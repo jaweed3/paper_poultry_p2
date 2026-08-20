@@ -19,3 +19,11 @@ onnx/
 ptq/
 models_all.tar.gz
 results/profiling/profile_*.json
+# p2 additions
+literature/*.pdf
+*.aux
+*.bbl
+*.blg
+*.log
+*.out
+results/baseline_p1
