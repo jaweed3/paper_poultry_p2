@@ -22,31 +22,35 @@ Target: buktikan hipotesis Paper 2 lewat eksperimen yang bisa direproduksi. Semu
 
 Kriteria: 5 tahun terakhir, prioritas pruning terstruktur + quant + edge CPU.
 
-- [ ] [1] Liang et al. 2021 — Pruning and Quantization survey (arxiv:2101.09671) — PDF open
-- [ ] [2] LightPrune — Latency-Aware Structured Pruning ICCVW 2025 — PDF open
-- [ ] [3] Channel pruning + group vector quantization — Neural Computing & Applications (Springer) — cek paywall, kumpulkan link+DOI
-- [ ] [4] Pruning+Quantization Hybrid CNN Mango Leaf — ResearchGate 2025-12-16 — link, minta PDF manual
-- [ ] [5] Optimized CNN at IoT edge via pruning+quantization — Multimedia Tools Appl. Springer 2024 — link/DOI
-- [ ] [6] Structured pruning for edge CPU 2024-2025 (cari 1 paper tambahan, mis. DepGraph / Torch-Pruning original)
-- [ ] [7] QAT vs PTQ trade-off (Maulana & Ramasamy 2026 sudah ada di Paper 1, reuse + tambah 1 QAT paper 2024-2025 untuk contrast)
+- [x] [1] Liang et al. 2021 — Pruning and Quantization survey (arxiv:2101.09671) — PDF open
+- [x] [2] LightPrune — Latency-Aware Structured Pruning ICCVW 2025 — PDF open
+- [x] [3] Nagel et al. 2021 White Paper — A White Paper on Neural Network Quantization — PDF open (covers PTQ failure on depthwise/SE)
+- [x] [4] Pruning+Quantization Hybrid CNN Mango Leaf — ResearchGate 2025-12-16 — user confirmed downloaded
+- [x] [5] Channel pruning + group vector quantization — Neural Computing & Applications (Springer) — user confirmed downloaded
+- [x] [5b] Optimized CNN at IoT edge via pruning+quantization — Multimedia Tools Appl. Springer 2024 — user confirmed downloaded
+- [x] [6] DepGraph CVPR 2023 — Towards Any Structural Pruning (Fang et al.) — PDF open (impl lib for prune.py)
+- [x] [7] He et al. 2023 — Structured Pruning for Deep CNNs survey — PDF open
 
-Action per ref: `curl -L -o literature/<slug>.pdf <url>` kalau open, kalau 403/timeout tulis di README.md dengan format `- [title](url) — paywall, download manual`. Nanti user kumpulin manual ke literature/.
-
-- [ ] literature/README.md terisi (tabel: # | title | DOI/url | status pdf/link | relevansi 1 kalimat)
+Literature vault: 5 PDF open + 3 paywall (user downloaded) — all in literature/. SSOT config.yaml references them.
 
 ## 3. Pruning method lock — sebelum sweep
 
-- [ ] Pilih library: Torch-Pruning vs DepGraph — putuskan 1 (rekomendasi: Torch-Pruning L1-norm, paling reproducible untuk deadline)
-- [ ] Lock sparsity grid: 0% (baseline Paper 1), 30%, 50%, 70%
-- [ ] Lock finetune: 10-20 epoch, lr 5e-5, cosine atau constant, batch 32 (sama kayak Paper 1)
-- [ ] Lock scope: prune Conv+BN channel, skip classifier head + SE block handling (catat rule untuk EfficientNet-B0)
-- [ ] Tulis `scripts/prune.py` skeleton (arg: --model {mobilenetv2,shufflenetv2,efficientnet_b0} --sparsity 0.3 --finetune 15)
+- [x] Pilih library: Torch-Pruning 1.6.1 + DepGraph (sudah terinstall di ml_core) — L1-norm MagnitudeImportance
+- [x] Lock sparsity grid: 0% (baseline Paper 1), 30%, 50%, 70% (di config.yaml)
+- [x] Lock finetune: 15 epoch, lr 5e-5, batch 32 (config.yaml finetune.epochs/lr)
+- [x] Lock scope: prune Conv+BN channel, skip classifier head + SE special untuk EB0 (fallback 50% if EB0 collapse)
+- [x] Tulis `scripts/prune.py` real (DepGraph L1, dynamo=False for ONNX) — proven di dry-run 5 configs
+- [ ] Fix SNV2: DepGraph 1.6.1 bug ChannelShuffle ZeroDivision — current fallback no-op; need upgrade or per-layer skip (track in results/README.md)
+
+Deliverable pagi ini: 5 dry-run configs proven (MN2 s30/s50, EB0 s30/s50, SNV2 s30 fallback) — ONNX+INT8+nodecount OK.
 
 ## 4. Infra fork — benchmark & profiling (APPLE-TO-APPLE dengan Paper 1)
 
-- [ ] Fork `benchmark_rpi5.py` -> `scripts/benchmark_rpi5_pruned.py` (tambah arg --sparsity, output json kompatibel dengan rpi5_benchmark_results.json)
-- [ ] Fork `profiling_nodecount.py` -> `scripts/profiling_pruned.py` (hitung FP32 nodes, INT8 nodes, expansion, DynQuant/CvInt, overhead, simpan ke results/profiling/level2_pruned_artifact.json)
-- [ ] Test 1 config end-to-end di RPi5: MobileNetV2 sparsity 30% FP32 1 thread batch 1 -> json terisi, suhu & RSS ke-log
+- [x] Fork `benchmark_rpi5.py` -> `scripts/benchmark_rpi5_pruned.py` (tambah arg --sparsity, output json kompatibel)
+- [x] Fork `profiling_nodecount.py` -> `scripts/profiling_pruned.py` (nodecount expansion, overhead)
+- [x] Add `config.yaml` SSOT (project, dataset, models, pruning, quant, bench, paths) — single source of truth
+- [x] Add `scripts/dry_run.py` end-to-end: prune->ONNX->PTQ->nodecount->bench (dryrun 5 iters) — proven MN2/EB0, SNV2 fallback
+- [ ] Test 1 config end-to-end di RPi5: MobileNetV2 sparsity 30% FP32 1 thread batch 1 -> json terisi, suhu & RSS ke-log (next step: on RPi5)
 - [ ] Verify artifact level-2: 10 run batch1 1thread, Conv_quant_kernel % + overhead % ke-log
 
 ## 5. Sweep matrix — 136 config feasible (batch 1 full, batch scaling spot check)

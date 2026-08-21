@@ -28,5 +28,5 @@
 ## Checklist
 
 - [x] 5 PDF open ter-download (01, 02, 03, 06, 07)
-- [ ] 3 PDF paywall manual (04, 05a, 05b) — download dan taruh di literature/ dengan nama di atas
+- [x] 3 PDF paywall manual (04, 05a, 05b) — user confirmed downloaded; if filenames differ, rename to 04_*/05* per table
 - [ ] Import ke Zotero + verify bib entries (cross-check DOI)
