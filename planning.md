@@ -13,10 +13,10 @@ Target: buktikan hipotesis Paper 2 lewat eksperimen yang bisa direproduksi. Semu
 ## 1. Fork & baseline — DONE hari ini
 
 - [x] Fork ~/paper_poultry_edge -> ~/paper_poultry_p2 (history 601dbb2 kejaga)
-- [x] `git remote remove origin` (remote baru jaweed3/paper_poultry_p2 nanti saat repo dibuat)
+- [x] `git remote remove origin` (remote jaweed3/paper_poultry_p2 DONE (2026-08-21))
 - [x] `results/baseline_p1 -> ~/paper_poultry_edge/results` (symlink, bukti APPLE-TO-APPLE)
 - [x] `literature/` subdir + `FORK.md` lineage
-- [ ] `git init` sudah ada; commit awal `chore: fork p2 from p1 601dbb2 + scaffolding` (tunggu planning+experiment_plan final)
+- [ ] `git init` DONE; remote added + pushed master `chore: fork p2 from p1 601dbb2 + scaffolding` (tunggu planning+experiment_plan final)
 
 ## 2. Literature pack — 7 refs (kumpulin di literature/, kalau paywall simpan link di literature/README.md)
 
