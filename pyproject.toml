@@ -1,0 +1,32 @@
+[project]
+name = "paper-poultry-p2"
+version = "0.1.0-dryrun"
+description = "Paper 2: Pruning Mitigates INT8 Quantization Overhead on ARM CPUs — MLCIPR 2026"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+  "torch>=2.4",
+  "torchvision>=0.19",
+  "torchaudio",
+  "onnx>=1.16",
+  "onnxruntime>=1.19",
+  "onnxscript",
+  "torch-pruning>=1.6",
+  "numpy",
+  "pillow",
+  "tqdm",
+  "psutil",
+  "pyyaml",
+  "matplotlib",
+]
+
+[tool.uv]
+managed = true
+
+[tool.uv.sources]
+torch = { index = "pytorch-cu121" }
+
+[[tool.uv.index]]
+name = "pytorch-cu121"
+url = "https://download.pytorch.org/whl/cu121"
+explicit = true
