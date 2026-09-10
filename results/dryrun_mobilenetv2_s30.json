@@ -1,0 +1,68 @@
+{
+  "experiment": "Paper 2 dry-run \u2014 pruning-then-PTQ (synthetic, reproducible)",
+  "timestamp": "2026-08-21T13:24:36",
+  "config_source": "config.yaml",
+  "model": "mobilenetv2",
+  "sparsity": 0.3,
+  "seed": 42,
+  "fp32_onnx": "onnx_pruned/s30/mobilenetv2.onnx",
+  "int8_onnx": "onnx_pruned/s30/mobilenetv2_int8.onnx",
+  "fp32_size_mb": 4.198,
+  "int8_size_mb": 1.193,
+  "nodecount": {
+    "fp32": {
+      "total_nodes": 209,
+      "quantize_linear": 0,
+      "dequantize_linear": 0,
+      "op_counts": {
+        "Identity": 39,
+        "Conv": 52,
+        "Constant": 70,
+        "Clip": 35,
+        "Add": 10,
+        "GlobalAveragePool": 1,
+        "Flatten": 1,
+        "Gemm": 1
+      }
+    },
+    "int8": {
+      "total_nodes": 526,
+      "quantize_linear": 0,
+      "dequantize_linear": 0,
+      "op_counts": {
+        "Constant": 70,
+        "DynamicQuantizeLinear": 53,
+        "Identity": 39,
+        "Reshape": 52,
+        "Mul": 106,
+        "ConvInteger": 52,
+        "Cast": 53,
+        "Add": 63,
+        "Clip": 35,
+        "GlobalAveragePool": 1,
+        "Flatten": 1,
+        "MatMulInteger": 1
+      }
+    },
+    "expansion": 2.52
+  },
+  "bench_dryrun": {
+    "fp32": {
+      "mean_ms": 5.65,
+      "p50_ms": 5.59,
+      "runs": 5,
+      "batch": 1
+    },
+    "int8": {
+      "mean_ms": 34.4,
+      "p50_ms": 34.13,
+      "runs": 5,
+      "batch": 1
+    },
+    "int8_error": null
+  },
+  "hypothesis_check": {
+    "expansion_vs_paper1": "Compare expansion to Paper1 Table level2 (MN2 2.86x, SNV2 1.37x, EB0 3.05x) \u2014 lower is win",
+    "int8_slower_than_fp32_on_cpu": true
+  }
+}

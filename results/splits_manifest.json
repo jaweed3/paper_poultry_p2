@@ -1,0 +1,43 @@
+{
+  "protocol": "publisher-test-intact",
+  "seed": 42,
+  "publisher": {
+    "train": 7016,
+    "test": 1754,
+    "total": 8770,
+    "source": "Dianyo/poultry-fecal-fl (FecalFed leak-free benchmark, Chi 2026, arXiv:2604.00559)"
+  },
+  "actual": {
+    "train": {
+      "total": 5614,
+      "per_class": {
+        "cocci": 1713,
+        "healthy": 1630,
+        "ncd": 461,
+        "salmo": 1810
+      }
+    },
+    "val": {
+      "total": 1402,
+      "per_class": {
+        "cocci": 428,
+        "healthy": 407,
+        "ncd": 115,
+        "salmo": 452
+      }
+    },
+    "test": {
+      "total": 1754,
+      "per_class": {
+        "cocci": 535,
+        "healthy": 509,
+        "ncd": 144,
+        "salmo": 566
+      }
+    }
+  },
+  "check": {
+    "train_plus_val_eq_publisher_train": true,
+    "test_eq_publisher_test": true
+  }
+}

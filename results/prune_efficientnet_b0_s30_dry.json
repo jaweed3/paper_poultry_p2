@@ -1,0 +1,16 @@
+{
+  "mode": "dry-run",
+  "model": "efficientnet_b0",
+  "sparsity": 0.3,
+  "seed": 42,
+  "params_before": 4012672,
+  "params_after": 2005801,
+  "params_remain_pct": 49.99,
+  "onnx_path": "onnx_pruned/s30/efficientnet_b0.onnx",
+  "onnx_size_mb": 7.601,
+  "opset": 17,
+  "output_shape": [
+    1,
+    4
+  ]
+}
