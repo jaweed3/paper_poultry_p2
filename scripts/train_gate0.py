@@ -40,6 +40,9 @@ def train_full(name, train_loader, val_loader, device, epochs=50):
         return None
     model = P.get_model(name).to(device)
     print(f"  {name}: params={sum(p.numel() for p in model.parameters()):,}")
+    last_ckpt = CKPT_DIR / f"{name}_gate0_last.pth"
+    best_ckpt = CKPT_DIR / f"{name}_gate0_best.pth"
+    partial_hist = LOG_DIR / f"{name}_gate0_partial.json"
     criterion = nn.CrossEntropyLoss()
     optimizer = optim.Adam(model.parameters(), lr=1e-4, weight_decay=1e-4)
     scheduler = optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=epochs)
@@ -47,8 +50,24 @@ def train_full(name, train_loader, val_loader, device, epochs=50):
     best_acc, best_wts = 0.0, copy.deepcopy(model.state_dict())
     history = {"train_loss": [], "train_acc": [], "val_loss": [],
                "val_acc": [], "lr": [], "epoch_time_s": []}
+    start_epoch = 0
+    if last_ckpt.exists() and partial_hist.exists() and not ARGS.force:
+        try:
+            model.load_state_dict(torch.load(last_ckpt, map_location=device))
+            history = json.load(open(partial_hist))
+            if best_ckpt.exists():
+                best_wts = torch.load(best_ckpt, map_location="cpu")
+                best_acc = max(history["val_acc"]) if history["val_acc"] else 0.0
+            start_epoch = len(history["val_acc"])
+            for _ in range(start_epoch):
+                scheduler.step()
+            print(f"  {name}: RESUME from epoch {start_epoch}/{epochs} "
+                  f"(best_val={best_acc:.2f}%)")
+        except Exception as e:
+            print(f"  {name}: resume failed ({e}), starting fresh")
+            start_epoch = 0
     t_start = time.perf_counter()
-    for epoch in range(epochs):
+    for epoch in range(start_epoch, epochs):
         t0 = time.perf_counter()
         tr_loss, tr_acc = P.train_epoch(model, train_loader, criterion, optimizer, device)
         va_loss, va_acc, _, _ = P.validate(model, val_loader, criterion, device)
@@ -65,6 +84,11 @@ def train_full(name, train_loader, val_loader, device, epochs=50):
         if va_acc > best_acc:
             best_acc = va_acc
             best_wts = copy.deepcopy(model.state_dict())
+            torch.save(best_wts, best_ckpt)
+        # crash-proof: persist every epoch so resume never loses >1 epoch
+        torch.save(model.state_dict(), last_ckpt)
+        with open(partial_hist, "w") as f:
+            json.dump(history, f)
     total = time.perf_counter() - t_start
     model.load_state_dict(best_wts)
     CKPT_DIR.mkdir(parents=True, exist_ok=True)
