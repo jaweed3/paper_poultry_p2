@@ -34,7 +34,7 @@ def main():
     assert all(len(g) == 2 for g in pairs), "expected all pairs"
     print(f"pairs: {len(pairs)}")
 
-    drop = {}  # dropped_path -> reason
+    drop = {}  # relpath -> reason (relpath as stored in phash_dedup.json)
     for a, b in pairs:
         sa, sb = split_of(a), split_of(b)
         if sa != sb:
@@ -54,8 +54,8 @@ def main():
         shutil.rmtree(DST)
     copied, dropped = 0, 0
     for p in sorted(SRC.rglob("*.jpg")):
-        rel = str(p.relative_to(SRC))
-        rel_root = str(Path(rel).as_posix())
+        rel = p.relative_to(SRC).as_posix()
+        rel_root = f"data/images/{rel}"  # match phash_dedup.json key format
         if rel_root in drop:
             dropped += 1
             continue
