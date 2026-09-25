@@ -1,0 +1,53 @@
+{
+  "fp32_test_acc": 98.5,
+  "dynamic_int8_test_acc": 10.42,
+  "calib_n": 100,
+  "configs": {
+    "static_per_tensor_minmax": {
+      "test_acc": 9.32,
+      "per_class": {
+        "cocci": 0.19,
+        "healthy": 2.98,
+        "ncd": 100.0,
+        "salmo": 0.72
+      },
+      "size_mb": 4.29,
+      "quant_time_s": 3.5,
+      "mcnemar_vs_fp32": {
+        "b": 1548,
+        "c": 7,
+        "chi2": 1525.145,
+        "p": 0.0
+      },
+      "mcnemar_vs_dynamic": {
+        "b": 36,
+        "c": 17,
+        "chi2": 6.113,
+        "p": 0.013417541070915164
+      }
+    },
+    "static_per_channel_minmax": {
+      "test_acc": 94.56,
+      "per_class": {
+        "cocci": 96.03,
+        "healthy": 94.84,
+        "ncd": 92.91,
+        "salmo": 93.32
+      },
+      "size_mb": 4.67,
+      "quant_time_s": 4.1,
+      "mcnemar_vs_fp32": {
+        "b": 75,
+        "c": 7,
+        "chi2": 54.744,
+        "p": 1.3730454524896308e-13
+      },
+      "mcnemar_vs_dynamic": {
+        "b": 14,
+        "c": 1468,
+        "chi2": 1424.567,
+        "p": 9.63600852468e-312
+      }
+    }
+  }
+}
