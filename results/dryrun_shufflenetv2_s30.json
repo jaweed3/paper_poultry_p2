@@ -1,0 +1,80 @@
+{
+  "experiment": "Paper 2 dry-run \u2014 pruning-then-PTQ (synthetic, reproducible)",
+  "timestamp": "2026-08-21T09:22:01",
+  "config_source": "config.yaml",
+  "model": "shufflenetv2",
+  "sparsity": 0.3,
+  "seed": 42,
+  "fp32_onnx": "onnx_pruned/s30/shufflenetv2.onnx",
+  "int8_onnx": "onnx_pruned/s30/shufflenetv2_int8.onnx",
+  "fp32_size_mb": 4.864,
+  "int8_size_mb": 1.454,
+  "nodecount": {
+    "fp32": {
+      "total_nodes": 953,
+      "quantize_linear": 0,
+      "dequantize_linear": 0,
+      "op_counts": {
+        "Identity": 51,
+        "Conv": 56,
+        "Relu": 37,
+        "MaxPool": 1,
+        "Concat": 48,
+        "Shape": 77,
+        "Constant": 302,
+        "Gather": 77,
+        "Div": 29,
+        "Cast": 32,
+        "Unsqueeze": 128,
+        "Reshape": 32,
+        "Transpose": 16,
+        "Add": 13,
+        "Mul": 26,
+        "Slice": 26,
+        "ReduceMean": 1,
+        "Gemm": 1
+      }
+    },
+    "int8": {
+      "total_nodes": 1291,
+      "quantize_linear": 0,
+      "dequantize_linear": 0,
+      "op_counts": {
+        "Constant": 302,
+        "DynamicQuantizeLinear": 54,
+        "Identity": 51,
+        "Reshape": 88,
+        "Mul": 140,
+        "ConvInteger": 56,
+        "Cast": 89,
+        "Add": 70,
+        "Relu": 37,
+        "MaxPool": 1,
+        "Concat": 48,
+        "Shape": 77,
+        "Gather": 77,
+        "Unsqueeze": 128,
+        "Div": 29,
+        "Transpose": 16,
+        "Slice": 26,
+        "ReduceMean": 1,
+        "MatMulInteger": 1
+      }
+    },
+    "expansion": 1.35
+  },
+  "bench_dryrun": {
+    "fp32": {
+      "mean_ms": 4.11,
+      "p50_ms": 4.11,
+      "runs": 5,
+      "batch": 1
+    },
+    "int8": null,
+    "int8_error": "[ONNXRuntimeError] : 9 : NOT_IMPLEMENTED : Could not find an implementation for ConvInteger(10) node with name '/conv1/conv1.0/Conv_quant'"
+  },
+  "hypothesis_check": {
+    "expansion_vs_paper1": "Compare expansion to Paper1 Table level2 (MN2 2.86x, SNV2 1.37x, EB0 3.05x) \u2014 lower is win",
+    "int8_slower_than_fp32_on_cpu": "skipped_on_macos (run on RPi5)"
+  }
+}

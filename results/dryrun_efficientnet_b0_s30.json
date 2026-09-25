@@ -1,0 +1,62 @@
+{
+  "experiment": "Paper 2 dry-run \u2014 pruning-then-PTQ (synthetic, reproducible)",
+  "timestamp": "2026-08-21T06:41:00",
+  "config_source": "config.yaml",
+  "model": "efficientnet_b0",
+  "sparsity": 0.3,
+  "seed": 42,
+  "fp32_onnx": "onnx_pruned/s30/efficientnet_b0.onnx",
+  "int8_onnx": "onnx_pruned/s30/efficientnet_b0_int8.onnx",
+  "fp32_size_mb": 7.601,
+  "int8_size_mb": 2.164,
+  "nodecount": {
+    "fp32": {
+      "total_nodes": 298,
+      "quantize_linear": 0,
+      "dequantize_linear": 0,
+      "op_counts": {
+        "Identity": 59,
+        "Conv": 81,
+        "Sigmoid": 65,
+        "Mul": 65,
+        "GlobalAveragePool": 17,
+        "Add": 9,
+        "Flatten": 1,
+        "Gemm": 1
+      }
+    },
+    "int8": {
+      "total_nodes": 789,
+      "quantize_linear": 0,
+      "dequantize_linear": 0,
+      "op_counts": {
+        "Reshape": 81,
+        "Identity": 59,
+        "DynamicQuantizeLinear": 82,
+        "Mul": 229,
+        "ConvInteger": 81,
+        "Cast": 82,
+        "Add": 91,
+        "Sigmoid": 65,
+        "GlobalAveragePool": 17,
+        "Flatten": 1,
+        "MatMulInteger": 1
+      }
+    },
+    "expansion": 2.65
+  },
+  "bench_dryrun": {
+    "fp32": {
+      "mean_ms": 11.51,
+      "p50_ms": 11.51,
+      "runs": 5,
+      "batch": 1
+    },
+    "int8": null,
+    "int8_error": "[ONNXRuntimeError] : 9 : NOT_IMPLEMENTED : Could not find an implementation for ConvInteger(10) node with name '/features/features.0/features.0.0/Conv_quant'"
+  },
+  "hypothesis_check": {
+    "expansion_vs_paper1": "Compare expansion to Paper1 Table level2 (MN2 2.86x, SNV2 1.37x, EB0 3.05x) \u2014 lower is win",
+    "int8_slower_than_fp32_on_cpu": "skipped_on_macos (run on RPi5)"
+  }
+}

@@ -1,0 +1,16 @@
+{
+  "mode": "dry-run",
+  "model": "mobilenetv2",
+  "sparsity": 0.5,
+  "seed": 42,
+  "params_before": 2228996,
+  "params_after": 583332,
+  "params_remain_pct": 26.17,
+  "onnx_path": "onnx_pruned/s50/mobilenetv2.onnx",
+  "onnx_size_mb": 2.208,
+  "opset": 17,
+  "output_shape": [
+    1,
+    4
+  ]
+}
