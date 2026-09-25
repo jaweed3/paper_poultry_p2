@@ -100,48 +100,90 @@ def get_transforms(train=True):
 
 
 def prepare_data():
-    """Split data into train/val/test (70/15/15) if not already split."""
-    images_dir = DATA_DIR / "train"  # HuggingFace saves all in train/
-    
-    # Check if already split
-    if (DATA_DIR / "train" / CLASS_NAMES[0]).exists() and \
-       (DATA_DIR / "val" / CLASS_NAMES[0]).exists() and \
-       (DATA_DIR / "test" / CLASS_NAMES[0]).exists():
-        print("Data already split")
+    """Use publisher splits as-is; carve val from publisher *train* only.
+
+    Provenance: Dianyo/poultry-fecal-fl is the FecalFed leak-free benchmark
+    (Chi 2026, arXiv:2604.00559, accepted CVPR 2026 Workshop on Vision for
+    Agriculture): 8,770 deduplicated unique images, publisher splits
+    train=7,016 / test=1,754. The publisher TEST split is NEVER touched or
+    re-split. Validation (1,402) is a stratified 80/20 split of the publisher
+    train only (rng seed=SEED), giving final 5,614 / 1,402 / 1,754.
+    A manifest (results/splits_manifest.json) records counts + seed so a
+    reviewer can verify test-untouched arithmetic: 5614+1402=7016 (train),
+    test=1754 intact.
+    """
+    # Publisher-test-intact protocol. If the HF parquet was materialized to
+    # folders preserving publisher splits (data/images/{train,test}/<cls>),
+    # carve val as a stratified 80/20 split of publisher TRAIN ONLY.
+    # Publisher test/ is NEVER touched, moved, or re-split.
+    if (DATA_DIR / "test" / CLASS_NAMES[0]).exists() and \
+       (DATA_DIR / "train" / CLASS_NAMES[0]).exists():
+        if (DATA_DIR / "val" / CLASS_NAMES[0]).exists():
+            print("Data already split (publisher test intact)")
+            _write_splits_manifest("publisher-test-intact")
+            return
+        import shutil
+        print("Carving val (20%) from publisher TRAIN only; test/ untouched...")
+        rng = np.random.RandomState(SEED)
+        manifest = {"protocol": "publisher-test-intact", "seed": SEED,
+                    "note": "val = stratified 80/20 of publisher train; "
+                            "publisher test/ never touched",
+                    "splits": {}}
+        for cls_name in CLASS_NAMES:
+            images = sorted((DATA_DIR / "train" / cls_name).glob("*.*"))
+            images = [f for f in images
+                      if f.suffix.lower() in (".jpg", ".jpeg", ".png", ".bmp")]
+            idx = np.arange(len(images))
+            rng.shuffle(idx)
+            n_val = int(0.2 * len(images))
+            val_files = [images[i] for i in idx[:n_val]]
+            split_dir = DATA_DIR / "val" / cls_name
+            split_dir.mkdir(parents=True, exist_ok=True)
+            for img_path in val_files:
+                shutil.move(str(img_path), str(split_dir / img_path.name))
+            manifest["splits"][cls_name] = {
+                "train": len(images) - n_val, "val": n_val}
+            print(f"  {cls_name}: {len(images)} train -> "
+                  f"train={len(images) - n_val}, val={n_val} (test untouched)")
+        _write_splits_manifest("publisher-test-intact", manifest)
         return
-    
-    # If all images are in one directory, split them
+
+    # LEGACY FALLBACK (NOT the paper protocol): single-dir 70/15/15 split.
+    # Only used when no publisher test/ exists. Results from this path must
+    # NOT be reported as the paper's numbers.
+    print("WARNING: no publisher test/ found; using legacy 70/15/15 split "
+          "(NOT the paper protocol).")
     source_dir = None
     for candidate in [DATA_DIR / "train", DATA_DIR]:
         if (candidate / CLASS_NAMES[0]).exists():
             source_dir = candidate
             break
-    
+
     if source_dir is None:
         print("ERROR: No data found at", DATA_DIR)
         return
-    
+
     print(f"Splitting data from {source_dir}...")
-    
+
     for cls_name in CLASS_NAMES:
         cls_dir = source_dir / cls_name
         if not cls_dir.exists():
             continue
-        
+
         images = list(cls_dir.glob("*.*"))
         images = [f for f in images if f.suffix.lower() in (".jpg", ".jpeg", ".png", ".bmp")]
         np.random.shuffle(images)
-        
+
         n = len(images)
         n_train = int(0.7 * n)
         n_val = int(0.15 * n)
-        
+
         splits = {
             "train": images[:n_train],
             "val": images[n_train:n_train + n_val],
             "test": images[n_train + n_val:],
         }
-        
+
         for split_name, split_images in splits.items():
             split_dir = DATA_DIR / split_name / cls_name
             split_dir.mkdir(parents=True, exist_ok=True)
@@ -150,8 +192,46 @@ def prepare_data():
                 if not dest.exists():
                     import shutil
                     shutil.copy2(str(img_path), str(dest))
-        
+
         print(f"  {cls_name}: {n} total -> train={n_train}, val={n_val}, test={n - n_train - n_val}")
+    _write_splits_manifest("legacy-70-15-15")
+
+
+def _write_splits_manifest(protocol, manifest=None):
+    """Record split counts + seed so a reviewer can verify test-untouched
+    arithmetic: train + val must equal publisher train (7,016)."""
+    from collections import Counter
+    out = {"protocol": protocol, "seed": SEED,
+           "publisher": {"train": 7016, "test": 1754, "total": 8770,
+                         "source": "Dianyo/poultry-fecal-fl (FecalFed leak-free "
+                                   "benchmark, Chi 2026, arXiv:2604.00559)"}}
+    if manifest is not None:
+        out.update(manifest)
+    counts = {}
+    for split in ("train", "val", "test"):
+        n = 0
+        dist = {}
+        for cls_name in CLASS_NAMES:
+            d = DATA_DIR / split / cls_name
+            files = list(d.glob("*.*")) if d.exists() else []
+            files = [f for f in files
+                     if f.suffix.lower() in (".jpg", ".jpeg", ".png", ".bmp")]
+            dist[cls_name] = len(files)
+            n += len(files)
+        counts[split] = {"total": n, "per_class": dist}
+    out["actual"] = counts
+    if protocol == "publisher-test-intact":
+        tr, va, te = (counts["train"]["total"], counts["val"]["total"],
+                      counts["test"]["total"])
+        out["check"] = {
+            "train_plus_val_eq_publisher_train": (tr + va) == 7016,
+            "test_eq_publisher_test": te == 1754,
+        }
+    RESULTS_DIR.mkdir(exist_ok=True)
+    with open(RESULTS_DIR / "splits_manifest.json", "w") as f:
+        json.dump(out, f, indent=2)
+    print(f"  Split manifest -> {RESULTS_DIR / 'splits_manifest.json'}: "
+          f"{json.dumps(counts)}")
 
 
 # ============================================================

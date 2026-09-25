@@ -1,0 +1,31 @@
+{
+  "model": "mobilenetv2",
+  "sparsity": 0.3,
+  "epochs": 2,
+  "lr": 5e-05,
+  "seed": 42,
+  "params_before": 2228996,
+  "params_after": 1110790,
+  "best_val_acc": 24.0,
+  "history": [
+    {
+      "epoch": 1,
+      "train_loss": 2.214179725646973,
+      "train_acc": 38.5,
+      "val_loss": 1.8347019147872925,
+      "val_acc": 2.0,
+      "lr": 2.5e-05
+    },
+    {
+      "epoch": 2,
+      "train_loss": 1.5812252283096313,
+      "train_acc": 40.5,
+      "val_loss": 1.6602805042266846,
+      "val_acc": 24.0,
+      "lr": 0.0
+    }
+  ],
+  "ckpt": "/home/master_core_ti/paper_poultry_p2/models/pruned/s30/mobilenetv2.pth",
+  "onnx": "/home/master_core_ti/paper_poultry_p2/onnx_pruned/s30/mobilenetv2.onnx",
+  "int8": "/home/master_core_ti/paper_poultry_p2/onnx_pruned/s30/mobilenetv2_int8.onnx"
+}
