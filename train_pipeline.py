@@ -26,7 +26,9 @@ from tqdm import tqdm
 # CONFIG
 # ============================================================
 PROJECT_ROOT = Path(__file__).resolve().parent
-DATA_DIR = PROJECT_ROOT / "data" / "images"
+# Gate 0b: sterile split lives in data/images_sterile (8153, 0 cross-survivors).
+# Override with POULTRY_DATA_DIR=data/images to use the raw publisher layout.
+DATA_DIR = PROJECT_ROOT / os.environ.get("POULTRY_DATA_DIR", "data/images")
 RESULTS_DIR = PROJECT_ROOT / "results"
 MODELS_DIR = PROJECT_ROOT / "models"
 FIGURES_DIR = PROJECT_ROOT / "figures"
@@ -112,6 +114,19 @@ def prepare_data():
     reviewer can verify test-untouched arithmetic: 5614+1402=7016 (train),
     test=1754 intact.
     """
+    # STERILE PROTOCOL (Gate 0b): data already deduplicated to 8153.
+    # If counts match 5088/1337/1728, just record and return.
+    _counts = {}
+    for _s in ("train", "val", "test"):
+        _n = 0
+        for _c in CLASS_NAMES:
+            _d = DATA_DIR / _s / _c
+            _n += len([f for f in _d.glob("*.*")]) if _d.exists() else 0
+        _counts[_s] = _n
+    if _counts == {"train": 5088, "val": 1337, "test": 1728}:
+        print("Data is sterile split 8153 (5088/1337/1728)")
+        _write_splits_manifest("sterile-8153")
+        return
     # Publisher-test-intact protocol. If the HF parquet was materialized to
     # folders preserving publisher splits (data/images/{train,test}/<cls>),
     # carve val as a stratified 80/20 split of publisher TRAIN ONLY.
@@ -226,6 +241,16 @@ def _write_splits_manifest(protocol, manifest=None):
         out["check"] = {
             "train_plus_val_eq_publisher_train": (tr + va) == 7016,
             "test_eq_publisher_test": te == 1754,
+        }
+    if protocol == "sterile-8153":
+        tr, va, te = (counts["train"]["total"], counts["val"]["total"],
+                      counts["test"]["total"])
+        out["check"] = {
+            "train_eq_5088": tr == 5088,
+            "val_eq_1337": va == 1337,
+            "test_eq_1728": te == 1728,
+            "total_eq_8153": (tr + va + te) == 8153,
+            "origin": "Gate 0b rebuild: drop-1-per-pair from phash_dedup.json",
         }
     RESULTS_DIR.mkdir(exist_ok=True)
     with open(RESULTS_DIR / "splits_manifest.json", "w") as f:

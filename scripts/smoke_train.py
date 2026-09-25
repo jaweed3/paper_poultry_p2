@@ -54,9 +54,9 @@ def main():
     val_ds = P.PoultryDataset(P.DATA_DIR, "val", P.get_transforms(train=False))
     test_ds = P.PoultryDataset(P.DATA_DIR, "test", P.get_transforms(train=False))
     print(f"counts: train={len(train_ds)} val={len(val_ds)} test={len(test_ds)}")
-    assert len(train_ds) == 5614, len(train_ds)
-    assert len(val_ds) == 1402, len(val_ds)
-    assert len(test_ds) == 1754, len(test_ds)
+    assert len(train_ds) == 5088, len(train_ds)
+    assert len(val_ds) == 1337, len(val_ds)
+    assert len(test_ds) == 1728, len(test_ds)
 
     train_loader = DataLoader(train_ds, batch_size=32, shuffle=True,
                               num_workers=4, pin_memory=True)
