@@ -1,0 +1,291 @@
+{
+  "meta": {
+    "dataset": "sterile-8153 (dedup dari Dianyo/poultry-fecal-fl 8770)",
+    "git_hash": "82113e1",
+    "seed": 42,
+    "protocol_train": "50ep Adam 1e-4 cosine, batch 32, 224px, ImageNet init",
+    "protocol_quant": "ORT dynamic PTQ (MatMul-only), CPU",
+    "runtime_lab": {
+      "onnxruntime": "1.29.0",
+      "onnx": "1.22.0",
+      "torch": "2.5.1+cu121",
+      "gpu": "RTX 4060",
+      "python": "3.12.14"
+    },
+    "note_latency": "latency_ms = referensi x86 WSL lab, BUKAN angka paper. Angka paper tetap dari RPi5 + x86 bench khusus.",
+    "leakage_disclosure": {
+      "publisher_claim": "8770 deduplicated leak-free (FecalFed, Chi 2026)",
+      "audit": "pHash Hamming<=5 over 8770 files",
+      "near_pairs": 617,
+      "exact_pairs": 393,
+      "cross_split_groups": 316,
+      "byte_identical_cross": 203,
+      "test_identical_to_train": 95,
+      "test_identical_to_val": 30,
+      "est_unique": 8153
+    }
+  },
+  "split": {
+    "train": {
+      "total": 5088,
+      "per_class": {
+        "cocci": 1555,
+        "healthy": 1537,
+        "ncd": 417,
+        "salmo": 1579
+      }
+    },
+    "val": {
+      "total": 1337,
+      "per_class": {
+        "cocci": 406,
+        "healthy": 396,
+        "ncd": 110,
+        "salmo": 425
+      }
+    },
+    "test": {
+      "total": 1728,
+      "per_class": {
+        "cocci": 529,
+        "healthy": 504,
+        "ncd": 141,
+        "salmo": 554
+      }
+    },
+    "strategy": "drop-1-per-pair, keep test>val>train, within keep lexicographically-first"
+  },
+  "models": {
+    "mobilenetv2": {
+      "params": 2228996,
+      "width": "standard",
+      "fp32_test_acc": 97.92,
+      "fp32_per_class": {
+        "cocci": 98.49,
+        "healthy": 98.02,
+        "ncd": 94.33,
+        "salmo": 98.19
+      },
+      "fp32_confusion": [
+        [
+          521,
+          3,
+          1,
+          4
+        ],
+        [
+          8,
+          494,
+          1,
+          1
+        ],
+        [
+          1,
+          3,
+          133,
+          4
+        ],
+        [
+          7,
+          2,
+          1,
+          544
+        ]
+      ],
+      "int8_test_acc": 97.11,
+      "int8_per_class": {
+        "cocci": 97.73,
+        "healthy": 98.02,
+        "ncd": 91.49,
+        "salmo": 97.11
+      },
+      "int8_confusion": [
+        [
+          517,
+          4,
+          1,
+          7
+        ],
+        [
+          6,
+          494,
+          1,
+          3
+        ],
+        [
+          6,
+          1,
+          129,
+          5
+        ],
+        [
+          10,
+          2,
+          4,
+          538
+        ]
+      ],
+      "acc_drop_pp": 0.81,
+      "fp32_lat_ms_ref": 2.4,
+      "int8_lat_ms_ref": 40.25,
+      "fp32_size_mb": 8.48,
+      "int8_size_mb": 2.3,
+      "best_val_acc": 97.75617053103964,
+      "train_time_s": 3648.2
+    },
+    "shufflenetv2": {
+      "params": 1257704,
+      "width": "x1.0",
+      "fp32_test_acc": 97.69,
+      "fp32_per_class": {
+        "cocci": 97.73,
+        "healthy": 98.41,
+        "ncd": 95.74,
+        "salmo": 97.47
+      },
+      "fp32_confusion": [
+        [
+          517,
+          1,
+          4,
+          7
+        ],
+        [
+          5,
+          496,
+          3,
+          0
+        ],
+        [
+          2,
+          1,
+          135,
+          3
+        ],
+        [
+          9,
+          2,
+          3,
+          540
+        ]
+      ],
+      "int8_test_acc": 97.45,
+      "int8_per_class": {
+        "cocci": 98.11,
+        "healthy": 98.02,
+        "ncd": 93.62,
+        "salmo": 97.29
+      },
+      "int8_confusion": [
+        [
+          519,
+          0,
+          3,
+          7
+        ],
+        [
+          7,
+          494,
+          2,
+          1
+        ],
+        [
+          3,
+          3,
+          132,
+          3
+        ],
+        [
+          10,
+          2,
+          3,
+          539
+        ]
+      ],
+      "acc_drop_pp": 0.24,
+      "fp32_lat_ms_ref": 4.15,
+      "int8_lat_ms_ref": 12.62,
+      "fp32_size_mb": 4.89,
+      "int8_size_mb": 1.47,
+      "best_val_acc": 97.30740463724757,
+      "train_time_s": 3612.3
+    },
+    "efficientnet_b0": {
+      "params": 4012672,
+      "width": "standard",
+      "fp32_test_acc": 98.55,
+      "fp32_per_class": {
+        "cocci": 98.49,
+        "healthy": 98.41,
+        "ncd": 95.74,
+        "salmo": 99.46
+      },
+      "fp32_confusion": [
+        [
+          521,
+          1,
+          1,
+          6
+        ],
+        [
+          6,
+          496,
+          1,
+          1
+        ],
+        [
+          3,
+          2,
+          135,
+          1
+        ],
+        [
+          1,
+          1,
+          1,
+          551
+        ]
+      ],
+      "int8_test_acc": 10.42,
+      "int8_per_class": {
+        "cocci": 2.27,
+        "healthy": 4.76,
+        "ncd": 100.0,
+        "salmo": 0.54
+      },
+      "int8_confusion": [
+        [
+          12,
+          2,
+          513,
+          2
+        ],
+        [
+          0,
+          24,
+          480,
+          0
+        ],
+        [
+          0,
+          0,
+          141,
+          0
+        ],
+        [
+          4,
+          5,
+          542,
+          3
+        ]
+      ],
+      "acc_drop_pp": 88.13,
+      "fp32_lat_ms_ref": 4.35,
+      "int8_lat_ms_ref": 57.18,
+      "fp32_size_mb": 15.3,
+      "int8_size_mb": 4.16,
+      "best_val_acc": 98.20493642483171,
+      "train_time_s": 3654.9
+    }
+  }
+}
