@@ -1,6 +1,6 @@
 # Poultry Fecal Disease Detection — Edge ML
 
-Diagnosing INT8 Quantization Collapse in EfficientNet-B0: Per-Channel Recovery and Scheme x Runtime Characterization for Poultry Fecal Disease Detection on Edge CPUs.
+Diagnosing INT8 Quantization Collapse in EfficientNet-B0: Per-Channel Recovery and Scheme x Runtime Characterization for Poultry Fecal Disease Detection on Raspberry Pi 5.
 
 ## Models (sterile split, test 1728)
 

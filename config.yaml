@@ -98,5 +98,5 @@ paths:
 paper:
   venue: "MLCIPR 2026-10-05"
   format: "IEEE 4-6pp A4"
-  title_working: "Diagnosing INT8 Quantization Collapse in EfficientNet-B0: Per-Channel Recovery and Scheme x Runtime Characterization for Poultry Fecal Disease Detection on Edge CPUs"
+  title_working: "Diagnosing INT8 Quantization Collapse in EfficientNet-B0: Per-Channel Recovery and Scheme x Runtime Characterization for Poultry Fecal Disease Detection on Raspberry Pi 5"
   template_source: "paper/main.tex (from Paper 1)"
