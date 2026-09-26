@@ -1,0 +1,50 @@
+\begin{table}[htbp]
+\caption{Test accuracy on sterile split (1,728 images) with 95\% bootstrap CI (B=10,000). Dynamic INT8 PTQ (ORT).}
+\label{tab:results}
+\centering
+\begin{tabular}{lccc}
+\toprule
+Model & FP32 (\%) & INT8 dynamic (\%) & Drop (pp) \\
+\midrule
+MobileNetV2 & 97.92 [97.22, 98.55] & 97.11 [96.30, 97.86] & 0.81 \\
+ShuffleNetV2 & 97.69 [96.93, 98.38] & 97.45 [96.64, 98.15] & 0.24 \\
+EfficientNet-B0 & 98.55 [97.97, 99.07] & 10.42 [8.97, 11.92] & 88.13 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{table}[htbp]
+\caption{EfficientNet-B0: static QDQ INT8 diagnosis (MinMax, calib 100). Per-tensor collapses; per-channel recovers.}
+\label{tab:eb0static}
+\centering
+\begin{tabular}{lcc}
+\toprule
+Config & Test acc. (\%) & McNemar vs FP32 $p$ \\
+\midrule
+Dynamic INT8 & 10.42 & --- \\
+Static QDQ per-tensor & 9.32 & 0.0 \\
+Static QDQ per-channel & 94.56 & 1.37e-13 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{table}[htbp]
+\caption{Raspberry Pi~5 latency, batch=1 (mean of 200 runs, P50 in parentheses). ORT 1.29.0, throttled=0x0.}
+\label{tab:rpi5}
+\centering
+\footnotesize
+\setlength{\tabcolsep}{3.2pt}
+\resizebox{\linewidth}{!}{\begin{tabular}{lcccccc}
+\toprule
+Model & Quant & t=1 & t=2 & t=3 & t=4 & FP32$\to$INT8 \\
+ & & (ms) & (ms) & (ms) & (ms) & t=4 \\
+\midrule
+MobileNetV2 & FP32 & 33.16 (33.00) & --- & --- & \textbf{14.23} (14.03) & --- \\
+ & INT8 & 43.88 (43.86) & --- & --- & 39.83 (39.73) & 2.80$\times$ slower \\
+ShuffleNetV2 & FP32 & 14.19 (14.19) & --- & --- & \textbf{6.19} (6.18) & --- \\
+ & INT8 & 13.65 (13.64) & --- & --- & 11.95 (11.76) & 1.93$\times$ slower \\
+EfficientNet-B0 & FP32 & 69.45 (69.42) & --- & --- & \textbf{31.56} (31.18) & --- \\
+ & INT8 & 76.68 (76.67) & --- & --- & 64.39 (64.19) & 2.04$\times$ slower \\
+\bottomrule
+\end{tabular}}
+\end{table}
