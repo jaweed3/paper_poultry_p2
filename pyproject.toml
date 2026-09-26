@@ -1,7 +1,7 @@
 [project]
 name = "paper-poultry-p2"
 version = "0.1.0"
-description = "Paper 2: Pruning Mitigates INT8 Quantization Overhead on ARM CPUs — MLCIPR 2026"
+description = "Paper 2: Diagnosing INT8 Quantization Collapse in EfficientNet-B0 (per-channel recovery, scheme x runtime) — MLCIPR 2026"
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [

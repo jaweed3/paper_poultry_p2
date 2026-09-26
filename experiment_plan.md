@@ -1,4 +1,4 @@
-# Experiment Plan — Paper 2: Structured Pruning before INT8 PTQ
+# Experiment Plan — Paper 2: INT8 Collapse Diagnosis (static per-tensor vs per-channel)
 
 > Kontrak eksperimen. Semua run harus ikut plan ini supaya apple-to-apple dengan Paper 1 dan bisa diklaim mitigation.
 

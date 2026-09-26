@@ -1,13 +1,13 @@
-# Outline — Paper 2: Pruning Mitigates INT8 Overhead (MLCIPR)
+# Outline — Paper 2: INT8 Collapse Diagnosis (MLCIPR)
 
 ## Target
 MLCIPR 2026-10-05, IEEE 4-6pp A4, 15+ refs (5yr), Scopus.
 
 ## Title (working)
-Pruning Mitigates INT8 Quantization Overhead on ARM CPUs for Poultry Disease Detection
+Diagnosing INT8 Quantization Collapse in EfficientNet-B0: Per-Channel Recovery and Scheme x Runtime Characterization for Poultry Fecal Disease Detection on Edge CPUs
 
 ## Story
-Paper 1 found the disease (INT8 slowdown via expansion+overhead). Paper 2 proves the cure (structured pruning before PTQ).
+Paper 1 found the disease (INT8 slowdown via expansion+overhead). Paper 2 diagnoses the collapse (dynamic per-tensor fails depthwise; static per-channel recovers) and characterizes scheme x runtime x architecture on a deduplicated sterile split.
 
 ## Sections (skeleton — fill after numbers exist)
 1. Intro: poultry loss, edge gap, RQ prescriptive

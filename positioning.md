@@ -1,6 +1,6 @@
 # Positioning — Paper 2 vs Paper 1 (MLCIPR 2026-10-05)
 
-Paper 1 = characterization. Paper 2 = mitigation. File ini mengunci delta supaya tidak dianggap incremental / self-plagiarism.
+Paper 1 = characterization. Paper 2 = diagnosis + sterile rebuild. File ini mengunci delta supaya tidak dianggap incremental / self-plagiarism.
 
 ## Paper 1 dalam 1 paragraf
 

@@ -1,16 +1,18 @@
 # Poultry Fecal Disease Detection — Edge ML
 
-Characterization of lightweight CNN architectures with INT8 quantization for poultry fecal disease detection on edge devices.
+Diagnosing INT8 Quantization Collapse in EfficientNet-B0: Per-Channel Recovery and Scheme x Runtime Characterization for Poultry Fecal Disease Detection on Edge CPUs.
 
-## Models
+## Models (sterile split, test 1728)
 
-| Model | Test Acc | FP32 Size | INT8 Size | FP32 Latency |
-|-------|----------|-----------|-----------|--------------|
-| MobileNetV2 | 97.83% | 8.48 MB | 2.30 MB | 1.85 ms |
-| ShuffleNetV2 | 97.38% | 4.89 MB | 1.47 MB | 3.17 ms |
-| EfficientNet-B0 | 98.35% | 15.30 MB | 4.16 MB | 3.50 ms |
+| Model | FP32 Acc | INT8 Acc | FP32 Size | INT8 Size | RPi5 FP32 t=4 |
+|-------|----------|----------|-----------|-----------|---------------|
+| MobileNetV2 | 97.92% | 97.11% | 8.48 MB | 2.30 MB | 14.23 ms |
+| ShuffleNetV2 | 97.69% | 97.45% | 4.89 MB | 1.47 MB | 6.19 ms |
+| EfficientNet-B0 | 98.55% | 10.42% | 15.30 MB | 4.16 MB | 31.56 ms |
 
-Benchmark: Intel i5-12400F CPU, ONNX Runtime, 200 runs.
+Key diagnosis: EB0 static QDQ per-tensor 9.32% vs per-channel 94.56% (McNemar vs dynamic p~1e-312).
+
+Benchmark: Raspberry Pi 5, ONNX Runtime 1.29.0, 200 runs, sterile-split models.
 
 ## Dataset
 
