@@ -1,0 +1,429 @@
+{
+  "experiment": "RPi5 Hardware Benchmark",
+  "device": "Raspberry Pi 5",
+  "timestamp": "2026-09-26T07:12:13.942711",
+  "config": {
+    "num_runs": 200,
+    "num_warmup": 10,
+    "thread_counts": [
+      1,
+      4
+    ],
+    "batch_sizes": [
+      1
+    ]
+  },
+  "system_info": {
+    "hostname": "techronity",
+    "os": "Debian GNU/Linux 13 (trixie)",
+    "kernel": "6.18.34+rpt-rpi-2712",
+    "architecture": "aarch64",
+    "cpu_model": "processor\t: 0",
+    "cpu_cores": 4,
+    "ram_total_mb": 8062.4,
+    "ram_available_mb": 7505.6,
+    "thermal_zone": "45750",
+    "thermal_type": "cpu-thermal",
+    "gpu_temp": "temp=46.1'C",
+    "voltage_core": "volt=0.8550V",
+    "throttled": "throttled=0x0",
+    "onnxruntime_version": "1.29.0",
+    "providers": [
+      "AzureExecutionProvider",
+      "CPUExecutionProvider"
+    ],
+    "temp_initial_c": 44.6,
+    "power_initial": {
+      "voltage_v": 0.855,
+      "current_a": null,
+      "power_w": null
+    },
+    "timestamp": "2026-09-26T07:10:42.167219"
+  },
+  "results": [
+    {
+      "model": "mobilenetv2",
+      "quantization": "FP32",
+      "threads": 1,
+      "batch_size": 1,
+      "input_shape": [
+        1,
+        3,
+        224,
+        224
+      ],
+      "model_size_mb": 8.477,
+      "latency_mean_ms": 33.16,
+      "latency_std_ms": 1.27,
+      "latency_p50_ms": 33.0,
+      "latency_p95_ms": 33.18,
+      "latency_p99_ms": 37.47,
+      "latency_min_ms": 32.87,
+      "latency_max_ms": 47.05,
+      "throughput_fps": 30.16,
+      "num_runs": 200,
+      "memory_rss_mean_mb": 99.09,
+      "memory_rss_peak_mb": 99.09,
+      "cpu_percent": 0.0,
+      "temp_before_c": 45.8,
+      "temp_after_c": 46.9,
+      "power": {
+        "voltage_v": 0.855,
+        "current_a": null,
+        "power_w": null
+      }
+    },
+    {
+      "model": "mobilenetv2",
+      "quantization": "FP32",
+      "threads": 4,
+      "batch_size": 1,
+      "input_shape": [
+        1,
+        3,
+        224,
+        224
+      ],
+      "model_size_mb": 8.477,
+      "latency_mean_ms": 14.23,
+      "latency_std_ms": 0.94,
+      "latency_p50_ms": 14.03,
+      "latency_p95_ms": 14.93,
+      "latency_p99_ms": 19.38,
+      "latency_min_ms": 13.87,
+      "latency_max_ms": 22.93,
+      "throughput_fps": 70.26,
+      "num_runs": 200,
+      "memory_rss_mean_mb": 102.26,
+      "memory_rss_peak_mb": 103.55,
+      "cpu_percent": 17.9,
+      "temp_before_c": 48.0,
+      "temp_after_c": 50.7,
+      "power": {
+        "voltage_v": 0.855,
+        "current_a": null,
+        "power_w": null
+      }
+    },
+    {
+      "model": "mobilenetv2",
+      "quantization": "INT8",
+      "threads": 1,
+      "batch_size": 1,
+      "input_shape": [
+        1,
+        3,
+        224,
+        224
+      ],
+      "model_size_mb": 2.302,
+      "latency_mean_ms": 43.88,
+      "latency_std_ms": 0.19,
+      "latency_p50_ms": 43.86,
+      "latency_p95_ms": 44.08,
+      "latency_p99_ms": 44.65,
+      "latency_min_ms": 43.62,
+      "latency_max_ms": 45.64,
+      "throughput_fps": 22.79,
+      "num_runs": 200,
+      "memory_rss_mean_mb": 107.82,
+      "memory_rss_peak_mb": 107.88,
+      "cpu_percent": 0.0,
+      "temp_before_c": 50.1,
+      "temp_after_c": 47.4,
+      "power": {
+        "voltage_v": 0.855,
+        "current_a": null,
+        "power_w": null
+      }
+    },
+    {
+      "model": "mobilenetv2",
+      "quantization": "INT8",
+      "threads": 4,
+      "batch_size": 1,
+      "input_shape": [
+        1,
+        3,
+        224,
+        224
+      ],
+      "model_size_mb": 2.302,
+      "latency_mean_ms": 39.83,
+      "latency_std_ms": 0.55,
+      "latency_p50_ms": 39.73,
+      "latency_p95_ms": 40.51,
+      "latency_p99_ms": 40.71,
+      "latency_min_ms": 39.51,
+      "latency_max_ms": 46.73,
+      "throughput_fps": 25.1,
+      "num_runs": 200,
+      "memory_rss_mean_mb": 108.2,
+      "memory_rss_peak_mb": 109.16,
+      "cpu_percent": 19.5,
+      "temp_before_c": 48.0,
+      "temp_after_c": 51.2,
+      "power": {
+        "voltage_v": 0.855,
+        "current_a": null,
+        "power_w": null
+      }
+    },
+    {
+      "model": "shufflenetv2",
+      "quantization": "FP32",
+      "threads": 1,
+      "batch_size": 1,
+      "input_shape": [
+        1,
+        3,
+        224,
+        224
+      ],
+      "model_size_mb": 4.888,
+      "latency_mean_ms": 14.19,
+      "latency_std_ms": 0.06,
+      "latency_p50_ms": 14.19,
+      "latency_p95_ms": 14.3,
+      "latency_p99_ms": 14.4,
+      "latency_min_ms": 14.11,
+      "latency_max_ms": 14.59,
+      "throughput_fps": 70.45,
+      "num_runs": 200,
+      "memory_rss_mean_mb": 111.28,
+      "memory_rss_peak_mb": 111.28,
+      "cpu_percent": 0.0,
+      "temp_before_c": 50.7,
+      "temp_after_c": 49.6,
+      "power": {
+        "voltage_v": 0.855,
+        "current_a": null,
+        "power_w": null
+      }
+    },
+    {
+      "model": "shufflenetv2",
+      "quantization": "FP32",
+      "threads": 4,
+      "batch_size": 1,
+      "input_shape": [
+        1,
+        3,
+        224,
+        224
+      ],
+      "model_size_mb": 4.888,
+      "latency_mean_ms": 6.19,
+      "latency_std_ms": 0.07,
+      "latency_p50_ms": 6.18,
+      "latency_p95_ms": 6.29,
+      "latency_p99_ms": 6.53,
+      "latency_min_ms": 6.09,
+      "latency_max_ms": 6.78,
+      "throughput_fps": 161.49,
+      "num_runs": 200,
+      "memory_rss_mean_mb": 111.38,
+      "memory_rss_peak_mb": 111.38,
+      "cpu_percent": 19.5,
+      "temp_before_c": 49.0,
+      "temp_after_c": 51.8,
+      "power": {
+        "voltage_v": 0.855,
+        "current_a": null,
+        "power_w": null
+      }
+    },
+    {
+      "model": "shufflenetv2",
+      "quantization": "INT8",
+      "threads": 1,
+      "batch_size": 1,
+      "input_shape": [
+        1,
+        3,
+        224,
+        224
+      ],
+      "model_size_mb": 1.468,
+      "latency_mean_ms": 13.65,
+      "latency_std_ms": 0.03,
+      "latency_p50_ms": 13.64,
+      "latency_p95_ms": 13.69,
+      "latency_p99_ms": 13.73,
+      "latency_min_ms": 13.6,
+      "latency_max_ms": 13.8,
+      "throughput_fps": 73.28,
+      "num_runs": 200,
+      "memory_rss_mean_mb": 111.34,
+      "memory_rss_peak_mb": 111.34,
+      "cpu_percent": 0.0,
+      "temp_before_c": 50.7,
+      "temp_after_c": 48.5,
+      "power": {
+        "voltage_v": 0.855,
+        "current_a": null,
+        "power_w": null
+      }
+    },
+    {
+      "model": "shufflenetv2",
+      "quantization": "INT8",
+      "threads": 4,
+      "batch_size": 1,
+      "input_shape": [
+        1,
+        3,
+        224,
+        224
+      ],
+      "model_size_mb": 1.468,
+      "latency_mean_ms": 11.95,
+      "latency_std_ms": 0.92,
+      "latency_p50_ms": 11.76,
+      "latency_p95_ms": 12.37,
+      "latency_p99_ms": 17.02,
+      "latency_min_ms": 11.67,
+      "latency_max_ms": 20.02,
+      "throughput_fps": 83.68,
+      "num_runs": 200,
+      "memory_rss_mean_mb": 112.32,
+      "memory_rss_peak_mb": 112.58,
+      "cpu_percent": 19.5,
+      "temp_before_c": 48.0,
+      "temp_after_c": 52.4,
+      "power": {
+        "voltage_v": 0.855,
+        "current_a": null,
+        "power_w": null
+      }
+    },
+    {
+      "model": "efficientnet_b0",
+      "quantization": "FP32",
+      "threads": 1,
+      "batch_size": 1,
+      "input_shape": [
+        1,
+        3,
+        224,
+        224
+      ],
+      "model_size_mb": 15.298,
+      "latency_mean_ms": 69.45,
+      "latency_std_ms": 0.29,
+      "latency_p50_ms": 69.42,
+      "latency_p95_ms": 69.64,
+      "latency_p99_ms": 71.15,
+      "latency_min_ms": 69.14,
+      "latency_max_ms": 72.2,
+      "throughput_fps": 14.4,
+      "num_runs": 200,
+      "memory_rss_mean_mb": 128.38,
+      "memory_rss_peak_mb": 129.0,
+      "cpu_percent": 0.0,
+      "temp_before_c": 52.4,
+      "temp_after_c": 48.5,
+      "power": {
+        "voltage_v": 0.855,
+        "current_a": null,
+        "power_w": null
+      }
+    },
+    {
+      "model": "efficientnet_b0",
+      "quantization": "FP32",
+      "threads": 4,
+      "batch_size": 1,
+      "input_shape": [
+        1,
+        3,
+        224,
+        224
+      ],
+      "model_size_mb": 15.298,
+      "latency_mean_ms": 31.56,
+      "latency_std_ms": 1.2,
+      "latency_p50_ms": 31.18,
+      "latency_p95_ms": 33.86,
+      "latency_p99_ms": 37.0,
+      "latency_min_ms": 30.85,
+      "latency_max_ms": 39.76,
+      "throughput_fps": 31.68,
+      "num_runs": 200,
+      "memory_rss_mean_mb": 127.97,
+      "memory_rss_peak_mb": 128.0,
+      "cpu_percent": 22.0,
+      "temp_before_c": 50.7,
+      "temp_after_c": 52.9,
+      "power": {
+        "voltage_v": 0.855,
+        "current_a": null,
+        "power_w": null
+      }
+    },
+    {
+      "model": "efficientnet_b0",
+      "quantization": "INT8",
+      "threads": 1,
+      "batch_size": 1,
+      "input_shape": [
+        1,
+        3,
+        224,
+        224
+      ],
+      "model_size_mb": 4.161,
+      "latency_mean_ms": 76.68,
+      "latency_std_ms": 0.14,
+      "latency_p50_ms": 76.67,
+      "latency_p95_ms": 76.86,
+      "latency_p99_ms": 77.07,
+      "latency_min_ms": 76.45,
+      "latency_max_ms": 77.87,
+      "throughput_fps": 13.04,
+      "num_runs": 200,
+      "memory_rss_mean_mb": 113.73,
+      "memory_rss_peak_mb": 113.88,
+      "cpu_percent": 0.0,
+      "temp_before_c": 51.8,
+      "temp_after_c": 49.6,
+      "power": {
+        "voltage_v": 0.855,
+        "current_a": null,
+        "power_w": null
+      }
+    },
+    {
+      "model": "efficientnet_b0",
+      "quantization": "INT8",
+      "threads": 4,
+      "batch_size": 1,
+      "input_shape": [
+        1,
+        3,
+        224,
+        224
+      ],
+      "model_size_mb": 4.161,
+      "latency_mean_ms": 64.39,
+      "latency_std_ms": 0.98,
+      "latency_p50_ms": 64.19,
+      "latency_p95_ms": 65.02,
+      "latency_p99_ms": 68.06,
+      "latency_min_ms": 63.96,
+      "latency_max_ms": 73.18,
+      "throughput_fps": 15.53,
+      "num_runs": 200,
+      "memory_rss_mean_mb": 114.67,
+      "memory_rss_peak_mb": 115.42,
+      "cpu_percent": 17.9,
+      "temp_before_c": 49.6,
+      "temp_after_c": 55.6,
+      "power": {
+        "voltage_v": 0.855,
+        "current_a": null,
+        "power_w": null
+      }
+    }
+  ]
+}
