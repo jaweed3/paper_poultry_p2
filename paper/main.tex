@@ -13,7 +13,7 @@
 
 \begin{document}
 
-\title{Diagnosing INT8 Quantization Collapse in EfficientNet-B0: Per-Channel Recovery and Scheme $\times$ Runtime Characterization for Poultry Fecal Disease Detection on Raspberry Pi 5}
+\title{Localizing INT8 Quantization Collapse in EfficientNet-B0 for Edge Poultry Disease Detection}
 
 \author{
 \IEEEauthorblockN{Fatih Jawwad Al Mumtaz}
@@ -30,7 +30,7 @@ Email: amirulalaziz57@student.tip.unida.gontor.ac.id}
 \maketitle
 
 \begin{abstract}
-Poultry fecal disease detection with deep learning achieves high accuracy, but prior work largely targets cloud inference with heavy models that are impractical for edge use. This paper presents a systematic characterization of three lightweight convolutional neural network architectures---MobileNetV2, ShuffleNetV2, and EfficientNet-B0---for classifying poultry fecal images into four disease categories: Coccidiosis, Salmonellosis, Newcastle Disease, and Healthy. We use the Machuve \textit{et al.} dataset via HuggingFace \texttt{Dianyo/poultry-fecal-fl}. We audit the publisher claim of 8,770 deduplicated leak-free images and find 617 near-duplicate pairs (393 exact), including 316 groups spanning train/test and 95 test images byte-identical to train images; all numbers in this paper are therefore reported on a deduplicated sterile split (8,153 images: 5,088/1,337/1,728 train/val/test, zero cross-split survivors). Each model is evaluated under INT8 post-training quantization (ONNX Runtime) on WSL x86 reference and a Raspberry Pi~5 (Cortex-A76, ONNX Runtime 1.29.0, 12 thread/batch configs). All three models exceed 97\% FP32 test accuracy on the sterile test set (EfficientNet-B0 98.55\% [97.97, 99.07]; MobileNetV2 97.92\% [97.22, 98.55]; ShuffleNetV2 97.69\% [96.93, 98.38]; 95\% bootstrap CI, B=10,000). Our thesis is scheme $\times$ runtime $\times$ architecture with diagnosis: dynamic INT8 preserves MobileNetV2 (97.11\%) and ShuffleNetV2 (97.45\%) but collapses EfficientNet-B0 to 10.42\% (mode collapse to Newcastle Disease); static QDQ per-tensor reproduces the collapse (9.32\%) while per-channel recovers to 94.56\% (McNemar vs dynamic $p \approx 10^{-312}$), localizing the failure to per-tensor depthwise quantization. On RPi5, INT8 is 1.9--2.8$\times$ slower than FP32 at 4 threads and scales by only 1.10--1.19$\times$ (1$\rightarrow$4 threads) versus 2.20--2.33$\times$ for FP32. Grad-CAM is reported as descriptive attention only. Together, the results guide hardware-aware model and quantization-scheme choice for edge CPU deployment.
+Poultry fecal disease detection with deep learning achieves high accuracy, but prior work largely targets cloud inference with heavy models that are impractical for edge use. This paper presents a systematic characterization of three lightweight convolutional neural network architectures---MobileNetV2, ShuffleNetV2, and EfficientNet-B0---for classifying poultry fecal images into four disease categories: Coccidiosis, Salmonellosis, Newcastle Disease, and Healthy. We use the Machuve \textit{et al.} dataset via HuggingFace \texttt{Dianyo/poultry-fecal-fl}. We audit the publisher claim of 8,770 deduplicated leak-free images and find 617 near-duplicate pairs (393 exact), including 316 groups spanning train/test and 95 test images byte-identical to train images; all numbers in this paper are therefore reported on a deduplicated sterile split (8,153 images: 5,088/1,337/1,728 train/val/test, zero cross-split survivors). Each model is evaluated under INT8 post-training quantization (ONNX Runtime) on WSL x86 reference and a Raspberry Pi~5 (Cortex-A76, ONNX Runtime 1.29.0, 12 thread/batch configs). All three models exceed 97\% FP32 test accuracy on the sterile test set (EfficientNet-B0 98.55\% [97.97, 99.07]; MobileNetV2 97.92\% [97.22, 98.55]; ShuffleNetV2 97.69\% [96.93, 98.38]; 95\% bootstrap CI, B=10,000). Our thesis is scheme $\times$ runtime $\times$ architecture with diagnosis: dynamic INT8 preserves MobileNetV2 (97.11\%) and ShuffleNetV2 (97.45\%) but collapses EfficientNet-B0 to 10.42\% (mode collapse to Newcastle Disease); static QDQ per-tensor reproduces the collapse (9.32\%) while per-channel recovers to 94.56\% (McNemar vs dynamic $p < 10^{-300}$, scipy underflow), localizing the failure to per-tensor depthwise quantization. On RPi5, INT8 is 1.9--2.8$\times$ slower than FP32 at 4 threads and scales by only 1.10--1.19$\times$ (1$\rightarrow$4 threads) versus 2.20--2.33$\times$ for FP32. Grad-CAM is reported as descriptive attention only. Together, the results guide hardware-aware model and quantization-scheme choice for edge CPU deployment.
 \end{abstract}
 
 \begin{IEEEkeywords}
@@ -43,32 +43,32 @@ Poultry production is a major agricultural sector in the United States (combined
 
 Recent deep learning approaches have achieved high accuracy for poultry fecal disease classification. Dhungana~\textit{et al.}~reported 99.12\% accuracy using EfficientNet-B0~\cite{dhungana2025}, while Tasdelen and Arslan achieved 97.1\% with MobileNetV2~\cite{tasdelen2025}. However, these solutions primarily target cloud-based deployment, leaving a critical gap: \textit{how can these models be efficiently deployed on resource-constrained edge devices at farm level?}
 
-Lightweight CNNs---MobileNetV2~\cite{mobilenetv2}, ShuffleNetV2~\cite{shufflenetv2}, and EfficientNet~\cite{efficientnet}---are candidates for edge deployment because they need fewer operations. INT8 post-training quantization (PTQ) reduces size by using 8-bit weights~\cite{jacob2018}. On CPUs without INT8 acceleration, however, PTQ can increase latency rather than reduce it. Our measurements in this paper quantify this effect directly; see also the quantization white paper for why PTQ without calibration degrades on depthwise layers~\cite{nagel2021}.
+Lightweight CNNs---MobileNetV2~\cite{mobilenetv2}, ShuffleNetV2~\cite{shufflenetv2}, and EfficientNet~\cite{efficientnet}---are candidates for edge deployment because they need fewer operations. INT8 post-training quantization (PTQ) reduces size by using 8-bit weights~\cite{jacob2018}. Even on CPUs that expose INT8 acceleration, PTQ can increase latency rather than reduce it when the runtime kernel path adds quantize/dequantize work around every convolution; our x86 reference (12th Gen i5-12400F, AVX-VNNI present per \texttt{/proc/cpuinfo}) still shows a 3.0--16.8$\times$ slowdown, so the bottleneck is the ORT kernel implementation, not raw ISA absence. See also the quantization white paper for why PTQ without calibration degrades on depthwise layers~\cite{nagel2021}.
 
-This paper addresses three research questions: (1) How do lightweight CNN architectures compare for poultry fecal disease classification? (2) What is the quantization sensitivity of each architecture under INT8 PTQ on CPU? (3) What is the accuracy-latency Pareto frontier for edge deployment?
+This paper addresses two research questions: (1) What is the quantization sensitivity of each lightweight architecture under INT8 PTQ on CPU, and where exactly does EfficientNet-B0 fail? (2) What is the accuracy-latency tradeoff for these models under INT8 PTQ on a Raspberry Pi~5? We additionally audit the dataset integrity claim underlying prior work on this benchmark.
 
-The main contributions of this paper are summarized as follows. First, we present a systematic comparison of three lightweight CNNs under INT8 PTQ for poultry fecal disease detection, validated on both x86 and ARM (Raspberry Pi~5) with 96 thread and batch configurations. Second, we measure that INT8 PTQ increases latency by 6--30$\times$ on x86 and 1.9--2.8$\times$ on ARM and show that, on ARM, INT8 throughput scales by only 1.1--1.2$\times$ from 1 to 4 threads versus 2.3$\times$ for FP32. Third, we provide hardware-aware deployment guidelines grounded in cross-platform latency, thread scaling, batch scaling, memory, and Pareto and interpretability analysis.
+The main contributions of this paper are summarized as follows. First, we audit the FecalFed leak-free claim~\cite{chi2026} and show 617 near-duplicate pairs (393 byte-exact) including 95 test images byte-identical to train images; all numbers are reported on a deduplicated sterile split (8,153 images: 5,088/1,337/1,728, zero cross-split survivors). Second, we localize the EfficientNet-B0 INT8 collapse to per-tensor depthwise quantization: dynamic INT8 (10.42\%) and static per-tensor QDQ (9.32\%) fail identically while per-channel QDQ recovers to 94.56\% (McNemar vs dynamic $p < 10^{-300}$, scipy underflow; vs FP32 $p = 1.37 \times 10^{-13}$). Third, we characterize the sterile models on Raspberry Pi~5 (12 configurations) with node-expansion and kernel-level profiling, showing INT8 1.93--2.80$\times$ slower at 4 threads with 1.10--1.19$\times$ scaling versus 2.20--2.33$\times$ for FP32.
 
 \section{Related Work}
 
 \subsection{Poultry Disease Detection}
-Machuve~\textit{et al.}~introduced the foundational dataset of 6,812 PCR-verified fecal images from Tanzanian poultry farms~\cite{machuve2022}. Subsequent work has applied various deep learning architectures: Dhungana~\textit{et al.}~combined YOLOv11 detection with EfficientNet-B0 classification, achieving 99.12\% accuracy and 25.8\,ms inference~\cite{dhungana2025}. Tasdelen and Arslan benchmarked six architectures, finding MobileNetV2 optimal for both accuracy (97.1\%) and training speed~\cite{tasdelen2025}. Degu and Simegn employed YOLO-V3 for region-of-interest detection followed by ResNet50 classification~\cite{degu2023}. Prior work on this dataset has not compared lightweight models under quantization with Pareto analysis.
+Machuve~\textit{et al.}~introduced the foundational dataset of 6,812 PCR-verified fecal images from Tanzanian poultry farms~\cite{machuve2022}. Subsequent work has applied various deep learning architectures: Dhungana~\textit{et al.}~combined YOLOv11 detection with EfficientNet-B0 classification, achieving 99.12\% accuracy and 25.8\,ms inference~\cite{dhungana2025}. Tasdelen and Arslan benchmarked six architectures, finding MobileNetV2 optimal for both accuracy (97.1\%) and training speed~\cite{tasdelen2025}. Degu and Simegn employed YOLO-V3 for region-of-interest detection followed by ResNet50 classification~\cite{degu2023}. Chi introduced FecalFed, a federated-learning benchmark on this dataset family claiming 8,770 rigorously deduplicated unique images~\cite{chi2026}; our audit in Section~III-A tests that claim directly. Prior work on this dataset has not compared lightweight models under quantization with accuracy-latency tradeoff analysis.
 
 \subsection{Lightweight CNN Architectures}
-MobileNetV2~\cite{mobilenetv2} utilizes inverted residuals with linear bottlenecks and depthwise separable convolutions, achieving efficient feature extraction with 3.4M parameters. ShuffleNetV2~\cite{shufflenetv2} introduces channel shuffle operations for cross-channel information flow with only 1.26M parameters. EfficientNet~\cite{efficientnet} employs compound scaling to uniformly balance network depth, width, and resolution. Hoang~\textit{et al.}~recently compared seven lightweight architectures for plant disease detection, identifying hybrid designs as optimal for edge deployment~\cite{hoang2026}.
+MobileNetV2~\cite{mobilenetv2} utilizes inverted residuals with linear bottlenecks and depthwise separable convolutions for efficient feature extraction. ShuffleNetV2~\cite{shufflenetv2} introduces channel shuffle operations for cross-channel information flow with only 1.26M parameters. EfficientNet~\cite{efficientnet} employs compound scaling to uniformly balance network depth, width, and resolution. Hoang~\textit{et al.}~recently compared seven lightweight architectures for plant disease detection, identifying hybrid designs as optimal for edge deployment~\cite{hoang2026}.
 
 \subsection{Model Quantization}
-INT8 quantization reduces model size by representing weights with 8-bit integers~\cite{jacob2018}. While theoretically achieving 4$\times$ compression, ONNX Runtime documentation~\cite{onnxruntime2024} explicitly notes that INT8 without hardware support (VNNI, Tensor Cores) may degrade performance due to quantize/dequantize overhead. Our measurements in this paper quantify this overhead directly on both x86 and ARM. The white paper on quantization surveys why PTQ without calibration degrades on depthwise and SE layers~\cite{nagel2021}.
+INT8 quantization reduces model size by representing weights with 8-bit integers~\cite{jacob2018}. While theoretically achieving 4$\times$ compression, ONNX Runtime documentation~\cite{onnxruntime2024} explicitly notes that INT8 without matching kernel support may degrade performance due to quantize/dequantize overhead. The white paper on quantization surveys why PTQ without calibration degrades on depthwise and SE layers~\cite{nagel2021}.
 
 \section{Methodology}
 
 \subsection{Dataset}
-We use the Machuve~\textit{et al.}~dataset~\cite{machuve22} with PCR-verified fecal images from Tanzanian farms, as distributed via HuggingFace~\texttt{Dianyo/poultry-fecal-fl}. The publisher describes 8,770 deduplicated leak-free images with train/test splits of 7,016/1,754. We audit this claim with pHash (Hamming $\le$ 5) over all 8,770 files and find 617 near-duplicate pairs (393 byte-exact), including 316 groups spanning train/test splits: 95 test images byte-identical to train images and 30 to validation images.
+We use the Machuve~\textit{et al.}~dataset~\cite{machuve22} with PCR-verified fecal images from Tanzanian farms, as distributed via HuggingFace~\texttt{Dianyo/poultry-fecal-fl}. Chi~\cite{chi2026} describes this benchmark as 8,770 rigorously deduplicated leak-free images with train/test splits of 7,016/1,754. We audit this claim with pHash (Hamming $\le$ 5) over all 8,770 files and find 617 near-duplicate pairs (393 byte-exact), including 316 groups spanning train/test splits: 95 test images byte-identical to train images and 30 to validation images.
 
 All numbers in this paper are therefore reported on a deduplicated sterile split: we drop one copy per duplicate pair (keeping test $>$ val $>$ train), yielding 8,153 unique images with 5,088/1,337/1,728 train/val/test and zero cross-split survivors (audit artifact \texttt{results/phash\_dedup.json}, split manifest \texttt{results/sterile\_split\_manifest.json}). We note as a limitation that this removes leakage but does not rebuild a fresh split from the Zenodo originals (6,812 images); the sterile test set remains 98\% inherited from the publisher test split. Classes are Coccidiosis, Healthy, Salmonella, and Newcastle Disease; NCD is underrepresented (417/8,153 train, 141/1,728 test), so we report per-class INT8 accuracy and bootstrap confidence intervals. Images are resized to 224$\times$224 and normalized with ImageNet mean/std.
 
 \subsection{Model Architectures}
-We evaluate three ImageNet~\cite{deng2009}-pretrained lightweight architectures with the classification head replaced for four classes. MobileNetV2~\cite{mobilenetv2} (2.2M parameters) uses inverted residuals with depthwise separable convolutions for efficient local feature extraction. ShuffleNetV2~\cite{shufflenetv2} (1.3M parameters) relies on channel shuffle for cross-channel mixing with few parameters. EfficientNet-B0~\cite{efficientnet} (4.0M parameters) applies compound scaling with squeeze-and-excitation blocks to capture multi-scale features.
+We evaluate three ImageNet~\cite{deng2009}-pretrained lightweight architectures with the classification head replaced for four classes (3.4M$\rightarrow$2.2M for MobileNetV2 after the head swap; parameter counts below are for our 4-class models). MobileNetV2~\cite{mobilenetv2} (2.2M parameters) uses inverted residuals with depthwise separable convolutions for efficient local feature extraction. ShuffleNetV2~\cite{shufflenetv2} (1.3M parameters) relies on channel shuffle for cross-channel mixing with few parameters. EfficientNet-B0~\cite{efficientnet} (4.0M parameters) applies compound scaling with squeeze-and-excitation blocks to capture multi-scale features.
 
 \subsection{Training Protocol}
 All models are trained for 50 epochs using Adam optimizer (learning rate $10^{-4}$, weight decay $10^{-4}$) with cosine annealing schedule. Batch size is 32, input resolution $224 \times 224$. Data augmentation includes random horizontal flip, rotation ($\pm 15^\circ$), and color jitter. Training is performed on an NVIDIA RTX 4060 GPU with 8\,GB VRAM using PyTorch 2.5.1 with CUDA 12.1.
@@ -100,7 +100,7 @@ EfficientNet-B0 & 98.55 [97.97, 99.07] & 10.42 [8.97, 11.92] & 88.13 \\
 \end{tabular}
 \end{table}
 
-EfficientNet-B0 achieves the highest FP32 accuracy (98.55\%), but its INT8 accuracy collapses to 10.42\%: the confusion matrix shows 1,676/1,728 predictions falling in the Newcastle Disease column (per-class: cocci 2.27\%, healthy 4.76\%, salmo 0.54\%, ncd 100\%), a mode collapse rather than gradual degradation. We diagnose this with static QDQ quantization (Table~\ref{tab:eb0static}): per-tensor MinMax reproduces the collapse (9.32\%), while per-channel MinMax recovers to 94.56\% (McNemar vs dynamic $p \approx 10^{-312}$; vs FP32 $p = 1.37 \times 10^{-13}$), localizing the failure to per-tensor depthwise quantization rather than squeeze-and-excitation alone.
+EfficientNet-B0 achieves the highest FP32 accuracy (98.55\%), but its INT8 accuracy collapses to 10.42\%: the confusion matrix shows 1,676/1,728 predictions falling in the Newcastle Disease column (per-class: cocci 2.27\%, healthy 4.76\%, salmo 0.54\%, ncd 100\%), a mode collapse rather than gradual degradation. We diagnose this with static QDQ quantization (Table~\ref{tab:eb0static}): per-tensor MinMax reproduces the collapse (9.32\%), while per-channel MinMax recovers to 94.56\% (McNemar vs dynamic $p < 10^{-300}$, scipy underflow; vs FP32 $p = 1.37 \times 10^{-13}$), localizing the failure to per-tensor depthwise quantization rather than squeeze-and-excitation alone.
 
 \begin{table}[htbp]
 \caption{EfficientNet-B0 static QDQ INT8 diagnosis (MinMax, calibration 100 train images). Per-tensor reproduces the collapse; per-channel recovers.}
@@ -144,7 +144,7 @@ EfficientNet-B0 & 15.3 & 4.16 & 4.35 & 57.18 & 13.1$\times$ \\
 \end{tabular}
 \end{table}
 
-INT8 quantization increases latency by 3.0--16.8$\times$ versus FP32 on the x86 reference. This is because ONNX Runtime's CPU Execution Provider must perform dequantization (INT8$\rightarrow$FP32) before each matrix multiplication, negating the theoretical benefits of lower-precision arithmetic. Our measurements below quantify this overhead directly on both x86 and ARM.
+INT8 quantization increases latency by 3.0--16.8$\times$ versus FP32 on the x86 reference. Because our reference CPU exposes AVX-VNNI yet still slows down, the bottleneck is the ORT CPU kernel path (dequantize before matmul), not raw ISA absence; Section~IV-C quantifies this overhead on both x86 and ARM.
 
 ShuffleNetV2 degrades least (3.0$\times$ versus 16.8$\times$ for MobileNetV2). Channel-shuffle ops are non-parametric and less sensitive to precision, while MobileNetV2 depthwise separable convolutions are more sensitive.
 
@@ -204,16 +204,16 @@ EfficientNet-B0 & 239 & 730 & 3.05$\times$ & 82 / 81 & 24.9\% & 13.1$\times$ / 2
 
 \textbf{Measured bottleneck (Level-2).} Table~\ref{tab:level2} quantifies why INT8 is slower. Dynamic PTQ does not insert static QuantizeLinear/DequantizeLinear nodes; it expands each Conv (52--81) into a DynamicQuantizeLinear + ConvInteger + Mul (scale) + Cast pattern, so node count grows by 1.37--3.05$\times$ on the sterile graphs. ORT kernel profiling on RPi5 (batch=1, 1 thread, 10 runs) shows \texttt{Conv\_quant\_kernel} alone consumes 49.5--55.1\% of total time, and all quant-related kernels (QuantizeLinear, scale Mul, Cast, bias-add) add 20.7--29.2\% overhead, while the final \texttt{Gemm\_MatMul\_quant} is $<0.1\%$. The ranking matches the slowdown ranking: MobileNetV2 (29.2\% overhead, 2.86$\times$ expansion) suffers most on x86, ShuffleNetV2 (20.7\%, 1.37$\times$) least. Artifact \texttt{level2\_profiling\_artifact.json} contains per-operator $\mu$s and full op counts (reproducible), complementing TinyML system studies~\cite{david2021}.
 
-\subsection{Pareto Frontier Analysis}
+\subsection{Accuracy-Latency Tradeoff}
 
 \begin{figure}[htbp]
 \centering
 \includegraphics[width=0.95\linewidth]{pareto_gate0.png}
-\caption{Accuracy-latency Pareto (sterile split, FP32). ShuffleNetV2 is fastest (6.19\,ms RPi5 @4 threads, 97.69\%); EfficientNet-B0 is most accurate (98.55\%) at 31.56\,ms; MobileNetV2 is balanced (97.92\%, 14.23\,ms). All three are Pareto-optimal.}
+\caption{Accuracy-latency tradeoff (sterile split, FP32). ShuffleNetV2 is fastest (6.19\,ms RPi5 @4 threads, 97.69\%); EfficientNet-B0 is most accurate (98.55\%) at 31.56\,ms; MobileNetV2 is balanced (97.92\%, 14.23\,ms).}
 \label{fig:pareto}
 \end{figure}
 
-The Pareto frontier (Fig.~\ref{fig:pareto}) shows that the fastest model is ShuffleNetV2 FP32 at 6.19\,ms RPi5 (161.5\,FPS), the most accurate is EfficientNet-B0 FP32 at 98.55\%, and MobileNetV2 FP32 is the balanced middle (97.92\%, 14.23\,ms). The gap between best and worst FP32 accuracy is only 0.86pp (97.69\% versus 98.55\%); hardware constraints and quantization scheme should drive model choice for deployment.
+The accuracy-latency plot (Fig.~\ref{fig:pareto}) shows that the fastest model is ShuffleNetV2 FP32 at 6.19\,ms RPi5 (161.5\,FPS), the most accurate is EfficientNet-B0 FP32 at 98.55\%, and MobileNetV2 FP32 is the balanced middle (97.92\%, 14.23\,ms). The gap between best and worst FP32 accuracy is only 0.86pp (97.69\% versus 98.55\%); hardware constraints and quantization scheme should drive model choice for deployment.
 
 \begin{figure}[htbp]
 \centering
@@ -231,7 +231,7 @@ The Pareto frontier (Fig.~\ref{fig:pareto}) shows that the fastest model is Shuf
 \label{fig:gradcam}
 \end{figure}
 
-Grad-CAM analysis~\cite{selvaraju2017} (Fig.~\ref{fig:gradcam}) provides descriptive attention maps. MobileNetV2 attention concentrates on color gradient regions, consistent with depthwise convolutions capturing local texture. EfficientNet-B0 attention spans broader diagnostic regions. We report these maps as descriptive observations only; they do not establish causal links between attention patterns and quantization sensitivity, which we diagnose instead via the per-tensor vs per-channel experiment above.
+Grad-CAM analysis~\cite{selvaraju2017} (Fig.~\ref{fig:gradcam}) provides a descriptive attention map for MobileNetV2: attention concentrates on color gradient regions, consistent with depthwise convolutions capturing local texture. We show a single MobileNetV2 map as illustration only and make no cross-architecture attention claims; quantization sensitivity is diagnosed via the per-tensor vs per-channel experiment above.
 
 \subsection{Comparison with Related Work}
 
@@ -247,20 +247,22 @@ Work & Dataset & Best & Acc. & Edge \\
 Dhungana~\textit{et al.}~\cite{dhungana2025} & Machuve & EB0 & 99.1 & Web \\
 Tasdelen~\textit{et al.}~\cite{tasdelen2025} & Machuve & MN2 & 97.1 & --- \\
 Degu~\textit{et al.}~\cite{degu2023} & Machuve & R50 & 98.7 & Mobile \\
-\textbf{Ours} & \textbf{Machuve} & \textbf{EB0} & \textbf{98.6} & \textbf{+INT8+Pareto} \\
+\textbf{Ours} & \textbf{Machuve} & \textbf{EB0} & \textbf{98.6} & \textbf{+INT8+diagnosis} \\
 \bottomrule
 \end{tabular}
 \end{table}
 
-Our accuracy (98.55\%) is competitive with prior results on the same dataset while providing additional analysis in quantization characterization, Pareto analysis, and interpretability that are absent from prior work.
+Our accuracy (98.55\%) is competitive with prior results on the same dataset while providing additional analysis in quantization diagnosis, tradeoff characterization, and interpretability that are absent from prior work.
 
 \section{Conclusion}
 
 This paper characterizes lightweight CNN architectures with INT8 quantization for poultry fecal disease detection. Our key findings are:
 
-All three architectures exceed 97\% FP32 accuracy with ImageNet transfer learning on the sterile split, with EfficientNet-B0 at 98.55\%. Dynamic INT8 PTQ preserves MobileNetV2 (97.11\%) and ShuffleNetV2 (97.45\%) but collapses EfficientNet-B0 to 10.42\%; static per-channel quantization recovers EfficientNet-B0 to 94.56\%, localizing the failure to per-tensor depthwise quantization. On x86 reference hardware, INT8 increases latency by 3.0--16.8$\times$ (ShuffleNetV2 least, MobileNetV2 most); on RPi5 INT8 is 1.9--2.8$\times$ slower at 4 threads and scales by only 1.10--1.19$\times$ from 1 to 4 threads versus 2.20--2.33$\times$ for FP32. ShuffleNetV2 degrades least (6.4$\times$ on x86, 1.93$\times$ on RPi5) due to its homogeneous design; notably ShuffleNetV2 INT8 at 1 thread is the only configuration faster than its FP32 counterpart (13.65 vs 14.19\,ms). On RPi5, batch 1 is optimal and INT8 size reduction (3.3--3.7$\times$) does not reduce runtime RSS. The Pareto analysis identifies MobileNetV2 FP32 for latency-critical use (1.85\,ms on x86, 14.23\,ms on RPi5 at 4 threads) and ShuffleNetV2 FP32 for the lowest RPi5 latency (6.19\,ms at 4 threads).
+All three architectures exceed 97\% FP32 accuracy with ImageNet transfer learning on the sterile split, with EfficientNet-B0 at 98.55\%. Dynamic INT8 PTQ preserves MobileNetV2 (97.11\%) and ShuffleNetV2 (97.45\%) but collapses EfficientNet-B0 to 10.42\%; static per-channel quantization recovers EfficientNet-B0 to 94.56\%, localizing the failure to per-tensor depthwise quantization. On x86 reference hardware, INT8 increases latency by 3.0--16.8$\times$ (ShuffleNetV2 least, MobileNetV2 most); on RPi5 INT8 is 1.9--2.8$\times$ slower at 4 threads and scales by only 1.10--1.19$\times$ from 1 to 4 threads versus 2.20--2.33$\times$ for FP32. ShuffleNetV2 degrades least (3.0$\times$ on x86, 1.93$\times$ on RPi5) due to its homogeneous design; notably ShuffleNetV2 INT8 at 1 thread is the only configuration faster than its FP32 counterpart (13.65 vs 14.19\,ms). On RPi5, batch 1 is the measured operating point and INT8 size reduction (3.3--3.7$\times$) does not reduce runtime RSS. The tradeoff analysis identifies ShuffleNetV2 FP32 for the lowest RPi5 latency (6.19\,ms at 4 threads) and MobileNetV2 FP32 as balanced (14.23\,ms, 97.92\%).
 
 These findings enable practitioners to make informed deployment decisions based on their specific hardware constraints. This work characterized RPi5 deployment; future work includes QAT comparison against the PTQ diagnosis here, energy measurement on RPi5, and class imbalance mitigation for the underrepresented NCD class.
+
+Code and sterile-split artifacts (dedup audit, split manifests, eval JSONs, benchmark logs, plotting scripts) are available at \url{https://github.com/jaweed3/paper_poultry_p2}.
 
 \begin{thebibliography}{99}
 
@@ -287,6 +289,9 @@ M.~Tan and Q.~V.~Le, ``EfficientNet: Rethinking model scaling for convolutional 
 
 \bibitem{jacob2018}
 B.~Jacob \textit{et al.}, ``Quantization and training of neural networks for efficient integer-arithmetic-only inference,'' in \emph{Proc. IEEE CVPR}, 2018, pp.~2704--2713.
+
+\bibitem{chi2026}
+T.-Y.~Chi, ``FecalFed: Privacy-preserving poultry disease detection via federated learning,'' \textit{arXiv:2604.00559}, 2026.
 
 \bibitem{usda2024}
 U.S.~Department of Agriculture, National Agricultural Statistics Service, ``Poultry production and value: 2023 summary,'' Apr. 2024. [Online]. Available: \url{https://www.nass.usda.gov/Publications/Todays_Reports/reports/plyaan24.pdf}
