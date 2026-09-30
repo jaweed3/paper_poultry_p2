@@ -51,8 +51,7 @@ def get_model(name, num_classes=4):
 
 def find_pretrained(model_name):
     candidates = [
-        Path(f"/mnt/c/Users/MASTER CORE TI/project/poultry_paper/fp32/{model_name}.pth"),
-        Path(f"/mnt/c/Users/MASTER CORE TI/project/poultry_paper/models/fp32/{model_name}.pth"),
+        # (absolute build paths redacted for blind review)
         ROOT / f"models/fp32/{model_name}.pth",
         ROOT / f"../project/poultry_paper/fp32/{model_name}.pth",
     ]
@@ -213,7 +212,7 @@ def main():
     data_root = ROOT / "data/images"
     if not data_root.exists():
         # fallback to Windows path
-        data_root = Path("/mnt/c/Users/MASTER CORE TI/project/poultry_paper/data/images")
+        data_root = Path("(redacted for blind review)")
     print(f"[data] root={data_root}")
 
     train_tf = get_transforms(train=True, img_size=cfg["dataset"]["img_size"])

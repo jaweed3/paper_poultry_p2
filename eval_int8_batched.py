@@ -7,7 +7,7 @@ from PIL import Image
 import onnxruntime as ort
 from collections import Counter
 
-PROJECT = Path(r"C:\Users\MASTER CORE TI\project\poultry_paper")
+PROJECT = Path(__file__).resolve().parent  # repo root (absolute build path redacted for blind review)
 DATA_TEST = PROJECT / "data" / "images" / "test"
 MODELS = {
     "mobilenetv2": ("mobilenetv2_fp32.onnx", "mobilenetv2_int8.onnx"),

@@ -1,15 +1,13 @@
 # ML2 Paper Execution Instructions — Edge Poultry Disease Detection
 
-> **Target agent:** Pi (Raspberry Pi 4 / remote agent)
-> **Author:** Keysha (Hermes Agent)
 > **Date:** August 15, 2026
 > **Paper:** Quantization-Aware Deployment of Lightweight CNNs for Poultry Fecal Disease Detection on Resource-Constrained Edge Devices
 
 ---
 
-## CRITICAL RULES
+## WORKING RULES
 
-1. **Every command must be executed, not described.** No placeholders like "run training here."
+1. **Every command must be executed, not described.**
 2. **Every output must be captured.** Save logs to `~/research/paper_poultry_edge/logs/`.
 3. **Every result must be verified.** Check file exists, check metrics are reasonable.
 4. **If a command fails, debug and fix.** Do not skip or assume success.

@@ -17,7 +17,7 @@ DATA_DIR = ROOT / "data" / "images"
 MANIFEST = ROOT / "results" / "splits_manifest.json"
 
 HF_ID = "Dianyo/poultry-fecal-fl"
-# Expected TOTAL per class (train+val+test) from splits_manifest (Farrel sync)
+# Expected TOTAL per class (train+val+test) from splits_manifest
 EXPECTED_TOTALS = {"cocci": 2676, "healthy": 2546, "ncd": 720, "salmo": 2828}
 CLASS_NAMES = ["cocci", "healthy", "ncd", "salmo"]
 

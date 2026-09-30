@@ -6,8 +6,8 @@ project:
   name: "paper_poultry_p2"
   version: "0.1.0-dryrun"
   seed: 42
-  fork_from: "jaweed3/paper_poultry_edge@601dbb2"
-  paper1_results_symlink: "results/baseline_p1"  # -> ~/paper_poultry_edge/results
+  fork_from: "private-fork-source@601dbb2 (redacted for blind review)"
+  paper1_results_symlink: "results/baseline_p1"  # -> local prior-study results (redacted path)
 
 dataset:
   source: "Machuve et al. (2022) — Dianyo/poultry-fecal-fl (HF) / Zenodo 4628934"

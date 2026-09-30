@@ -25,7 +25,7 @@
       "lr": 0.0
     }
   ],
-  "ckpt": "/home/master_core_ti/paper_poultry_p2/models/pruned/s30/mobilenetv2.pth",
-  "onnx": "/home/master_core_ti/paper_poultry_p2/onnx_pruned/s30/mobilenetv2.onnx",
-  "int8": "/home/master_core_ti/paper_poultry_p2/onnx_pruned/s30/mobilenetv2_int8.onnx"
+  "ckpt": "models/pruned/s30/mobilenetv2.pth (absolute build path redacted)",
+  "onnx": "onnx_pruned/s30/mobilenetv2.onnx (absolute build path redacted)",
+  "int8": "onnx_pruned/s30/mobilenetv2_int8.onnx (absolute build path redacted)"
 }

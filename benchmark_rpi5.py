@@ -39,7 +39,7 @@ except ImportError:
 
 # ─── Configuration ───────────────────────────────────────────────────────────
 
-RELEASE_URL = "https://github.com/jaweed3/paper_poultry_edge/releases/download/v0.1-alpha/models_all.tar.gz"
+RELEASE_URL = "https://anonymous.4open.science/r/paper_poultry_p2-C1F9/releases/models_all.tar.gz"  # anonymized mirror; original release URL redacted for blind review
 
 MODELS_DIR = Path("models")
 RESULTS_DIR = Path("results/rpi5_benchmark")
