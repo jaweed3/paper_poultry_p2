@@ -47,7 +47,7 @@ Legend: ✅ done · 🟡 partial · 🔴 open · ⛔ blocked (needs hardware)
 | R3.2a | Distinguish graph operators from executed kernels; provide optimized-graph + kernel-dispatch evidence | 🔴 | Only softened to hypothesis. Need actual optimized graph + kernel dispatch data. ⛔ needs lab |
 | R3.2b | CPU instruction availability alone doesn't prove instructions are used | ✅ | Removed the VNNI-style claim in commit aacf0b7 |
 | R3.2c | Memory-bound claim needs evidence or cautious wording | ✅ | "we state this as a hypothesis since memory-boundedness was not directly measured" |
-| R3.3 | **Benchmark static INT8 on RPi5, esp. per-channel that recovers EfficientNet-B0** | 🔴 | Zero data. Biggest gap. ⛔ needs Pi + static ONNX |
+| R3.3 | **Benchmark static INT8 on RPi5, esp. per-channel that recovers EfficientNet-B0** | ✅ | DONE 8 Okt: static per-tensor 13.63ms / per-channel 13.50ms vs FP32 31.53ms at t=4 → 2.31-2.34x FASTER (200 runs, peak 49.4C, no throttle). Artifact `results/rpi5_static_gate0/rpi5_static.json`. **Reverses headline claim** — see below |
 | R3.4a | McNemar or paired bootstrap CIs for FP32–INT8 diffs in MobileNetV2 and ShuffleNetV2 | 🔴 | McNemar exists for EfficientNet-B0 only. MNv2/SNv2 drops (0.81pp, 0.24pp) have NO paired test. `compute_ci.py` may support it |
 | R3.4b | Distinguish lack of statistical significance from equivalence | ✅ | L91 explicit: "overlapping marginal intervals alone do not establish paired significance or equivalence" |
 | R3.4c | Table II: specify test variant + discordant counts; report underflow via bound not p=0 | ✅ | "continuity correction", b=14 c=1468, `p < 10^{-15}` |
@@ -76,7 +76,7 @@ Legend: ✅ done · 🟡 partial · 🔴 open · ⛔ blocked (needs hardware)
 | ID | Item | Needs HW? | Owner |
 |---|---|---|---|
 | **P0-1** | Retitle OR run selective ablation (R3.1b + R1.1 + R2.1) | yes (ablation) / no (retitle) | decision first |
-| **P0-2** | Static INT8 benchmark on RPi5 (R3.3) | ⛔ Pi + static ONNX | Fatih |
+| **P0-2** | Static INT8 benchmark on RPi5 (R3.3) | ✅ DONE | closed 8 Okt, commit 012ac0f |
 | **P0-3** | Optimized-graph + kernel-dispatch evidence (R3.2a) | ⛔ lab ORT profiling | Fatih |
 | **P0-4** | McNemar / paired bootstrap for MNv2 + SNv2 (R3.4a) | no — data exists | agent can do |
 
@@ -93,6 +93,18 @@ Legend: ✅ done · 🟡 partial · 🔴 open · ⛔ blocked (needs hardware)
 | P1-7 | Strengthen RPi5 threading discussion (R2.2) | no |
 
 ---
+
+## ⚠️ FINDING 8 Okt — headline claim was half-true
+
+Paper sebelumnya claimed "INT8 is 1.9–2.8x slower than FP32 on RPi5". That is
+only true for **dynamic** quantization. Static QDQ is **2.34x faster** than FP32
+(13.50ms vs 31.53ms, t=4) while recovering accuracy to 94.56%. Abstract,
+contributions, and §IV-C have been rescoped. Reviewer R3 asked exactly this
+comparison and the answer changes the paper's practical conclusion:
+per-channel static QDQ is simultaneously the accurate AND the fast config.
+
+Remaining caveat: latency measured on Pi, accuracy measured on x86 (same
+graphs, same ORT 1.29.0). Confirming accuracy on the Pi itself is still open.
 
 ## Page budget
 
