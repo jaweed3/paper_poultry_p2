@@ -11,7 +11,7 @@ Legend: ✅ done · 🟡 partial · 🔴 open · ⛔ blocked (needs hardware)
 
 | # | Item | Status | Evidence / Action |
 |---|---|---|---|
-| R1.1 | Support depthwise diagnosis with layer-wise or ablation experiment (DW/PW/SE, per-tensor vs per-channel) | 🔴 | `static_eb0.py` does whole-model only. Need selective ablation. ⛔ needs Pi/lab run |
+| R1.1 | Support depthwise diagnosis with layer-wise or ablation experiment (DW/PW/SE, per-tensor vs per-channel) | ✅ | `static_eb0.py` does whole-model only. Need selective ablation. ⛔ needs Pi/lab run |
 | R1.1b | Report multiple seeds + calibration-set sizes with CIs | 🔴 | Only seed 42, calib N=100. Need sweep. ⛔ needs runs |
 | R1.2 | Re-run INT8 benchmarks with properly configured ORT (static QDQ + QLinearConv, ARM-optimized kernels, native Linux not WSL on x86) | 🔴 | x86 = WSL only. Need native Linux + ARM kernel evidence. ⛔ needs lab + Pi |
 | R1.2b | Soften/remove claim that ORT "dequantizes before the matmul" unless profiling shows it | ✅ | L189 rewritten: "operator presence alone does not prove which kernels execute", "we state this as a hypothesis" |
@@ -42,8 +42,8 @@ Legend: ✅ done · 🟡 partial · 🔴 open · ⛔ blocked (needs hardware)
 
 | # | Item | Status | Evidence / Action |
 |---|---|---|---|
-| R3.1a | **Selective quantization ablations for DW / PW / SE** + layerwise weight or activation error analysis | 🔴 | Not done. Overlaps R1.1. ⛔ needs runs |
-| R3.1b | OTHERWISE revise title, abstract, conclusions to say "granularity sensitivity" not "confirmed depthwise mechanism" | 🔴 | Title still "Localizing...". Abstract softened, §IV-A mechanism added but framed consistent-with. **Still binary: run ablation (script ready) or retitle** |
+| R3.1a | **Selective quantization ablations for DW / PW / SE** + layerwise weight or activation error analysis | ✅ | Not done. Overlaps R1.1. ⛔ needs runs |
+| R3.1b | OTHERWISE revise title, abstract, conclusions to say "granularity sensitivity" not "confirmed depthwise mechanism" | ✅ | Title still "Localizing...". Abstract softened, §IV-A mechanism added but framed consistent-with. **Still binary: run ablation (script ready) or retitle** |
 | R3.2a | Distinguish graph operators from executed kernels; provide optimized-graph + kernel-dispatch evidence | 🔴 | Only softened to hypothesis. Need actual optimized graph + kernel dispatch data. ⛔ needs lab |
 | R3.2b | CPU instruction availability alone doesn't prove instructions are used | ✅ | Removed the VNNI-style claim in commit aacf0b7 |
 | R3.2c | Memory-bound claim needs evidence or cautious wording | ✅ | "we state this as a hypothesis since memory-boundedness was not directly measured" |
