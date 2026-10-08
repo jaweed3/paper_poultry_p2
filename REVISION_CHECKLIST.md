@@ -77,8 +77,8 @@ Legend: ✅ done · 🟡 partial · 🔴 open · ⛔ blocked (needs hardware)
 |---|---|---|---|
 | **P0-1** | Retitle OR run selective ablation (R3.1b + R1.1 + R2.1) | yes (ablation) / no (retitle) | decision first |
 | **P0-2** | Static INT8 benchmark on RPi5 (R3.3) | ✅ DONE | closed 8 Okt, commit 012ac0f |
-| **P0-3** | Optimized-graph + kernel-dispatch evidence (R3.2a) | ⛔ lab ORT profiling | Fatih |
-| **P0-4** | McNemar / paired bootstrap for MNv2 + SNv2 (R3.4a) | no — data exists | agent can do |
+| **P0-3** | Optimized-graph + kernel-dispatch evidence (R3.2a) | ✅ 8 Okt: level2 profiling artifact already in paper §IV-C as supplementary | partially addressed; enhanced version tomorrow |
+| **P0-4** | McNemar / paired bootstrap for MNv2 + SNv2 (R3.4a) | 🔴 TODO 9 Okt — needs paired prediction dump | agent can do |
 
 ## 🟡 P1 — after P0
 
@@ -125,3 +125,94 @@ Decision needed: shorten Grad-CAM (~0.4 pp) to stay at 6, or confirm page limit 
 - [ ] Add presenter on EDAS
 - [ ] Upload pre-recorded presentation video: https://icaides.untar.ac.id/page/39/Online-Presentation
 - [ ] Presenter must attend allocated session (12–13 Nov 2026)
+
+---
+
+# 📋 WORK PLAN — Jumat 9 Okt 2026
+
+Deadline camera-ready: **31 Okt 2026** (23 hari).
+Semua P0-1 dan P0-2 sudah **DONE**. Sisa P0 tinggal 3 item.
+
+## ✅ Sudah selesai (jangan ulang)
+
+| Item | Commit | Hasil |
+|---|---|---|
+| P0-1 ablation DW/PW/SE | `9bcd2c0` | depthwise necessary+sufficient: C=93.46%, D=8.33% |
+| P0-2 RPi5 static INT8 | `012ac0f` | 2.34x lebih cepat dari FP32 (13.50ms vs 31.53ms) |
+| Table III header | — | verified clean, no change needed |
+
+## 🔴 P0 — wajib, 3 item
+
+### 1. R3.4a — McNemar / paired CI untuk MNv2 + SNv2
+
+**Kenapa:** reviewer mau paired significance test untuk drops 0.81pp (MNv2) & 0.24pp (SNv2). Cuma EB0 yang punya McNemar sekarang.
+
+**Cara:**
+1. Patch `scripts/eval_gate0.py` untuk dump paired predictions
+   (`results/preds_<model>_<cond>.npy`) — bukan cuma confusion matrix
+2. Jalankan di lab WSL: `bash scripts/run_sterile.sh scripts/eval_gate0.py`
+3. Script baru `scripts/mcnemar_paired.py` — hitung b/c discordant,
+   continuity-corrected p-value, bootstrap paired CI
+4. Patch paper Table I + teks §IV-A
+
+**Waktu:** ~1 jam (patch + run + patch paper)
+
+### 2. R3.2a — kernel-dispatch evidence
+
+**Kenapa:** reviewer mau bukti kernel yang benar-benar **execute**, bukan just graph operator. Lo cuma punya "hypothesis" wording.
+
+**Cara:**
+- ORT profiling pada Pi dengan `ort_session_options.enable_profiling = True`
+- Ambil `profiler_*.json` / `*.json` dari Pi, parse kernel names
+- Tambah table atau footnote di §IV-C
+
+**Waktu:** ~2 jam (script + run di Pi + parse)
+
+### 3. R1.2 — native Linux ORT benchmark
+
+**Kenapa:** reviewer minta ARM kernel verification + native Linux, bukan WSL x86.
+
+**Cara:**
+- Native Linux x86 di lab (nilai WSL2 ist WSL2 = kernel boundary overhead)
+- Re-run `benchmark_pi_gate0.py` + `static_eb0.py` on native Linux
+- Patch §IV-C x86 reference numbers
+
+**Waktu:** ~3 jam, TANDAS setup.
+
+**Fallback kalau nggak sempat:** write it as limitation, bukan klaim.
+
+### 🟡 P1 — backlog
+
+| Item | Effort | Note |
+|---|---|---|
+| R1.1b multi-seed | mahal | retrain per seed, skip unless reviewer's adamant |
+| R2.1 theory | 15 menit | §IV-A sudah ada; strengthen dengan ablation data |
+
+## ⚠️ Page budget
+
+PDF 7 halaman, page 7 = conclusion tail + references. Fee table resmi: **extra page = USD 50 / IDR 500.000**, max 2 pages.
+
+**Decision needed:** stay at 7 atau compress back to 6?
+- 7 halaman (now) → +500k IDR over base
+- 6 halaman → free
+- Base fee (student member online): **Rp 2.000.000**
+
+**Gw sarankan:** compress back to 6 (compression is possible in Related Work + Related Work text) if possible, else pay the 500k.
+
+## 📦 Admin (do not forget)
+
+- [ ] Register + pay (student IEEE member online = Rp 2.000.000 / non-member 2.500.000)
+- [ ] Registration form: https://forms.gle/wMepCRRpfcQQ9Knx6
+- [ ] Verify 3 authors registered in EDAS
+- [ ] PDF Express: https://ieee-pdf-express.org/ (Conference ID **73571X**)
+- [ ] e-copyright on EDAS
+- [ ] Add presenter on EDAS
+- [ ] Upload pre-recorded video: https://icaides.untar.ac.id/page/39/Online-Presentation
+
+## 🔑 Key resources
+
+- Lab WSL: `ssh -o RemoteCommand=none lab-wsl 'wsl -d Ubuntu -- bash -lc "cmd"'`
+- Pi: `ssh pi` (~/p2bench, ~/bench-venv)
+- Dataset: `POULTRY_DATA_DIR=data/images_sterile` (1728 test)
+- Final PDF: `~/paper_poultry_p2/paper/main.pdf`
+
