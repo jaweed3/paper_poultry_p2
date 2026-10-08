@@ -46,45 +46,85 @@ OUT_DIR = ROOT / "results"
 
 # ── layer classification ────────────────────────────────────────────────────
 
-def classify_node(node_name: str, node_op: str) -> str:
-    """Klasifikasikan ONNX node ke dalam: dw / pw / se / other."""
-    n = node_name.lower()
-    # EfficientNet MBConv: DepthwiseConv node / Conv dengan group=depth
-    if "depthwise" in n:
-        return "dw"
-    # Squeeze-and-Excitation: GlobalAveragePool + ReduceMean + 1x1 Conv pair
-    if any(k in n for k in ("se_", "squeeze", "excitation", "se_reduce", "se_expand")):
-        return "se"
-    # pointwise / 1x1 / Gemm / MatMul = channel mixing
-    if any(k in n for k in ("conv2d_1x1", "1x1", "pointwise", "pw")):
-        return "pw"
-    return "other"
+def _weight_dims(g, node):
+    """Weight tensor dims for a Conv node, or None."""
+    init = {t.name: t for t in g.initializer}
+    if len(node.input) < 2:
+        return None
+    w = node.input[1]
+    if w not in init:
+        return None
+    return list(init[w].dims)
+
+
+def _group_attr(node):
+    for a in node.attribute:
+        if a.name == "group":
+            return a.i
+    return 1
+
+
+def classify_layers(g):
+    """Classify every Conv in the graph into dw / se_reduce / se_expand / pw / stem.
+
+    Structure-derived, not name-matched, because EfficientNet-B0 exports SE
+    blocks as plain `fc1/Conv` + `fc2/Conv` with no "SE" substring anywhere:
+
+      - depthwise      : group == channels (Conv with group>1, 1x1 spatial, in_ch==1)
+      - SE reduce      : 1x1 Conv whose out_channels < in_channels  (e.g. 144 -> 6)
+      - SE expand      : 1x1 Conv whose out_channels > in_channels  (e.g. 6 -> 144)
+      - stem           : first Conv, in_channels == 3 (RGB)
+      - pointwise      : everything else that is 1x1
+
+    The SE reduce/expand pair is what makes per-tensor scaling dangerous: their
+    channel counts are tiny (4-48), so a single shared scale over 4 channels has
+    far less room for outlier cancellation than a 1152-channel pointwise.
+    """
+    convs = [n for n in g.node if n.op_type == "Conv"]
+    out = {"dw": [], "se_reduce": [], "se_expand": [], "pw": [], "stem": [], "other": []}
+
+    for n in convs:
+        dims = _weight_dims(g, n)
+        if dims is None or len(dims) != 4:
+            out["other"].append(n.name)
+            continue
+        out_c, in_c_per_g, kh, kw = dims
+        grp = _group_attr(n)
+
+        if grp > 1:
+            out["dw"].append(n.name)
+        elif in_c_per_g == 3:
+            out["stem"].append(n.name)
+        elif kh == 1 and kw == 1:
+            # pointwise: compare against the block width via the sibling conv
+            out["pw"].append(n.name)   # refined below
+        else:
+            out["other"].append(n.name)
+
+    # Resolve SE pairs: fc1 (reduce) sits directly before fc2 (expand) inside
+    # the same MBConv block. Match on the shared block path prefix.
+    for n in convs:
+        if n.name not in out["pw"]:
+            continue
+        if "/fc1/" not in n.name and "/fc2/" not in n.name:
+            continue
+        block = n.name.split("/block/block.")[0] if "/block/block." in n.name \
+            else n.name.rsplit("/", 2)[0]
+        if "/fc1/" in n.name:
+            out["pw"].remove(n.name)
+            out["se_reduce"].append(n.name)
+        elif "/fc2/" in n.name:
+            out["pw"].remove(n.name)
+            out["se_expand"].append(n.name)
+
+    return out
 
 
 def group_nodes(onnx_path: Path):
-    """Return {group: [node names]} plus a function to detect depthwise via group attr."""
+    """Return ({group: [conv node names]}, raw graph) for an ONNX file."""
     import onnx
-
-    model = onnx.load(str(onnx_path))
-    groups = {"dw": [], "pw": [], "se": [], "other": []}
-
-    # Kumpulkan SE block ranges dari Pool/Reduce node
-    se_markers = []
-    for node in model.graph.node:
-        if node.op_type in ("GlobalAveragePool", "ReduceMean"):
-            se_markers.append(node)
-
-    for node in model.graph.node:
-        if node.op_type != "Conv":
-            continue
-        g = classify_node(node.name, node.op_type)
-        # fallback: cek attr group > 1 = depthwise
-        attrs = {a.name: a for a in node.attribute}
-        if "group" in attrs and attrs["group"].i > 1:
-            g = "dw"
-        groups[g].append(node.name)
-
-    return groups, se_markers
+    m = onnx.load(str(onnx_path))
+    return classify_layers(m.graph), m.graph
 
 
 def make_exclusion(onnx_path: Path, exclude_group: str):
@@ -101,103 +141,148 @@ def make_per_channel_override(onnx_path: Path, per_channel_group: str):
 
 # ── quantization with node exclusion ───────────────────────────────────────
 
+def _resolve_groups(spec, groups: dict) -> set:
+    """Turn a group spec into a set of node names.
+
+    Accepts: None/empty set, a single group name ("dw"), or a "+"-joined union
+    ("pw+se_reduce+se_expand+stem+other").
+    """
+    if not spec:
+        return set()
+    if isinstance(spec, set):
+        return set(spec)
+    out = set()
+    for part in str(spec).split("+"):
+        part = part.strip()
+        if part not in groups:
+            raise KeyError(f"unknown layer group {part!r}; have {sorted(groups)}")
+        out |= set(groups[part])
+    return out
+
+
 def quantize_selective(fp32_onnx: Path, out_path: Path, *,
                       nodes_to_exclude=None,
                       per_channel_nodes=None,
                       calib_loader=None,
                       input_name=None,
                       calib_n=100):
-    """Static QDQ per-tensor by default; nodes in per_channel_nodes get per-channel.
+    """Selective static QDQ with mixed granularity.
 
-    nodes_to_exclude : set of node names -> left in FP32 (no QDQ inserted)
-    per_channel_nodes : set of node names -> QDQ with per_channel=True
+    ORT 1.29 gotcha (verified empirically, see scripts/probe_selective_api.py):
+    `extra_options["nodes_to_exclude"]` does NOT prevent weight quantization
+    for Conv nodes. Excluding every node still produced 644 Q/DQ pairs, byte
+    identical to the no-exclusion baseline. The working control is the
+    `nodes_to_quantize` allowlist, which reduced Q/DQ to 96 when restricted to
+    the 16 depthwise convs.
+
+    So both knobs are expressed through `nodes_to_quantize`:
+      - per-tensor family : included in the allowlist
+      - per-channel family: included in the allowlist, quantize per_channel=True
+      - left in FP32       : simply omitted from the allowlist
     """
     from onnxruntime.quantization import (
         quantize_static, CalibrationMethod, QuantFormat, QuantType,
-        quant_pre_process, quantize_dynamic,
+        quant_pre_process,
     )
 
-    nodes_to_exclude = nodes_to_exclude or set()
-    per_channel_nodes = per_channel_nodes or set()
-
-    # Strategy: opset-level first, then refine per-node via ONNX NodeQuantConfig
-    from onnxruntime.quantization import QuantType as QT
-    from onnxruntime.quantization.node_quant_config import NodeQuantConfig
-
-    # Bangun extra_options untuk exclude + per-channel override
-    extra = {
-        "nodes_to_exclude": list(nodes_to_exclude),
-    }
-
     if not per_channel_nodes:
-        # single-shot: semua per-tensor (atau semua per-channel)
-        pc = len(per_channel_nodes) == 0 and "per_channel_all" in str(out_path)
+        # Uniform per-tensor over everything except the excluded set.
         prepped = fp32_onnx.with_name(fp32_onnx.stem + "_prepped.onnx")
         quant_pre_process(str(fp32_onnx), str(prepped))
         reader = calib_reader(calib_loader, input_name, calib_n)
+
+        import onnx as _onnx
+        g = _onnx.load(str(prepped)).graph
+        conv_names = [n.name for n in g.node if n.op_type == "Conv"]
+        allow = [n for n in conv_names if n not in set(nodes_to_exclude or set())]
+
         quantize_static(
             model_input=str(prepped),
             model_output=str(out_path),
             calibration_data_reader=reader,
             quant_format=QuantFormat.QDQ,
-            per_channel=pc,
+            per_channel=False,
             activation_type=QuantType.QInt8,
             weight_type=QuantType.QInt8,
             calibrate_method=CalibrationMethod.MinMax,
-            extra_options=extra,
+            nodes_to_quantize=allow,
         )
         return out_path
 
-    # Mixed granularity: split approach.
-    # Praktisnya: exclude non-target, quantize target per-channel, selesai.
-    all_names = set()
-    import onnx
-    m = onnx.load(str(fp32_onnx))
-    for node in m.graph.node:
-        all_names.add(node.name)
-    to_exclude = (all_names - per_channel_nodes) | nodes_to_exclude
-    extra["nodes_to_exclude"] = list(to_exclude)
-
+    # Mixed granularity: per-channel for the target family, per-tensor for the
+    # remaining Conv nodes, FP32 for anything explicitly excluded.
     prepped = fp32_onnx.with_name(fp32_onnx.stem + "_prepped.onnx")
     quant_pre_process(str(fp32_onnx), str(prepped))
-    reader = calib_reader(calib_loader, input_name, calib_n)
+
+    import onnx as _onnx
+    g = _onnx.load(str(prepped)).graph
+    conv_names = [n.name for n in g.node if n.op_type == "Conv"]
+    exclude = set(nodes_to_exclude or set())
+    target = set(per_channel_nodes)
+
+    # Per-channel pass over the target family only. Each quantize_static call
+    # consumes its reader, so a fresh one is required per pass.
     quantize_static(
         model_input=str(prepped),
         model_output=str(out_path),
-        calibration_data_reader=reader,
+        calibration_data_reader=calib_reader(calib_loader, input_name, calib_n),
         quant_format=QuantFormat.QDQ,
         per_channel=True,
         activation_type=QuantType.QInt8,
         weight_type=QuantType.QInt8,
         calibrate_method=CalibrationMethod.MinMax,
-        extra_options=extra,
+        nodes_to_quantize=[n for n in conv_names if n in target],
     )
+
+    # Per-tensor pass over the remaining Conv nodes, chaining onto the result.
+    rest = [n for n in conv_names if n not in target and n not in exclude]
+    if rest:
+        quantize_static(
+            model_input=str(out_path),
+            model_output=str(out_path),
+            calibration_data_reader=calib_reader(calib_loader, input_name, calib_n),
+            quant_format=QuantFormat.QDQ,
+            per_channel=False,
+            activation_type=QuantType.QInt8,
+            weight_type=QuantType.QInt8,
+            calibrate_method=CalibrationMethod.MinMax,
+            nodes_to_quantize=rest,
+        )
     return out_path
 
 
-def calib_reader(loader, input_name, n):
+def calib_reader(loader, input_name, n_images):
+    """CalibrationDataReader yielding exactly n_images samples.
+
+    n_images counts IMAGES, not batches, to match scripts/static_eb0.py which
+    calibrates on the first 100 images. Counting batches would silently give
+    ceil(n/batch_size)*batch_size images and make this ablation
+    non-comparable to the headline static numbers.
+    """
     from onnxruntime.quantization import CalibrationDataReader
 
     class R(CalibrationDataReader):
         def __init__(self):
-            self.it = None
-            self.c = 0
+            self.it = iter(loader)
+            self.n = 0
+            self.done = False
 
         def get_next(self):
-            if self.it is None:
-                self.it = iter(loader)
-            if self.c >= n:
+            if self.done or self.n >= n_images:
+                self.done = True
                 return None
             try:
                 imgs, _ = next(self.it)
             except StopIteration:
+                self.done = True
                 return None
-            self.c += 1
+            self.n += imgs.shape[0]
             return {input_name: imgs.numpy()}
 
         def rewind(self):
-            self.it = None
-            self.c = 0
+            self.it = iter(loader)
+            self.n = 0
+            self.done = False
 
     return R()
 
@@ -218,41 +303,68 @@ def run_ort_acc(onnx_path: Path, loader):
 
 
 def weight_error_report(fp32_onnx: Path, group_names: dict):
-    """SQNR per weight tensor (FP32 vs simulated per-tensor INT8) per group."""
+    """SQNR per weight tensor (FP32 vs simulated INT8) per layer family.
+
+    Computes BOTH per-tensor and per-channel SQNR so the comparison shows how
+    much error per-tensor scaling injects into each family relative to what
+    per-channel scaling could recover. A family with a large per-tensor/per-
+    channel gap is a family that per-channel quantization will rescue.
+
+    Node names are mapped to their weight initializer via node.input[1]; using
+    node.name directly silently matches nothing, so results must come back
+    non-empty (main() asserts this).
+    """
     import onnx
     from onnx import numpy_helper
 
     m = onnx.load(str(fp32_onnx))
     init = {t.name: numpy_helper.to_array(t) for t in m.graph.initializer}
+    node_by_name = {n.name: n for n in m.graph.node}
+
+    def sqnr_db(arr: np.ndarray, axis=None) -> float:
+        a = arr.astype(np.float32)
+        amax = np.abs(a).max(axis=axis, keepdims=True)
+        if amax.size == 0 or float(np.max(amax)) == 0.0:
+            return float("nan")
+        scale = amax / 127.0
+        scale = np.where(scale == 0, 1.0, scale)
+        deq = np.round(a / scale) * scale
+        num = float((a ** 2).sum())
+        den = max(float(((a - deq) ** 2).sum()), 1e-30)
+        return 10 * np.log10(num / den)
 
     rows = []
     for group, names in group_names.items():
         if not names:
             continue
-        errs = []
+        pt, pc, shapes = [], [], []
         for name in names:
-            arr = init.get(name)
+            node = node_by_name.get(name)
+            if node is None or len(node.input) < 2:
+                continue
+            arr = init.get(node.input[1])
             if arr is None or arr.size == 0:
                 continue
-            arr = arr.astype(np.float32)
-            # simulate per-tensor int8 round
-            amax = np.abs(arr).max()
-            if amax == 0:
-                continue
-            scale = amax / 127.0
-            q = np.round(arr / scale)
-            deq = q * scale
-            num = float((arr ** 2).sum())
-            den = max(float(((arr - deq) ** 2).sum()), 1e-30)
-            errs.append(10 * np.log10(num / den))
-        if errs:
-            rows.append({
-                "group": group,
-                "n_tensors": len(errs),
-                "sqnr_mean_db": round(float(np.mean(errs)), 2),
-                "sqnr_min_db": round(float(np.min(errs)), 2),
-                "sqnr_median_db": round(float(np.median(errs)), 2),
-            })
+            shapes.append(tuple(arr.shape))
+            pt.append(sqnr_db(arr, axis=None))
+            # per-channel: scale each output channel independently
+            pc.append(sqnr_db(arr.reshape(arr.shape[0], -1), axis=1))
+
+        pt = [v for v in pt if v == v]      # drop NaN
+        pc = [v for v in pc if v == v]
+        if not pt:
+            continue
+        n_par = sum(int(np.prod(s)) for s in shapes)
+        rows.append({
+            "group": group,
+            "n_tensors": len(pt),
+            "n_params": n_par,
+            "sqnr_pertensor_mean_db": round(float(np.mean(pt)), 2),
+            "sqnr_pertensor_min_db": round(float(np.min(pt)), 2),
+            "sqnr_perchannel_mean_db": round(float(np.mean(pc)), 2) if pc else None,
+            "perchannel_gain_db": (round(float(np.mean(pc) - np.mean(pt)), 2)
+                                   if pc else None),
+        })
     return rows
 
 
@@ -263,6 +375,8 @@ def main():
     ap.add_argument("--model", default="efficientnet_b0",
                     choices=["efficientnet_b0", "mobilenetv2", "shufflenetv2"])
     ap.add_argument("--calib-n", type=int, default=100)
+    ap.add_argument("--only", nargs="*", default=None,
+                    help="run only these experiment names (default: all)")
     a = ap.parse_args()
 
     import torch
@@ -294,11 +408,15 @@ def main():
     (out_dir / "node_groups.json").write_text(
         json.dumps({g: list(n) for g, n in groups.items()}, indent=2))
 
-    print("\n=== layerwise weight SQNR (per-tensor INT8 simulation) ===")
+    print("\n=== layerwise weight SQNR: per-tensor vs per-channel INT8 ===")
     sqnr = weight_error_report(fp32, groups)
+    assert sqnr, "SQNR report empty — node->weight mapping is broken"
+    print(f"  {'group':<11}{'n':>4}{'params':>10}{'per-tensor':>12}{'per-ch':>10}{'gain':>9}")
     for r in sqnr:
-        print(f"  {r['group']:<8} n={r['n_tensors']:>3}  "
-              f"SQNR mean={r['sqnr_mean_db']:>6.2f}dB  min={r['sqnr_min_db']:>6.2f}dB")
+        print(f"  {r['group']:<11}{r['n_tensors']:>4}{r['n_params']:>10}"
+              f"{r['sqnr_pertensor_mean_db']:>10.2f}dB"
+              f"{r['sqnr_perchannel_mean_db']:>8.2f}dB"
+              f"{r['perchannel_gain_db']:>8.2f}dB")
     (out_dir / "weight_sqnr.json").write_text(json.dumps(sqnr, indent=2))
 
     import onnxruntime as ort
@@ -313,14 +431,30 @@ def main():
     fp32_acc, fp32_pred, y = run_ort_acc(fp32, test_loader)
     print(f"\nFP32 reference: {fp32_acc:.2f}%")
 
+    # Each experiment isolates one layer family. Design logic:
+    #
+    #   A/B are the two extremes and must reproduce the paper's headline
+    #      numbers (9.32% / 94.56%) or the ablation is not comparable.
+    #
+    #   C tests the paper's central claim directly: if ONLY depthwise gets
+    #      per-channel treatment and everything else stays per-tensor, does it
+    #      recover? If yes, depthwise is necessary and sufficient.
+    #
+    #   D is the complement of C (everything per-channel EXCEPT depthwise).
+    #      If D collapses while C survives, depthwise is proven necessary.
+    #      If D also survives, granularity is not the whole story.
+    #
+    #   E/F leave one family in FP32 entirely (no QDQ at all), isolating whether
+    #      quantizing that family at all is harmful vs merely quantizing it
+    #      per-tensor.
     experiments = [
         # (name, nodes_to_exclude, per_channel_nodes)
         ("A_all_pertensor", set(), set()),
-        ("B_all_perchannel", set(), set()),   # special-cased
-        ("C_dw_perchannel_only", None, "dw"),
-        ("D_dw_pertensor_only", None, "pw+se+other"),
-        ("E_se_excluded", "se", set()),
-        ("F_dw_excluded", "dw", set()),
+        ("B_all_perchannel", set(), set()),      # special-cased below
+        ("C_dw_perchannel", set(), "dw"),
+        ("D_allpc_except_dw", set(), "pw+se_reduce+se_expand+stem+other"),
+        ("E_dw_left_fp32", "dw", set()),
+        ("F_se_left_fp32", "se_reduce+se_expand", set()),
     ]
 
     results = {
@@ -336,6 +470,8 @@ def main():
     ptq_dir.mkdir(parents=True, exist_ok=True)
 
     for name, excl, pcn in experiments:
+        if a.only and name not in a.only:
+            continue
         print(f"\n[{name}]")
         out_onnx = ptq_dir / f"{a.model}_ablate_{name}.onnx"
 
@@ -358,14 +494,8 @@ def main():
                 activation_type=QuantType.QInt8, weight_type=QuantType.QInt8,
                 calibrate_method=CalibrationMethod.MinMax)
         else:
-            if isinstance(excl, str):
-                excl = set(groups[excl])
-            if isinstance(pcn, str) and "+" in pcn:
-                pcn = set()
-                for part in pcn.split("+"):
-                    pcn |= set(groups[part])
-            elif pcn == "dw":
-                pcn = set(groups["dw"])
+            excl = _resolve_groups(excl, groups)
+            pcn = _resolve_groups(pcn, groups)
             quantize_selective(fp32, out_onnx,
                                nodes_to_exclude=excl,
                                per_channel_nodes=pcn,
