@@ -1,0 +1,136 @@
+{
+  "model": "efficientnet_b0",
+  "fp32_acc": 98.5,
+  "calib_n": 100,
+  "groups": {
+    "dw": 16,
+    "se_reduce": 16,
+    "se_expand": 16,
+    "pw": 32,
+    "stem": 1,
+    "other": 0
+  },
+  "weight_sqnr": [
+    {
+      "group": "dw",
+      "n_tensors": 16,
+      "n_params": 182016,
+      "sqnr_pertensor_mean_db": 27.97,
+      "sqnr_pertensor_min_db": 22.71,
+      "sqnr_perchannel_mean_db": 44.42,
+      "perchannel_gain_db": 16.46
+    },
+    {
+      "group": "se_reduce",
+      "n_tensors": 16,
+      "n_params": 313600,
+      "sqnr_pertensor_mean_db": 32.68,
+      "sqnr_pertensor_min_db": 21.3,
+      "sqnr_perchannel_mean_db": 37.14,
+      "perchannel_gain_db": 4.46
+    },
+    {
+      "group": "se_expand",
+      "n_tensors": 16,
+      "n_params": 313600,
+      "sqnr_pertensor_mean_db": 34.0,
+      "sqnr_pertensor_min_db": 26.53,
+      "sqnr_perchannel_mean_db": 45.26,
+      "perchannel_gain_db": 11.26
+    },
+    {
+      "group": "pw",
+      "n_tensors": 32,
+      "n_params": 3146112,
+      "sqnr_pertensor_mean_db": 33.67,
+      "sqnr_pertensor_min_db": 25.7,
+      "sqnr_perchannel_mean_db": 42.3,
+      "perchannel_gain_db": 8.63
+    },
+    {
+      "group": "stem",
+      "n_tensors": 1,
+      "n_params": 864,
+      "sqnr_pertensor_mean_db": 35.19,
+      "sqnr_pertensor_min_db": 35.19,
+      "sqnr_perchannel_mean_db": 45.28,
+      "perchannel_gain_db": 10.09
+    }
+  ],
+  "experiments": {
+    "C_dw_perchannel": {
+      "test_acc": 93.46,
+      "size_mb": 4.33,
+      "ncd_pred_frac_pct": 29.1,
+      "collapsed": false,
+      "excluded": [],
+      "excluded_count": 0,
+      "per_channel_count": 16
+    },
+    "D_allpc_except_dw": {
+      "test_acc": 8.33,
+      "size_mb": 4.51,
+      "ncd_pred_frac_pct": 0.1,
+      "collapsed": true,
+      "excluded": [],
+      "excluded_count": 0,
+      "per_channel_count": 65
+    },
+    "E_dw_left_fp32": {
+      "test_acc": 97.16,
+      "size_mb": 4.69,
+      "ncd_pred_frac_pct": 32.2,
+      "collapsed": false,
+      "excluded": [
+        "/features/features.1/features.1.0/block/block.0/block.0.0/Conv",
+        "/features/features.2/features.2.0/block/block.1/block.1.0/Conv",
+        "/features/features.2/features.2.1/block/block.1/block.1.0/Conv",
+        "/features/features.3/features.3.0/block/block.1/block.1.0/Conv",
+        "/features/features.3/features.3.1/block/block.1/block.1.0/Conv",
+        "/features/features.4/features.4.0/block/block.1/block.1.0/Conv",
+        "/features/features.4/features.4.1/block/block.1/block.1.0/Conv",
+        "/features/features.4/features.4.2/block/block.1/block.1.0/Conv",
+        "/features/features.5/features.5.0/block/block.1/block.1.0/Conv",
+        "/features/features.5/features.5.1/block/block.1/block.1.0/Conv",
+        "/features/features.5/features.5.2/block/block.1/block.1.0/Conv",
+        "/features/features.6/features.6.0/block/block.1/block.1.0/Conv",
+        "/features/features.6/features.6.1/block/block.1/block.1.0/Conv",
+        "/features/features.6/features.6.2/block/block.1/block.1.0/Conv",
+        "/features/features.6/features.6.3/block/block.1/block.1.0/Conv",
+        "/features/features.7/features.7.0/block/block.1/block.1.0/Conv"
+      ],
+      "excluded_count": 16,
+      "per_channel_count": 0
+    },
+    "F_se_left_fp32": {
+      "test_acc": 12.44,
+      "size_mb": 5.91,
+      "ncd_pred_frac_pct": 3.0,
+      "collapsed": true,
+      "excluded": [
+        "/features/features.1/features.1.0/block/block.1/fc1/Conv",
+        "/features/features.1/features.1.0/block/block.1/fc2/Conv",
+        "/features/features.2/features.2.0/block/block.2/fc1/Conv",
+        "/features/features.2/features.2.0/block/block.2/fc2/Conv",
+        "/features/features.2/features.2.1/block/block.2/fc1/Conv",
+        "/features/features.2/features.2.1/block/block.2/fc2/Conv",
+        "/features/features.3/features.3.0/block/block.2/fc1/Conv",
+        "/features/features.3/features.3.0/block/block.2/fc2/Conv",
+        "/features/features.3/features.3.1/block/block.2/fc1/Conv",
+        "/features/features.3/features.3.1/block/block.2/fc2/Conv",
+        "/features/features.4/features.4.0/block/block.2/fc1/Conv",
+        "/features/features.4/features.4.0/block/block.2/fc2/Conv",
+        "/features/features.4/features.4.1/block/block.2/fc1/Conv",
+        "/features/features.4/features.4.1/block/block.2/fc2/Conv",
+        "/features/features.4/features.4.2/block/block.2/fc1/Conv",
+        "/features/features.4/features.4.2/block/block.2/fc2/Conv",
+        "/features/features.5/features.5.0/block/block.2/fc1/Conv",
+        "/features/features.5/features.5.0/block/block.2/fc2/Conv",
+        "/features/features.5/features.5.1/block/block.2/fc1/Conv",
+        "/features/features.5/features.5.1/block/block.2/fc2/Conv"
+      ],
+      "excluded_count": 32,
+      "per_channel_count": 0
+    }
+  }
+}
