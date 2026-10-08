@@ -17,11 +17,11 @@ Legend: ✅ done · 🟡 partial · 🔴 open · ⛔ blocked (needs hardware)
 | R1.2b | Soften/remove claim that ORT "dequantizes before the matmul" unless profiling shows it | ✅ | L189 rewritten: "operator presence alone does not prove which kernels execute", "we state this as a hypothesis" |
 | R1.3 | Fair comparison on same deduplicated split vs prior work, OR clearly caveat Table VI | ✅ | L244 caption "different protocols; not head-to-head"; L262 caveat paragraph |
 | R1.3b | Report energy OR discuss its absence as a limitation | ✅ | L82/85/270: `current_a=null`, "energy is a stated limitation" |
-| R1.4a | Fix broken Table III header | 🔴 | Needs visual inspection of rendered PDF |
+| R1.4a | Fix broken Table III header | ✅ | Verified: renders correctly, 2-row header, all columns aligned. No change needed |
 | R1.4b | Fix illegible Fig. 1 | ✅ | `pareto_gate0.png` regenerated 7 Oct, 52KB, big font |
 | R1.4c | Fix inconsistent statements about run counts | ✅ | L85: "200 iterations after 10 warmup iterations" consistent |
 | R1.4d | Fix unexplained x86 ShuffleNetV2 vs MobileNetV2 FP32 latency ordering | 🟡 | L189 explains via matmul count / node expansion. Verify it actually answers |
-| R1.4e | Grad-CAM figure adds little → shorten or remove | 🟡 | Softened to "descriptive attention only" but full section + 2.6MB figure still present |
+| R1.4e | Grad-CAM figure adds little → shorten or remove | ✅ | Figure + section removed; one-sentence note kept; abstract + keywords synced (commit 8598f01) |
 | R1.5 | Replace anonymous repo link with permanent archive | ✅ | No `4open`/`anonymous` string remains. Verify actual URL works |
 | R1.5b | Temper generality of conclusions resting on single board / one runtime / one dataset / batch 1 | ✅ | L85 "Variability across independent benchmark sessions was not measured"; "model-only"; limitations in Conclusion |
 
@@ -31,7 +31,7 @@ Legend: ✅ done · 🟡 partial · 🔴 open · ⛔ blocked (needs hardware)
 
 | # | Item | Status | Evidence / Action |
 |---|---|---|---|
-| R2.1 | Explain theoretically why depthwise-separable conv in EfficientNet-B0 is exceptionally sensitive to per-tensor vs MobileNetV2/ShuffleNetV2 | 🔴 | NOT answered. §IV-A says "consistent with" but no mechanism explanation. Needs a paragraph + R1.1 ablation as evidence |
+| R2.1 | Explain theoretically why depthwise-separable conv in EfficientNet-B0 is exceptionally sensitive to per-tensor vs MobileNetV2/ShuffleNetV2 | 🟡 | Mechanism paragraph added to §IV-A (commit 8598f01): per-tensor shares one scale across C≤32 depthwise channels with no spatial averaging; SE 1x1 convs span few channels so range is dominated by the largest; MNv2/SNv2 pair depthwise with wide pointwise. Framed as consistent-with, still needs R1.1 ablation as evidence |
 | R2.2 | Deeply elaborate RPi5 threading inefficiency (ORT threading overhead / small-matrix bottleneck) | 🟡 | L189 has hypothesis + node expansion table. Needs more depth |
 | R2.3 | Explicitly detail pHash audit so others can replicate the 8,153-image dedup split | ✅ | L73: manifest paths, 80/20 stratified seed 42, publisher test never re-split, pair/group semantics |
 | R2.4 | Strong contribution / novelty | ✅ | R2 scored 4/4/4 — no action |
@@ -43,7 +43,7 @@ Legend: ✅ done · 🟡 partial · 🔴 open · ⛔ blocked (needs hardware)
 | # | Item | Status | Evidence / Action |
 |---|---|---|---|
 | R3.1a | **Selective quantization ablations for DW / PW / SE** + layerwise weight or activation error analysis | 🔴 | Not done. Overlaps R1.1. ⛔ needs runs |
-| R3.1b | OTHERWISE revise title, abstract, conclusions to say "granularity sensitivity" not "confirmed depthwise mechanism" | 🔴 | Title still "Localizing...". Abstract says "consistent with". **Binary choice: run ablation or retitle** |
+| R3.1b | OTHERWISE revise title, abstract, conclusions to say "granularity sensitivity" not "confirmed depthwise mechanism" | 🔴 | Title still "Localizing...". Abstract softened, §IV-A mechanism added but framed consistent-with. **Still binary: run ablation (script ready) or retitle** |
 | R3.2a | Distinguish graph operators from executed kernels; provide optimized-graph + kernel-dispatch evidence | 🔴 | Only softened to hypothesis. Need actual optimized graph + kernel dispatch data. ⛔ needs lab |
 | R3.2b | CPU instruction availability alone doesn't prove instructions are used | ✅ | Removed the VNNI-style claim in commit aacf0b7 |
 | R3.2c | Memory-bound claim needs evidence or cautious wording | ✅ | "we state this as a hypothesis since memory-boundedness was not directly measured" |
@@ -53,7 +53,7 @@ Legend: ✅ done · 🟡 partial · 🔴 open · ⛔ blocked (needs hardware)
 | R3.4c | Table II: specify test variant + discordant counts; report underflow via bound not p=0 | ✅ | "continuity correction", b=14 c=1468, `p < 10^{-15}` |
 | R3.5a | Explain validation split creation (source release has train/test, audit refers to validation) | ✅ | L73: "stratified 80/20 split of the publisher train only (seed 42); publisher test was never re-split" |
 | R3.5b | Distinguish duplicate pairs vs connected groups vs removed images; explain overlapping near-dup handling | ✅ | L73: "all size 2", "counts refer to removed copies rather than connected groups" |
-| R3.5c | Replace absolute "sterile" with qualified statement | 🟡 | Says "under this audit" but the word "sterile" itself still used 23×. Consider replacing term entirely |
+| R3.5c | Replace absolute "sterile" with qualified statement | ✅ | §III-A now defines the term explicitly: denotes only absence of cross-split near-duplicates under this audit, not independence; residual within-split dependence stated (commit 8598f01) |
 | R3.5d | Discuss remaining dependence between images from same specimen/farm/session | ✅ | L73: "Residual dependence may remain..." |
 | R3.6a | Specify model implementations, trainable layers, checkpoint-selection, seeds, training repetitions | 🟡 | L78 Training Protocol — verify completeness |
 | R3.6b | Exact quantization options: act/weight signedness, quantized op types, per-channel axes, preprocessing/fusion, calib selection | ✅ | L82: activation_type=QInt8, weight_type=QInt8, QuantFormat.QDQ, MinMax, first 100 sterile-train, batch 8 |
@@ -64,7 +64,7 @@ Legend: ✅ done · 🟡 partial · 🔴 open · ⛔ blocked (needs hardware)
 | R3.7d | Report variability across independent benchmark sessions | ✅ | L85: "within-session; across sessions was not measured" |
 | R3.7e | Separate model-only throughput from end-to-end application throughput | ✅ | L85 explicit |
 | R3.8a | Enlarge labels/annotations in Figures 1, 4, 5 | 🟡 | Fig 1 done. Fig 4 (rpi5 thread scaling) 82KB. Fig 5 (gradcam) 2.6MB — needs check |
-| R3.8b | Resolve discrepancy: text says single Grad-CAM map, Fig 5 shows four examples | 🔴 | Must check caption vs figure |
+| R3.8b | Resolve discrepancy: text says single Grad-CAM map, Fig 5 shows four examples | ✅ | Resolved by removal: figure deleted entirely, no caption discrepancy possible |
 | R3.8c | Avoid inferring low-level feature use from visualizations alone | 🟡 | Check §Grad-CAM wording |
 | R3.8d | Explain criterion behind "best balance" recommendation for MobileNetV2 | ✅ | Phrase "best balance" no longer present |
 | R3.8e | State Table VI results are contextual, different protocols | ✅ | L244 + L262 |
