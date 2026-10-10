@@ -18,16 +18,17 @@
       "audit": "pHash Hamming<=5 over 8770 files",
       "near_pairs": 617,
       "exact_pairs": 393,
-      "cross_split_groups": 316,
+      "cross_split_groups": 303,
       "byte_identical_cross": 203,
-      "test_identical_to_train": 95,
-      "test_identical_to_val": 30,
+      "test_identical_to_train": 94,
+      "test_identical_to_val": 31,
       "est_unique": 8153
-    }
+    },
+    "mcnemar_artifact": "results/mcnemar_mnv2_snv2.json"
   },
   "split": {
     "train": {
-      "total": 5088,
+      "total": 5100,
       "per_class": {
         "cocci": 1555,
         "healthy": 1537,
@@ -36,7 +37,7 @@
       }
     },
     "val": {
-      "total": 1337,
+      "total": 1325,
       "per_class": {
         "cocci": 406,
         "healthy": 396,
@@ -92,7 +93,7 @@
           544
         ]
       ],
-      "int8_test_acc": 97.11,
+      "int8_test_acc": 97.28,
       "int8_per_class": {
         "cocci": 97.73,
         "healthy": 98.02,
@@ -125,7 +126,7 @@
           538
         ]
       ],
-      "acc_drop_pp": 0.81,
+      "acc_drop_pp": 0.64,
       "fp32_lat_ms_ref": 2.4,
       "int8_lat_ms_ref": 40.25,
       "fp32_size_mb": 8.48,
@@ -177,7 +178,7 @@
           540
         ]
       ],
-      "int8_test_acc": 97.45,
+      "int8_test_acc": 97.63,
       "int8_per_class": {
         "cocci": 98.11,
         "healthy": 98.02,
@@ -210,7 +211,7 @@
           539
         ]
       ],
-      "acc_drop_pp": 0.24,
+      "acc_drop_pp": 0.06,
       "fp32_lat_ms_ref": 4.15,
       "int8_lat_ms_ref": 12.62,
       "fp32_size_mb": 4.89,
