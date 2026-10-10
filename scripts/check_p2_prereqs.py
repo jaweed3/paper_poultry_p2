@@ -33,8 +33,10 @@ MODELS = {
 }
 
 def check_python():
+    # Use the interpreter that actually runs check (could be .venv python)
+    # So check sys.executable version, not system python3
     ok = sys.version_info >= (3, 10)
-    return ok, f"python {sys.version.split()[0]}", "need >=3.10" if not ok else "OK"
+    return ok, f"python {sys.version.split()[0]} ({Path(sys.executable).name})", "need >=3.10" if not ok else "OK"
 
 def check_packages():
     results = {}
