@@ -1,13 +1,13 @@
 \begin{table}[htbp]
-\caption{Test accuracy on sterile split (1,728 images) with 95\% bootstrap CI (B=10,000). Dynamic INT8 PTQ (ORT).}
+\caption{Test accuracy on sterile split (1,728 images) point accuracy on the sterile split (1,728 images); dynamic INT8 PTQ (ORT).}
 \label{tab:results}
 \centering
 \begin{tabular}{lccc}
 \toprule
 Model & FP32 (\%) & INT8 dynamic (\%) & Drop (pp) \\
 \midrule
-MobileNetV2 & 97.92 [97.22, 98.55] & 97.11 [96.30, 97.86] & 0.81 \\
-ShuffleNetV2 & 97.69 [96.93, 98.38] & 97.45 [96.64, 98.15] & 0.24 \\
+MobileNetV2 & 97.92 [97.22, 98.55] & 97.28 & 0.64 \\
+ShuffleNetV2 & 97.69 [96.93, 98.38] & 97.63 & 0.06 \\
 EfficientNet-B0 & 98.55 [97.97, 99.07] & 10.42 [8.97, 11.92] & 88.13 \\
 \bottomrule
 \end{tabular}

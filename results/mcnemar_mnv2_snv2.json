@@ -1,0 +1,30 @@
+{
+  "data_dir": "data/images_sterile",
+  "test_n": 1728,
+  "models": {
+    "mobilenetv2": {
+      "fp32_acc": 97.92,
+      "int8_acc": 97.28,
+      "drop_pp": 0.64,
+      "mcnemar": {
+        "b": 18,
+        "c": 7,
+        "chi2": 4.0,
+        "p": 0.045500263896358396,
+        "n_discord": 25
+      }
+    },
+    "shufflenetv2": {
+      "fp32_acc": 97.69,
+      "int8_acc": 97.63,
+      "drop_pp": 0.06,
+      "mcnemar": {
+        "b": 6,
+        "c": 5,
+        "chi2": 0.0,
+        "p": 1.0,
+        "n_discord": 11
+      }
+    }
+  }
+}

@@ -71,8 +71,8 @@ def main():
     for p in DST.rglob("*.jpg"):
         c[p.parent.parent.name] += 1
     print(dict(c))
-    assert c["train"] == 5088, c
-    assert c["val"] == 1337, c
+    assert c["train"] in (5088, 5100), c  # 5100 when re-materialized with val carved via seed 42
+    assert c["val"] in (1337, 1325), c
     assert c["test"] == 1728, c
 
     # verify zero cross-split survivors: re-run exact-hash check on DST
