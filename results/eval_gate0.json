@@ -1,5 +1,6 @@
 {
   "split": "sterile-8153",
+  "note": "Historical Gate 0 export. For current paired INT8 point estimates, use results/mcnemar_mnv2_snv2.json and results/results.json; this export predates the paired rerun.",
   "test_n": 1728,
   "seed": 42,
   "models": {
