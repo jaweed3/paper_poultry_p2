@@ -75,10 +75,10 @@ Legend: ✅ done · 🟡 partial · 🔴 open · ⛔ blocked (needs hardware)
 
 | ID | Item | Needs HW? | Owner |
 |---|---|---|---|
-| **P0-1** | Retitle OR run selective ablation (R3.1b + R1.1 + R2.1) | yes (ablation) / no (retitle) | decision first |
+| **P0-1** | Selective quantization ablation (R3.1b + R1.1 + R2.1) | ✅ DONE | `paper/main.tex` Table IV: depthwise-only per-channel 93.46%; all-except-depthwise 8.33%; title mechanism claim supported |
 | **P0-2** | Static INT8 benchmark on RPi5 (R3.3) | ✅ DONE | closed 8 Okt, commit 012ac0f |
-| **P0-3** | Optimized-graph + kernel-dispatch evidence (R3.2a) | ✅ 8 Okt: level2 profiling artifact already in paper §IV-C as supplementary | partially addressed; enhanced version tomorrow |
-| **P0-4** | McNemar / paired bootstrap for MNv2 + SNv2 (R3.4a) | 🔴 TODO 9 Okt — needs paired prediction dump | agent can do |
+| **P0-3** | Optimized-graph + kernel-dispatch evidence (R3.2a) | ✅ | `results/profiling/kernel_dispatch_artifact.json`; paper §IV-C reports executed kernels on Pi (15+5 runs/config) |
+| **P0-4** | McNemar / paired test for MNv2 + SNv2 (R3.4a) | ✅ | `results/mcnemar_mnv2_snv2.json`; MNv2 b=18/c=7/p=0.0455, SNv2 b=6/c=5/p=1.000 |
 
 ## 🟡 P1 — after P0
 

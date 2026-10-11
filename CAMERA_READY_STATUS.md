@@ -1,7 +1,7 @@
 # Camera-Ready Status — ICAIDES #1571359798
 
 **Deadline: 31 Okt 2026** (~23 hari)
-**Branch:** `post30-gate0-dedup` (clean, HEAD `dff574f`)
+**Branch:** `post30-gate0-dedup` (clean; verify with `git status` before release)
 **Title:** "Localizing INT8 Quantization Collapse in EfficientNet-B0 for Edge Poultry Disease Detection"
 
 ## Review scores
@@ -40,21 +40,19 @@ R3 yang bikin revisi pedas. R2 bilang "merit serious consideration for outstandi
 
 ### 🔴 P0 — WAJIB, kalau tidak kemungkinan besar di-reject camera-ready
 
-**1. Judul masih klaim "Localizing"** — R3 secara eksplisit: *"Otherwise, revise the title, abstract, and conclusions to describe sensitivity to quantization granularity rather than a confirmed depthwise-specific mechanism."*
+**1. Judul dan selective ablation** — DONE. Selective per-family ablation is now in `paper/main.tex` and supports the mechanism claim.
 
-_lo sudah jawab di Conclusion ("selective ablations remain future work"), tapi **judul belum diubah.** Ini kontradiksi langsung: judul tetap claim mechanism-specific, badan paper bilang belum dibuktikan.
+The old "selective ablations remain future work" wording was removed from the current paper; the current title is supported by the selective per-family ablation reported in Table IV.
 
-Pilihan:
-- (a) Rename ke granularity-based (aman, tapi hilang klaim kuat)
-- (b) **Jalankan selective ablation depthwise/pointwise/SE** (jawaban review 1 DAN review 3 sekaligus) → judul tetap
+No retitling is required for this evidence-backed version.
 
-**2. Static INT8 di RPi5 belum di-benchmark** — R3: *"Benchmark static INT8 configurations on the Raspberry Pi 5, particularly the per-channel configuration that recovers EfficientNet-B0 accuracy."*
+**2. Static INT8 di RPi5** — DONE. Per-channel static QDQ: 13.50 ms versus FP32 31.53 ms at four threads (2.34× faster), with 94.56% ONNX accuracy.
 
-_lo cuma static QDQ di x86/WSL. Static QDQ di RPi5 = 0 data. padahal itu yang "practical accuracy-latency comparison". Ini gap terbesar.
+Artifact: `results/rpi5_static_gate0/rpi5_static.json`.
 
-**3. Runtime explanation belum di-substantiate** — R3: *"provide optimized-graph and kernel-dispatch evidence. CPU instruction availability alone does not establish that the relevant instructions are used."*
+**3. Runtime explanation** — DONE for the submitted scope. Executed-kernel profiling is in `results/profiling/kernel_dispatch_artifact.json` and described in §IV-C.
 
-L189 sudah di-soften ke "hypothesis", tapi belum ada optimized-graph + kernel dispatch evidence yang R3 minta. ORT 1.29 native ARM kernel (bukan WSL x86) = jawaban.
+Remaining claims about memory-boundedness are explicitly labelled as hypotheses because power/energy was not measured.
 
 **4. Energy belum diukur** — R1 item 3: *"report energy or at least discuss its absence as a limitation."*
 
