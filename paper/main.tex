@@ -52,7 +52,7 @@ Lightweight CNNs---MobileNetV2~\cite{mobilenetv2}, ShuffleNetV2~\cite{shufflenet
 
 This paper addresses two research questions: (1) What is the quantization sensitivity of each lightweight architecture under INT8 PTQ on CPU, and where exactly does EfficientNet-B0 fail? (2) What is the accuracy-latency tradeoff for these models under INT8 PTQ on a Raspberry Pi~5? We additionally audit the dataset integrity claim underlying prior work on this benchmark.
 
-The main contributions of this paper are summarized as follows. First, we audit the FecalFed leak-free claim~\cite{chi2026} and identify 617 near-duplicate pairs, including 393 byte-exact pairs and 94 test images byte-identical to training images; all results use the resulting 8,153-image deduplicated split with 5,100/1,325/1,728 train/validation/test images and zero cross-split survivors. Second, we characterize EfficientNet-B0 sensitivity to quantization granularity: dynamic INT8 and static per-tensor QDQ collapse to 10.42\% and 9.32\%, respectively, while static per-channel QDQ recovers 94.56\%. Selective ablations and layerwise SQNR provide evidence that depthwise layers are especially sensitive in this configuration, but do not establish a universal necessary-and-sufficient mechanism. Third, we characterize the three models on Raspberry Pi~5 across 12 model--quantization--thread configurations and compare dynamic with static QDQ, showing that deployment latency depends on the runtime and quantization scheme.
+The main contributions of this paper are summarized as follows. First, we audit the FecalFed leak-free claim~\cite{chi2026} and identify 617 near-duplicate pairs, including 393 byte-exact pairs and 94 test images byte-identical to training images; all results use the resulting 8,153-image deduplicated split with 5,100/1,325/1,728 train/validation/test images and zero cross-split survivors. Second, we characterize EfficientNet-B0 sensitivity to quantization granularity: dynamic INT8 and static per-tensor QDQ collapse to 10.42\% and 9.32\%, respectively, while static per-channel QDQ recovers 94.56\%. Selective ablations and layerwise SQNR suggest that depthwise layers are especially sensitive in this configuration. Third, we characterize the three models on Raspberry Pi~5 across 12 model--quantization--thread configurations and compare dynamic with static QDQ, showing that deployment latency depends on the runtime and quantization scheme.
 
 \section{Related Work}
 
@@ -79,7 +79,7 @@ We evaluate three ImageNet~\cite{deng2009}-pretrained lightweight architectures 
 All models are ImageNet-pretrained (torchvision V1 weights) with only the classification head replaced (4 classes); all layers are trainable (no freezing). Each model is trained once (seed 42) for 50 epochs using Adam (learning rate $10^{-4}$, weight decay $10^{-4}$) with cosine annealing; the checkpoint with the best validation accuracy is kept. Batch size is 32, input resolution $224 \times 224$. Data augmentation (train only): random horizontal flip, rotation ($\pm 15^\circ$), color jitter (brightness/contrast/saturation 0.2); eval preprocessing is resize$\to$tensor$\to$ImageNet normalize. Training is performed on an NVIDIA RTX 4060 GPU with 8\,GB VRAM using PyTorch 2.5.1 with CUDA 12.1.
 
 \subsection{Quantization and Benchmarking (x86)}
-Models are exported to ONNX (opset 13) and quantized with ONNX Runtime dynamic per-tensor INT8 using signed QInt8 weights and dynamically quantized activations; default operator selection includes convolution operators observed in the resulting graphs. The original static-QDQ run used the first 100 training images sequentially; because the dataset loader is class-ordered, this calibration set contained only Coccidiosis images and was not class-balanced. We therefore treat the static-QDQ accuracy as a single-slice diagnostic result and list stratified recalibration as required follow-up, not as a claim of a generally calibrated deployment. Static QDQ uses signed QInt8 weights and activations, MinMax calibration, per-tensor or per-channel weight scales, and standard ORT quantization preprocessing; no custom graph fusion is enabled. The native-Linux rerun, performed with the same ORT model-only protocol, gives dynamic-INT8 slowdowns of 14.73--14.97$\times$ for MobileNetV2, 3.22--3.26$\times$ for ShuffleNetV2, and 14.08--14.08$\times$ for EfficientNet-B0 at one and four threads, respectively. These host-reference values are reported separately from the WSL and Raspberry Pi~5 results.
+Models are exported to ONNX (opset 13) and quantized with ONNX Runtime dynamic per-tensor INT8 using signed QInt8 weights and dynamically quantized activations; default operator selection includes convolution operators observed in the resulting graphs. The static-QDQ run used the first 100 training images sequentially; because the dataset loader is class-ordered, this calibration set contained only Coccidiosis images and was not class-balanced. The static-QDQ results are diagnostic evidence from a single-class calibration slice, not a claim of calibration robustness. Static QDQ uses signed QInt8 weights and activations, MinMax calibration, per-tensor or per-channel weight scales, and standard ORT quantization preprocessing; no custom graph fusion is enabled. The native-Linux rerun, performed with the same ORT model-only protocol, gives dynamic-INT8 slowdowns of 14.73--14.97$\times$ for MobileNetV2, 3.22--3.26$\times$ for ShuffleNetV2, and 14.08$\times$ for EfficientNet-B0 at one and four threads, respectively. These host-reference values are reported separately from the WSL and Raspberry Pi~5 results.
 
 \subsection{Edge Deployment on Raspberry Pi~5}
 We characterize the same ONNX FP32 and INT8 models on a Raspberry Pi~5 (Broadcom BCM2712, 4$\times$ Cortex-A76 at up to 2.4\,GHz, 8\,GB LPDDR4X, Debian 13 trixie, kernel 6.18.34+rpt-rpi-2712, aarch64, \texttt{ondemand} governor, throttled=0x0). ONNX Runtime 1.29.0 is used with only \texttt{CPUExecutionProvider} (no NPU/GPU; \texttt{AzureExecutionProvider} listed but unused). The sterile-model sweep (\texttt{scripts/benchmark\_pi\_gate0.py}) covers 12 configurations: 3 models $\times$ 2 quantizations (FP32/INT8 dynamic) $\times$ 2 thread counts (1 and 4 via \texttt{intra\_op\_num\_threads}) $\times$ batch 1, with input 3$\times$224$\times$224. Each configuration runs 200 iterations after 10 warmup iterations (single session per config), reporting mean/std/P50/P95/P99 latency, throughput, RSS memory (mean/peak), CPU\%, and die temperature before/after. Variability reported is within-session; variability across independent benchmark sessions was not measured. All timings are model-only (eval preprocessing and data transfer excluded), not end-to-end application throughput. Initial temperature was 44.6$^{\circ}$C; peak during the sweep was 55.6$^{\circ}$C. Current/power telemetry was unavailable (\texttt{current\_a=null}) on this board, so energy is discussed as a limitation. All 12/12 runs completed without thermal throttling.
@@ -145,7 +145,7 @@ F\quad Squeeze-and-excitation left in FP32 & 5.91 & 12.44 & yes \\
 \end{table}
 
 \begin{table}[htbp]
-\caption{Layerwise weight SQNR under simulated INT8. Values are family means; gain is the per-channel improvement.}
+\caption{Layerwise weight SQNR under simulated INT8. Values are family means; gain is the per-channel improvement. The range-audit table below instead reports median SQNR across depthwise layers.}
 \label{tab:sqnr}
 \centering
 \footnotesize
@@ -164,7 +164,7 @@ Stem & 1 & 864 & 35.19 & 45.28 (+10.09) \\
 \end{table}
 
 \begin{table}[htbp]
-\caption{Depthwise weight audit across architectures. Ratios are median per-layer P95/P5 channel ranges; SQNR is median across depthwise layers.}
+\caption{Depthwise weight audit across architectures. The range column is the median per-layer P95/P5 channel-range ratio; the SQNR column is the median per-layer SQNR. These are not the family means reported in Table~\ref{tab:sqnr}. Source: \texttt{results/depthwise\_range\_audit.json}.}
 \label{tab:rangeaudit}
 \centering
 \footnotesize
@@ -179,7 +179,7 @@ ShuffleNetV2 & 19 & 5.32 & 37.79 \\
 \end{tabular}
 \end{table}
 
-EfficientNet-B0 has the highest FP32 accuracy (98.55\%), but dynamic INT8 collapses to 10.42\%; Fig.~\ref{fig:cm} shows that 1,676/1,728 predictions fall in the Newcastle Disease column. Static per-tensor QDQ also collapses to 9.32\%, whereas per-channel QDQ recovers 94.56\% (Table~\ref{tab:eb0static}). A plausible mechanism is channel-wise range imbalance: the shared per-tensor scale is set by the largest channel, reducing resolution for smaller channels. EfficientNet-B0 depthwise layers reach 1,152 channels, and the audit reports lower depthwise SQNR than the corresponding MobileNetV2 and ShuffleNetV2 audit. These observations support sensitivity to granularity but do not prove a universal mechanism; the experiment uses one seed and one calibration set. Per-class accuracy denotes recall; macro metrics for all models are reported in Table~\ref{tab:results}.
+EfficientNet-B0 has the highest FP32 accuracy (98.55\%), but dynamic INT8 collapses to 10.42\%; Fig.~\ref{fig:cm} shows that 1,676/1,728 predictions fall in the Newcastle Disease column. Static per-tensor QDQ also collapses to 9.32\%, whereas per-channel QDQ recovers 94.56\% (Table~\ref{tab:eb0static}). A plausible mechanism is channel-wise range imbalance: the shared per-tensor scale is set by the largest channel, reducing resolution for smaller channels. EfficientNet-B0 depthwise layers reach 1,152 channels, and the audit reports lower depthwise SQNR than the corresponding MobileNetV2 and ShuffleNetV2 audit. The range audit in Table~\ref{tab:rangeaudit} gives median P95/P5 ratios of 39.94$\times$, 9.20$\times$, and 5.32$\times$, respectively. These observations suggest sensitivity to granularity; the experiment uses one seed and a single-class (Coccidiosis-only) 100-image calibration set. Per-class accuracy denotes recall; macro metrics for all models are reported in Table~\ref{tab:results}.
 
 \begin{figure}[htbp]
 \centering
@@ -198,8 +198,8 @@ Table~\ref{tab:quantization} presents the quantization analysis on the sterile s
 \centering
 \begin{tabular}{lccccc}
 \toprule
-\multirow{2}{*}{Model} & \multicolumn{2}{c}{Size} & \multicolumn{2}{c}{Latency} & \multirow{2}{*}{Ratio} \\
- & FP32 & INT8 & FP32 & INT8 & INT8/FP32 \\
+\multirow{2}{*}{Model} & \multicolumn{2}{c}{Size} & \multicolumn{2}{c}{Latency} & \multirow{2}{*}{\shortstack{INT8/\\FP32}} \\
+ & FP32 & INT8 & FP32 & INT8 & \\
 \midrule
 MobileNetV2 & 8.48 & 2.30 & 2.40 & 40.25 & 16.8$\times$ \\
 ShuffleNetV2 & 4.89 & \textbf{1.47} & 4.15 & 12.62 & 3.0$\times$ \\
@@ -267,7 +267,7 @@ Dynamic INT8 is slower than FP32 at four threads (1.93--2.80$\times$), and its t
 \label{fig:rpi5thread}
 \end{figure}
 
-The exported-weight audit also records depthwise channel range imbalance across architectures in \texttt{results/depthwise\_range\_audit.json}; we use it as diagnostic evidence rather than a causal claim.
+The exported-weight audit is summarized in Table~\ref{tab:rangeaudit}; the machine-readable source is named in that table's caption.
 
 Model file size shrinks 3.3--3.7$\times$ with INT8 (e.g., 8.48$\rightarrow$2.30\,MB for MobileNetV2). On the sterile RPi5 sweep (batch=1 only), runtime RSS is similar across quantizations for MobileNetV2 ($\sim$99--108\,MB) and ShuffleNetV2 ($\sim$111--112\,MB), so INT8 does not save RAM at inference on this stack---a practical caveat for memory claims. We do not claim batch-scaling behavior for the sterile models; only batch=1 was measured.
 
@@ -303,7 +303,7 @@ Our accuracy (98.55\%) is competitive with prior results on the same dataset fam
 
 This paper characterizes lightweight CNN architectures with INT8 quantization for poultry fecal disease detection. FP32 accuracy exceeds 97\% for all models; dynamic INT8 yields 97.28\% for MobileNetV2 and 97.63\% for ShuffleNetV2, but collapses EfficientNet-B0 to 10.42\%. Static per-channel QDQ recovers EfficientNet-B0 to 94.56\%, while the EfficientNet-B0 ablation indicates strong sensitivity to depthwise-layer granularity (93.46\% when depthwise layers alone are per-channel versus 8.33\% when they are not). Dynamic INT8 is 3.0--16.8$\times$ slower on x86 and 1.93--2.80$\times$ slower on RPi5 at four threads, whereas static per-channel QDQ is 2.34$\times$ faster than FP32 on RPi5. ShuffleNetV2 FP32 is fastest on RPi5 at 6.19\,ms, while MobileNetV2 FP32 provides an intermediate latency of 14.23\,ms with 97.92\% accuracy.
 
-This paper characterizes one board, one runtime build, one dataset, one random seed, and one 100-image calibration set; multi-seed confidence intervals, stratified recalibration, and calibration-size sweeps are not included in the reported tables. Energy measurement was unavailable, and the RPi5 latency measurements were model-only at batch 1. The selective quantization ablation was performed only for EfficientNet-B0; extending it to MobileNetV2 and ShuffleNetV2 would test whether the observed depthwise sensitivity generalizes. Quantization-aware training and class-imbalance mitigation for the underrepresented NCD class also remain open.
+This paper characterizes one board, one runtime build, one dataset, one random seed, and a single-class (Coccidiosis-only) 100-image calibration set; multi-seed confidence intervals, stratified recalibration, and calibration-size sweeps are not included in the reported tables. Energy measurement was unavailable, and the RPi5 latency measurements were model-only at batch 1. The selective quantization ablation was performed only for EfficientNet-B0; extending it to MobileNetV2 and ShuffleNetV2 would test whether the observed depthwise sensitivity generalizes. Quantization-aware training and class-imbalance mitigation for the underrepresented NCD class also remain open.
 
 Code and sterile-split artifacts (dedup audit, split manifests, evaluation JSONs, benchmark logs, plotting scripts) are archived at Zenodo: \url{https://doi.org/10.5281/zenodo.23374216}. The corresponding source repository is \url{https://github.com/jaweed3/paper_poultry_p2}.
 
