@@ -4,7 +4,7 @@
     "git_hash": "4075e93",
     "seed": 42,
     "protocol_train": "50ep Adam 1e-4 cosine, batch 32, 224px, ImageNet init",
-    "protocol_quant": "ORT dynamic PTQ (MatMul-only), CPU",
+    "protocol_quant": "ORT dynamic PTQ (Conv-inclusive default operator selection), CPU",
     "runtime_lab": {
       "onnxruntime": "1.29.0",
       "onnx": "1.22.0",
