@@ -1,0 +1,27 @@
+cff-version: 1.2.0
+title: "ICAIDES 2026 Camera-Ready: Edge Deployment of Lightweight CNNs for Poultry-Fecal Disease Classification"
+message: "If you use this artifact, please cite the associated ICAIDES 2026 paper and the Zenodo record."
+type: software
+version: "v1.0.0"
+date-released: "2026-10-14"
+repository-code: "https://github.com/jaweed3/paper_poultry_p2"
+url: "https://doi.org/10.5281/zenodo.23374216"
+doi: "10.5281/zenodo.23374216"
+license: "MIT"
+authors:
+  - family-names: "Fatih"
+    given-names: ""
+    affiliation: "Universitas Darussalam Gontor"
+  - family-names: "Amirul Al Aziz"
+    given-names: ""
+    affiliation: "Universitas Darussalam Gontor"
+  - family-names: "Iqbal"
+    given-names: ""
+    affiliation: "Universitas Darussalam Gontor"
+keywords:
+  - edge AI
+  - INT8 quantization
+  - ONNX Runtime
+  - Raspberry Pi 5
+  - poultry disease classification
+  - depthwise convolution
