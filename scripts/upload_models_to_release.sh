@@ -8,7 +8,7 @@
 set -euo pipefail
 
 # ---- Configuration ----
-REPO="jaweed3/paper_poultry_edge"
+REPO="(redacted for blind review — see anonymized repo README)"
 TAG="${TAG:-v0.1-alpha}"
 RELEASE_NAME="Model Checkpoints (Alpha)"
 MODELS_DIR="models"
@@ -156,7 +156,7 @@ upload_release() {
 
 ```bash
 # Download all models
-curl -LO https://github.com/jaweed3/paper_poultry_edge/releases/download/v0.1-alpha/models_all.tar.gz
+echo "Model archive: see anonymized repo release page (URL redacted for blind review)"
 tar -xzf models_all.tar.gz
 
 # Verify checksum

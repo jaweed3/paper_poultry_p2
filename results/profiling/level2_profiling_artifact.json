@@ -684,16 +684,28 @@
   "analysis": {
     "key_findings": [
       "INT8 dynamic PTQ does NOT insert QuantizeLinear/DequantizeLinear nodes into the ONNX graph. Instead, ORT applies quantization at runtime via ConvInteger + DynamicQuantizeLinear + Mul (dequant scale).",
-      "Node expansion FP32→INT8: MobileNetV2 2.86x (170→487), ShuffleNetV2 1.37x (902→1240), EfficientNet-B0 3.05x (239→730).",
+      "Node expansion FP32\u2192INT8: MobileNetV2 2.86x (170\u2192487), ShuffleNetV2 1.37x (902\u21921240), EfficientNet-B0 3.05x (239\u2192730).",
       "DynamicQuantizeLinear nodes: MobileNetV2 53, ShuffleNetV2 54, EfficientNet-B0 82. MobileNetV2 has 53 depthwise separable convolutions that each require independent quantization.",
       "ORT profiling confirms quantization overhead (10 runs, batch=1, 1 thread): MobileNetV2 29.2%, ShuffleNetV2 20.7%, EfficientNet-B0 24.9% of total inference time spent on quant/dequant kernels.",
-      "Conv_quant_kernel is the dominant bottleneck: MobileNetV2 20.2%, ShuffleNetV2 14.9%, EfficientNet-B0 19.0% of total time.",
+      "Conv_quant_kernel is the dominant bottleneck: MobileNetV2 55.1%, ShuffleNetV2 49.5%, EfficientNet-B0 54.5% of total time (per-operator us from ort_profiles; corrected 2026-09-26, previous 20.2/14.9/19.0 used a wrong denominator).",
       "DequantizeLinear is fused into Conv_quant kernel (not separate events in ORT profiling). The 29.2% quant overhead for MobileNetV2 correlates with its 30.1x INT8 slowdown vs 6.4x for ShuffleNetV2."
     ],
     "node_expansion": {
-      "mobilenetv2": {"fp32_nodes": 170, "int8_nodes": 487, "expansion": 2.86},
-      "shufflenetv2": {"fp32_nodes": 902, "int8_nodes": 1240, "expansion": 1.37},
-      "efficientnet_b0": {"fp32_nodes": 239, "int8_nodes": 730, "expansion": 3.05}
+      "mobilenetv2": {
+        "fp32_nodes": 170,
+        "int8_nodes": 487,
+        "expansion": 2.86
+      },
+      "shufflenetv2": {
+        "fp32_nodes": 902,
+        "int8_nodes": 1240,
+        "expansion": 1.37
+      },
+      "efficientnet_b0": {
+        "fp32_nodes": 239,
+        "int8_nodes": 730,
+        "expansion": 3.05
+      }
     },
     "quant_overhead_pct": {
       "mobilenetv2": 29.2,

@@ -14,7 +14,7 @@
 set -euo pipefail
 
 # ---- Configuration ----
-REPO="jaweed3/paper_poultry_edge"
+REPO="(redacted for blind review — see anonymized repo README)"
 TAG="${TAG:-v0.1-alpha}"
 BASE_URL="https://github.com/${REPO}/releases/download/${TAG}"
 MODELS_DIR="models"
