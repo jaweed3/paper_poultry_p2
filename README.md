@@ -14,6 +14,10 @@ Key diagnosis: EB0 static QDQ per-tensor 9.32% vs per-channel 94.56%; paired McN
 
 Benchmark: Raspberry Pi 5, ONNX Runtime 1.29.0, 200 runs, sterile-split models.
 
+## Sample images
+
+For a small qualitative demonstration, see [`sample_data/`](sample_data/README.md), which contains two attributed test-split images per class. These copies are for teaching/demo only and are not the full benchmark.
+
 ## Dataset
 
 Machuve et al. (2022) — 8,770 images, 4 classes (Coccidiosis, Healthy, NCD, Salmonellosis).
