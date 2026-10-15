@@ -1,0 +1,203 @@
+{
+  "meta": {
+    "ort_version": "1.29.0",
+    "runs": 200,
+    "warmup": 10,
+    "threads": [
+      1,
+      4
+    ],
+    "batch": 1,
+    "cpu_features": {
+      "asimd": true,
+      "sve": false,
+      "i8mm": false,
+      "bf16": false,
+      "asimddp": true,
+      "asimdfhm": false,
+      "sme": false
+    },
+    "board_start": {
+      "temp_raw": "temp=40.0'C",
+      "throttled": "throttled=0x0"
+    }
+  },
+  "configs": {
+    "eb0_fp32_t1": {
+      "model": "eb0_fp32",
+      "path": "models/onnx/efficientnet_b0_gate0_fp32.onnx",
+      "size_mb": 15.3,
+      "threads": 1,
+      "n": 200,
+      "mean_ms": 69.0,
+      "std_ms": 0.16,
+      "p50_ms": 68.97,
+      "p95_ms": 69.21,
+      "p99_ms": 69.58,
+      "fps": 14.5,
+      "wall_s": 13.8,
+      "board_before": {
+        "temp_raw": "temp=38.9'C",
+        "throttled": "throttled=0x0"
+      },
+      "board_after": {
+        "temp_raw": "temp=41.7'C",
+        "throttled": "throttled=0x0"
+      }
+    },
+    "eb0_fp32_t4": {
+      "model": "eb0_fp32",
+      "path": "models/onnx/efficientnet_b0_gate0_fp32.onnx",
+      "size_mb": 15.3,
+      "threads": 4,
+      "n": 200,
+      "mean_ms": 31.53,
+      "std_ms": 1.94,
+      "p50_ms": 30.89,
+      "p95_ms": 36.38,
+      "p99_ms": 39.84,
+      "fps": 31.7,
+      "wall_s": 6.3,
+      "board_before": {
+        "temp_raw": "temp=41.7'C",
+        "throttled": "throttled=0x0"
+      },
+      "board_after": {
+        "temp_raw": "temp=47.2'C",
+        "throttled": "throttled=0x0"
+      }
+    },
+    "eb0_int8_dynamic_t1": {
+      "model": "eb0_int8_dynamic",
+      "path": "models/ptq/efficientnet_b0_gate0_int8.onnx",
+      "size_mb": 4.16,
+      "threads": 1,
+      "n": 200,
+      "mean_ms": 76.38,
+      "std_ms": 0.17,
+      "p50_ms": 76.35,
+      "p95_ms": 76.64,
+      "p99_ms": 76.98,
+      "fps": 13.1,
+      "wall_s": 15.3,
+      "board_before": {
+        "temp_raw": "temp=47.2'C",
+        "throttled": "throttled=0x0"
+      },
+      "board_after": {
+        "temp_raw": "temp=41.7'C",
+        "throttled": "throttled=0x0"
+      }
+    },
+    "eb0_int8_dynamic_t4": {
+      "model": "eb0_int8_dynamic",
+      "path": "models/ptq/efficientnet_b0_gate0_int8.onnx",
+      "size_mb": 4.16,
+      "threads": 4,
+      "n": 200,
+      "mean_ms": 63.99,
+      "std_ms": 0.99,
+      "p50_ms": 63.82,
+      "p95_ms": 64.6,
+      "p99_ms": 68.96,
+      "fps": 15.6,
+      "wall_s": 12.8,
+      "board_before": {
+        "temp_raw": "temp=41.7'C",
+        "throttled": "throttled=0x0"
+      },
+      "board_after": {
+        "temp_raw": "temp=48.3'C",
+        "throttled": "throttled=0x0"
+      }
+    },
+    "eb0_static_per_tensor_t1": {
+      "model": "eb0_static_per_tensor",
+      "path": "models/ptq/efficientnet_b0_gate0_static_per_tensor_minmax.onnx",
+      "size_mb": 4.29,
+      "threads": 1,
+      "n": 200,
+      "mean_ms": 24.51,
+      "std_ms": 0.03,
+      "p50_ms": 24.5,
+      "p95_ms": 24.56,
+      "p99_ms": 24.63,
+      "fps": 40.8,
+      "wall_s": 4.9,
+      "board_before": {
+        "temp_raw": "temp=48.3'C",
+        "throttled": "throttled=0x0"
+      },
+      "board_after": {
+        "temp_raw": "temp=45.0'C",
+        "throttled": "throttled=0x0"
+      }
+    },
+    "eb0_static_per_tensor_t4": {
+      "model": "eb0_static_per_tensor",
+      "path": "models/ptq/efficientnet_b0_gate0_static_per_tensor_minmax.onnx",
+      "size_mb": 4.29,
+      "threads": 4,
+      "n": 200,
+      "mean_ms": 13.63,
+      "std_ms": 1.12,
+      "p50_ms": 13.37,
+      "p95_ms": 14.42,
+      "p99_ms": 18.94,
+      "fps": 73.4,
+      "wall_s": 2.7,
+      "board_before": {
+        "temp_raw": "temp=43.3'C",
+        "throttled": "throttled=0x0"
+      },
+      "board_after": {
+        "temp_raw": "temp=49.4'C",
+        "throttled": "throttled=0x0"
+      }
+    },
+    "eb0_static_per_channel_t1": {
+      "model": "eb0_static_per_channel",
+      "path": "models/ptq/efficientnet_b0_gate0_static_per_channel_minmax.onnx",
+      "size_mb": 4.67,
+      "threads": 1,
+      "n": 200,
+      "mean_ms": 24.66,
+      "std_ms": 0.21,
+      "p50_ms": 24.64,
+      "p95_ms": 24.75,
+      "p99_ms": 24.86,
+      "fps": 40.5,
+      "wall_s": 4.9,
+      "board_before": {
+        "temp_raw": "temp=48.8'C",
+        "throttled": "throttled=0x0"
+      },
+      "board_after": {
+        "temp_raw": "temp=44.4'C",
+        "throttled": "throttled=0x0"
+      }
+    },
+    "eb0_static_per_channel_t4": {
+      "model": "eb0_static_per_channel",
+      "path": "models/ptq/efficientnet_b0_gate0_static_per_channel_minmax.onnx",
+      "size_mb": 4.67,
+      "threads": 4,
+      "n": 200,
+      "mean_ms": 13.5,
+      "std_ms": 0.06,
+      "p50_ms": 13.49,
+      "p95_ms": 13.58,
+      "p99_ms": 13.7,
+      "fps": 74.1,
+      "wall_s": 2.7,
+      "board_before": {
+        "temp_raw": "temp=43.9'C",
+        "throttled": "throttled=0x0"
+      },
+      "board_after": {
+        "temp_raw": "temp=48.3'C",
+        "throttled": "throttled=0x0"
+      }
+    }
+  }
+}

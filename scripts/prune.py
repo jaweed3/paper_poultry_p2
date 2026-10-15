@@ -187,7 +187,7 @@ def main():
     # Minimal finetune hint for full mode
     if is_full:
         print(f"[finetune] FULL mode requested: {args.finetune} epochs at lr={cfg['finetune']['lr']} (not run in dry-run)")
-        print(f"[finetune] -> run train_pipeline finetune path or scripts/train_pruned.py (TODO)")
+        print(f"[finetune] -> run train_pipeline finetune path or scripts/train_pruned.py")
 
     # Save dry-run metadata
     meta = {

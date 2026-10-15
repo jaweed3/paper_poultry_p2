@@ -1,0 +1,43 @@
+{
+  "B": 10000,
+  "note": "FP32 confidence intervals are current Gate 0 values. INT8 point estimates were synchronized from the paired McNemar rerun; the old INT8 intervals were generated from superseded predictions and are intentionally null rather than reused.",
+  "seed": 42,
+  "models": {
+    "mobilenetv2": {
+      "fp32": {
+        "acc": 97.92,
+        "ci_lo": 97.22,
+        "ci_hi": 98.55
+      },
+      "int8": {
+        "acc": 97.28,
+        "ci_lo": null,
+        "ci_hi": null
+      }
+    },
+    "shufflenetv2": {
+      "fp32": {
+        "acc": 97.69,
+        "ci_lo": 96.93,
+        "ci_hi": 98.38
+      },
+      "int8": {
+        "acc": 97.63,
+        "ci_lo": null,
+        "ci_hi": null
+      }
+    },
+    "efficientnet_b0": {
+      "fp32": {
+        "acc": 98.55,
+        "ci_lo": 97.97,
+        "ci_hi": 99.07
+      },
+      "int8": {
+        "acc": 10.42,
+        "ci_lo": 8.97,
+        "ci_hi": 11.92
+      }
+    }
+  }
+}

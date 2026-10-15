@@ -1,0 +1,47 @@
+[
+  {
+    "group": "dw",
+    "n_tensors": 16,
+    "n_params": 182016,
+    "sqnr_pertensor_mean_db": 27.97,
+    "sqnr_pertensor_min_db": 22.71,
+    "sqnr_perchannel_mean_db": 44.42,
+    "perchannel_gain_db": 16.46
+  },
+  {
+    "group": "se_reduce",
+    "n_tensors": 16,
+    "n_params": 313600,
+    "sqnr_pertensor_mean_db": 32.68,
+    "sqnr_pertensor_min_db": 21.3,
+    "sqnr_perchannel_mean_db": 37.14,
+    "perchannel_gain_db": 4.46
+  },
+  {
+    "group": "se_expand",
+    "n_tensors": 16,
+    "n_params": 313600,
+    "sqnr_pertensor_mean_db": 34.0,
+    "sqnr_pertensor_min_db": 26.53,
+    "sqnr_perchannel_mean_db": 45.26,
+    "perchannel_gain_db": 11.26
+  },
+  {
+    "group": "pw",
+    "n_tensors": 32,
+    "n_params": 3146112,
+    "sqnr_pertensor_mean_db": 33.67,
+    "sqnr_pertensor_min_db": 25.7,
+    "sqnr_perchannel_mean_db": 42.3,
+    "perchannel_gain_db": 8.63
+  },
+  {
+    "group": "stem",
+    "n_tensors": 1,
+    "n_params": 864,
+    "sqnr_pertensor_mean_db": 35.19,
+    "sqnr_pertensor_min_db": 35.19,
+    "sqnr_perchannel_mean_db": 45.28,
+    "perchannel_gain_db": 10.09
+  }
+]

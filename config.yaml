@@ -6,8 +6,8 @@ project:
   name: "paper_poultry_p2"
   version: "0.1.0-dryrun"
   seed: 42
-  fork_from: "jaweed3/paper_poultry_edge@601dbb2"
-  paper1_results_symlink: "results/baseline_p1"  # -> ~/paper_poultry_edge/results
+  fork_from: "private-fork-source@601dbb2 (redacted for blind review)"
+  paper1_results_symlink: "results/baseline_p1"  # -> local prior-study results (redacted path)
 
 dataset:
   source: "Machuve et al. (2022) — Dianyo/poultry-fecal-fl (HF) / Zenodo 4628934"
@@ -98,5 +98,5 @@ paths:
 paper:
   venue: "MLCIPR 2026-10-05"
   format: "IEEE 4-6pp A4"
-  title_working: "Pruning Mitigates INT8 Quantization Overhead on ARM CPUs for Poultry Disease Detection"
+  title_working: "Diagnosing INT8 Quantization Collapse in EfficientNet-B0: Per-Channel Recovery and Scheme x Runtime Characterization for Poultry Fecal Disease Detection on Raspberry Pi 5"
   template_source: "paper/main.tex (from Paper 1)"

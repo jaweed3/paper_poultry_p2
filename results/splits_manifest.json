@@ -1,5 +1,5 @@
 {
-  "protocol": "publisher-test-intact",
+  "protocol": "sterile-8153",
   "seed": 42,
   "publisher": {
     "train": 7016,
@@ -9,35 +9,38 @@
   },
   "actual": {
     "train": {
-      "total": 5614,
+      "total": 5088,
       "per_class": {
-        "cocci": 1713,
-        "healthy": 1630,
-        "ncd": 461,
-        "salmo": 1810
+        "cocci": 1555,
+        "healthy": 1537,
+        "ncd": 417,
+        "salmo": 1579
       }
     },
     "val": {
-      "total": 1402,
+      "total": 1337,
       "per_class": {
-        "cocci": 428,
-        "healthy": 407,
-        "ncd": 115,
-        "salmo": 452
+        "cocci": 406,
+        "healthy": 396,
+        "ncd": 110,
+        "salmo": 425
       }
     },
     "test": {
-      "total": 1754,
+      "total": 1728,
       "per_class": {
-        "cocci": 535,
-        "healthy": 509,
-        "ncd": 144,
-        "salmo": 566
+        "cocci": 529,
+        "healthy": 504,
+        "ncd": 141,
+        "salmo": 554
       }
     }
   },
   "check": {
-    "train_plus_val_eq_publisher_train": true,
-    "test_eq_publisher_test": true
+    "train_eq_5088": true,
+    "val_eq_1337": true,
+    "test_eq_1728": true,
+    "total_eq_8153": true,
+    "origin": "Gate 0b rebuild: drop-1-per-pair from phash_dedup.json"
   }
 }

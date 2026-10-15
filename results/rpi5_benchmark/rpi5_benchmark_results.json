@@ -19,7 +19,7 @@
     ]
   },
   "system_info": {
-    "hostname": "techronity",
+    "hostname": "raspberry-pi-5",
     "os": "Debian GNU/Linux 13 (trixie)",
     "kernel": "6.18.34+rpt-rpi-2712",
     "architecture": "aarch64",
