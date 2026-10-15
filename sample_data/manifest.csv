@@ -1,0 +1,9 @@
+file,label,source_dataset,split,source_asset_url
+cocci_01.jpg,cocci,Dianyo/poultry-fecal-fl,test split,https://datasets-server.huggingface.co/assets/Dianyo/poultry-fecal-fl/--/3908ba7cbce06f809b063003826a11076c3add32/--/default/test/3/image/image.jpg
+cocci_02.jpg,cocci,Dianyo/poultry-fecal-fl,test split,https://datasets-server.huggingface.co/assets/Dianyo/poultry-fecal-fl/--/3908ba7cbce06f809b063003826a11076c3add32/--/default/test/12/image/image.jpg
+healthy_01.jpg,healthy,Dianyo/poultry-fecal-fl,test split,https://datasets-server.huggingface.co/assets/Dianyo/poultry-fecal-fl/--/3908ba7cbce06f809b063003826a11076c3add32/--/default/test/2/image/image.jpg
+healthy_02.jpg,healthy,Dianyo/poultry-fecal-fl,test split,https://datasets-server.huggingface.co/assets/Dianyo/poultry-fecal-fl/--/3908ba7cbce06f809b063003826a11076c3add32/--/default/test/4/image/image.jpg
+ncd_01.jpg,ncd,Dianyo/poultry-fecal-fl,test split,https://datasets-server.huggingface.co/assets/Dianyo/poultry-fecal-fl/--/3908ba7cbce06f809b063003826a11076c3add32/--/default/test/0/image/image.jpg
+ncd_02.jpg,ncd,Dianyo/poultry-fecal-fl,test split,https://datasets-server.huggingface.co/assets/Dianyo/poultry-fecal-fl/--/3908ba7cbce06f809b063003826a11076c3add32/--/default/test/6/image/image.jpg
+salmo_01.jpg,salmo,Dianyo/poultry-fecal-fl,test split,https://datasets-server.huggingface.co/assets/Dianyo/poultry-fecal-fl/--/3908ba7cbce06f809b063003826a11076c3add32/--/default/test/1/image/image.jpg
+salmo_02.jpg,salmo,Dianyo/poultry-fecal-fl,test split,https://datasets-server.huggingface.co/assets/Dianyo/poultry-fecal-fl/--/3908ba7cbce06f809b063003826a11076c3add32/--/default/test/5/image/image.jpg
