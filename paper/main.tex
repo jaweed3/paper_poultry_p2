@@ -11,6 +11,12 @@
 \usepackage{multirow}
 \usepackage{array}
 
+\setlength{\textfloatsep}{8pt plus 2pt minus 2pt}
+\setlength{\floatsep}{6pt plus 1pt minus 1pt}
+\setlength{\intextsep}{6pt plus 1pt minus 1pt}
+\setlength{\abovedisplayskip}{3pt}
+\setlength{\belowdisplayskip}{3pt}
+
 \begin{document}
 
 \title{Localizing INT8 Quantization Collapse in EfficientNet-B0 for Edge Poultry Disease Detection}
@@ -48,7 +54,7 @@ Poultry production is a major agricultural sector (combined broiler, egg, turkey
 
 Recent deep learning approaches have achieved high accuracy for poultry fecal disease classification. Dhungana~\textit{et al.}~reported 99.12\% accuracy using EfficientNet-B0~\cite{dhungana2025}, while Tasdelen and Arslan achieved 97.1\% with MobileNetV2~\cite{tasdelen2025}. However, these solutions primarily target cloud-based deployment, leaving a critical gap: \textit{how can these models be efficiently deployed on resource-constrained edge devices at farm level?}
 
-Lightweight CNNs---MobileNetV2~\cite{mobilenetv2}, ShuffleNetV2~\cite{shufflenetv2}, and EfficientNet~\cite{efficientnet}---are candidates for edge deployment because they need fewer operations. INT8 post-training quantization (PTQ) reduces size by using 8-bit weights~\cite{jacob2018}. Even on CPUs that expose INT8 acceleration, PTQ can increase latency when the runtime kernel path adds quantize/dequantize work around every convolution; our x86 reference still shows a 3.0--16.8$\times$ slowdown. Kernel-level attribution is discussed in Sec.~IV-C, and~\cite{nagel2021} explains why PTQ without calibration degrades on depthwise layers.
+Lightweight CNNs---MobileNetV2~\cite{mobilenetv2}, ShuffleNetV2~\cite{shufflenetv2}, and EfficientNet~\cite{efficientnet}---are candidates for edge deployment because they need fewer operations. INT8 post-training quantization (PTQ) reduces size by using 8-bit weights~\cite{jacob2018}. Even on CPUs that expose INT8 acceleration, \emph{dynamic} PTQ can increase latency when the runtime kernel path adds quantize/dequantize work around every convolution; our x86 reference shows a 3.0--16.8$\times$ slowdown for dynamic INT8, whereas static QDQ is faster than FP32 on Raspberry Pi~5. Kernel-level attribution is discussed in Sec.~IV-C, and~\cite{nagel2021} explains why PTQ without calibration degrades on depthwise layers.
 
 This paper addresses two research questions: (1) What is the quantization sensitivity of each lightweight architecture under INT8 PTQ on CPU, and where exactly does EfficientNet-B0 fail? (2) What is the accuracy-latency tradeoff for these models under INT8 PTQ on a Raspberry Pi~5? We additionally audit the dataset integrity claim underlying prior work on this benchmark.
 
@@ -88,7 +94,7 @@ We characterize the same ONNX FP32 and INT8 models on a Raspberry Pi~5 (Broadcom
 
 \subsection{Classification Performance}
 
-Table~\ref{tab:results} summarizes the classification performance on the sterile test set (1,728 images). All three architectures achieve over 97\% accuracy, demonstrating the effectiveness of ImageNet transfer learning for the poultry fecal domain. Dynamic INT8 reduces accuracy slightly for MobileNetV2 and ShuffleNetV2; the paired test detects discordance for MobileNetV2 ($b{=}18$, $c{=}7$, $p{=}0.0455$) but not for ShuffleNetV2 ($b{=}6$, $c{=}5$, $p{=}1.000$). This test does not establish equivalence. The EfficientNet-B0 collapse is 88.13 percentage points.
+Table~\ref{tab:results} summarizes classification performance on the sterile test set. All three architectures exceed 97\% accuracy, showing ImageNet transfer learning transfers well to the poultry fecal domain. Dynamic INT8 reduces accuracy slightly for MobileNetV2 and ShuffleNetV2; the paired test detects discordance for MobileNetV2 ($b{=}18$, $c{=}7$, $p{=}0.0455$) but not for ShuffleNetV2 ($b{=}6$, $c{=}5$, $p{=}1.000$). This test does not establish equivalence. The EfficientNet-B0 collapse is 88.13 percentage points.
 
 \begin{table}[htbp]
 \caption{Test accuracy on sterile split (1,728 images); dynamic INT8 PTQ (ORT). Macro columns are macro-averaged precision/recall/F1 and balanced accuracy.}
@@ -107,7 +113,7 @@ EfficientNet-B0 & 98.55 [97.97, 99.07] & 10.42 [8.97, 11.92] & 88.13 & 98.22 (98
 \end{tabular}}
 \end{table}
 
-Table~\ref{tab:eb0static} reports the EfficientNet-B0 static-QDQ comparison. Table~\ref{tab:ablation} summarizes the selective per-family ablation: depthwise-only per-channel scaling reaches 93.46\%, while excluding depthwise from per-channel scaling yields 8.33\%. The exported-weight audit reports median P95/P5 depthwise range ratios of 39.94$\times$ for EfficientNet-B0, 9.20$\times$ for MobileNetV2, and 5.32$\times$ for ShuffleNetV2; Table~\ref{tab:sqnr} reports the EfficientNet-B0 family-level SQNR values.
+Table~\ref{tab:eb0static} reports the EfficientNet-B0 static-QDQ comparison. Table~\ref{tab:ablation} summarizes the selective per-family ablation: depthwise-only per-channel scaling reaches 93.46\%, while excluding depthwise from per-channel scaling yields 8.33\%. Table~\ref{tab:sqnr} reports the EfficientNet-B0 family-level SQNR values.
 
 \begin{table}[htbp]
 \caption{EfficientNet-B0 static QDQ INT8 diagnostic using MinMax calibration on the first 100 class-ordered training images (Coccidiosis only). Per-tensor reproduces the collapse; per-channel recovers. McNemar tests use continuity correction; $b$ and $c$ are discordant-pair counts.}
@@ -163,11 +169,11 @@ Pointwise & 32 & 3.15M & 33.67 & 42.30 (+8.63) \\
 \end{table}
 
 
-EfficientNet-B0 has the highest FP32 accuracy (98.55\%), but dynamic INT8 collapses to 10.42\%; Fig.~\ref{fig:cm} shows that 1,676/1,728 predictions fall in the Newcastle Disease column. Static per-tensor QDQ also collapses to 9.32\%, whereas per-channel QDQ recovers 94.56\% (Table~\ref{tab:eb0static}). A plausible mechanism is channel-wise range imbalance: the shared per-tensor scale is set by the largest channel, reducing resolution for smaller channels. EfficientNet-B0 depthwise layers reach 1,152 channels, and the audit reports lower depthwise SQNR than the corresponding MobileNetV2 and ShuffleNetV2 audit. A per-model depthwise audit gives median P95/P5 channel-range ratios of 39.94$\times$, 9.20$\times$, and 5.32$\times$ and median per-layer SQNR of 16.67, 34.06, and 37.79\,dB for EfficientNet-B0, MobileNetV2, and ShuffleNetV2, respectively (16, 17, and 19 depthwise layers; \texttt{results/depthwise\_range\_audit.json}). These observations suggest sensitivity to granularity; the experiment uses one seed and a single-class (Coccidiosis-only) 100-image calibration set. Per-class accuracy denotes recall; macro metrics for all models are reported in Table~\ref{tab:results}.
+EfficientNet-B0 has the highest FP32 accuracy (98.55\%) but collapses to 10.42\% under dynamic INT8; Fig.~\ref{fig:cm} shows 1,676/1,728 predictions falling in the Newcastle Disease column. Static per-tensor QDQ also collapses (9.32\%), whereas per-channel QDQ recovers 94.56\% (Table~\ref{tab:eb0static}). A plausible mechanism is channel-wise range imbalance: a shared per-tensor scale is set by the largest channel, reducing resolution for smaller ones. EfficientNet-B0 depthwise layers reach 1,152 channels. A per-model depthwise audit gives median P95/P5 channel-range ratios of 39.94$\times$, 9.20$\times$, and 5.32$\times$ for EfficientNet-B0, MobileNetV2, and ShuffleNetV2, respectively (16, 17, and 19 depthwise layers; \texttt{results/depthwise\_range\_audit.json}). The audit summarizes per-channel weight SQNR within each layer, and its distribution is skewed by a few bad layers. Median layer SQNR is 16.67, 34.06, and 37.79\,dB, but the worst layer reaches 13.87, 30.17, and 35.29\,dB. The worst EfficientNet-B0 layer (480 channels, P95/P5 range ratio 112$\times$) holds channels at 0\,dB, i.e.\ quantized to a constant; MobileNetV2's worst layer stays at 12.23\,dB. This gap, not the family mean of 27.97\,dB in Table~\ref{tab:sqnr}, is what we argue drives the collapse: 28\,dB is not catastrophic on its own, so the failure is localized to few severely quantized tensors. These observations suggest sensitivity to granularity; the experiment uses one seed and a single-class (Coccidiosis-only) 100-image calibration set. Per-class accuracy denotes recall; macro metrics for all models are reported in Table~\ref{tab:results}.
 
 \begin{figure}[htbp]
 \centering
-\includegraphics[width=0.76\linewidth]{../figures/confusion_gate0.png}
+\includegraphics[width=0.66\linewidth]{../figures/confusion_gate0.png}
 \caption{Confusion matrices on the sterile test set (1,728 images). EfficientNet-B0 changes from high-quality FP32 predictions to near-mode collapse under dynamic INT8, with most predictions assigned to Newcastle Disease.}
 \label{fig:cm}
 \end{figure}
@@ -202,7 +208,7 @@ Table~\ref{tab:rpi5static} and Table~\ref{tab:rpi5} summarize the sterile-model 
 The dynamic INT8 slowdown reported in Table~\ref{tab:rpi5} is a property of dynamic quantization on this runtime, not of INT8 in general. Table~\ref{tab:rpi5static} repeats the EfficientNet-B0 measurement on the same board, same ORT build, and same session with the static QDQ graphs whose accuracy we characterized in Table~\ref{tab:eb0static}. Static QDQ is 2.31--2.34$\times$ \emph{faster} than FP32 at 4 threads (13.63 and 13.50\,ms versus 31.53\,ms), reversing the direction of the dynamic result (63.99\,ms, 0.49$\times$ of FP32). The static per-channel result is faster and more accurate in this experiment, but it does not establish that granularity always dominates bit width: the comparison uses one board, one runtime, one seed, and one calibration set, and leaving depthwise layers in FP32 reaches 97.16\%.
 
 \begin{table}[htbp]
-\caption{EfficientNet-B0 on Raspberry Pi~5: dynamic vs static QDQ INT8, batch=1, mean of 200 runs after 10 warmup, single session per configuration, CPUExecutionProvider only, ORT 1.29.0, peak 49.4$^{\circ}$C, throttled=0x0. Accuracy in the last column is measured on the exported ONNX graphs rather than the PyTorch checkpoints reported in Table~\ref{tab:results}, which is why the FP32 reference reads 98.50\% here versus 98.55\% there; the 0.05-point gap is one image and reflects float32 export. Per-channel static QDQ is both the accurate and the fast configuration.}
+\caption{EfficientNet-B0 on Raspberry Pi~5: dynamic vs static QDQ INT8, batch=1, mean of 200 runs after 10 warmup, single session per configuration, CPUExecutionProvider only, ORT 1.29.0, peak 49.4$^{\circ}$C, throttled=0x0. Measured in separate sessions from Table~\ref{tab:rpi5}; identical EfficientNet-B0 configurations agree within 0.65\% (FP32 $t{=}4$: 31.53 vs.\ 31.56\,ms; dynamic INT8 $t{=}4$: 63.99 vs.\ 64.39\,ms; $t{=}1$: 69.00 vs.\ 69.45\,ms), i.e.\ session variability below 1\%. Accuracy in the last column is measured on the exported ONNX graphs rather than the PyTorch checkpoints reported in Table~\ref{tab:results}, which is why the FP32 reference reads 98.50\% here versus 98.55\% there; the 0.05-point gap is one image and reflects float32 export. Per-channel static QDQ is both the accurate and the fast configuration.}
 \label{tab:rpi5static}
 \centering
 \footnotesize
@@ -246,7 +252,7 @@ Dynamic INT8 is slower than FP32 at four threads (1.93--2.80$\times$), and its t
 
 \begin{figure}[htbp]
 \centering
-\includegraphics[width=0.76\linewidth]{../figures/rpi5_thread_scaling_gate0.png}
+\includegraphics[width=0.66\linewidth]{../figures/rpi5_thread_scaling_gate0.png}
 \caption{Raspberry Pi~5 thread scaling at batch 1. FP32 benefits more from four threads, whereas dynamic INT8 shows limited scaling and remains slower at four threads.}
 \label{fig:rpi5thread}
 \end{figure}
@@ -276,7 +282,7 @@ EfficientNet-B0 & 239 & 730 & 3.05$\times$ & 82 / 81 & 24.9\% & 13.1$\times$ / 2
 
 \subsection{Accuracy-Latency Tradeoff}
 
-The accuracy-latency comparison shows that ShuffleNetV2 FP32 is fastest at 6.19\,ms on RPi5 (161.5\,FPS), EfficientNet-B0 is most accurate at 98.55\%, and MobileNetV2 FP32 is intermediate (97.92\%, 14.23\,ms). The gap between best and worst FP32 accuracy is only 0.86pp (97.69\% versus 98.55\%); hardware constraints and quantization scheme should drive model choice for deployment. By ``balanced'' we mean MobileNetV2 FP32 sits between the latency extremes (14.23\,ms vs 6.19\,ms ShuffleNetV2 and 31.56\,ms EfficientNet-B0 at 4 threads) while staying within 0.63pp of the best accuracy. All latency numbers are means of 200 runs after 10 warmup iterations (batch 1, model-only). On x86, ShuffleNetV2 FP32 (4.15\,ms) is slower than MobileNetV2 FP32 (2.40\,ms) but the order flips on RPi5 (6.19\,ms vs 14.23\,ms at 4 threads); reference and deployment hardware rank architectures differently, which is why deployment claims rest on RPi5 only.
+ShuffleNetV2 FP32 is fastest on RPi5 at 6.19\,ms (161.5\,FPS), EfficientNet-B0 is most accurate at 98.55\%, and MobileNetV2 FP32 is intermediate (97.92\%, 14.23\,ms). The best and worst FP32 accuracies differ by only 0.86pp, so hardware constraints and quantization scheme should drive model choice. On x86, ShuffleNetV2 FP32 (4.15\,ms) is slower than MobileNetV2 FP32 (2.40\,ms), but the order flips on RPi5; reference and deployment hardware rank architectures differently, which is why deployment claims rest on RPi5 only.
 
 
 \subsection{Comparison with Related Work}
