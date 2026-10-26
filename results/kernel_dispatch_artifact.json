@@ -1,0 +1,716 @@
+{
+  "experiment": "Level 2 Profiling \u2014 Q/DQ Node Count + ORT Operator Timing",
+  "timestamp": "2026-08-20T12:01:19.654354",
+  "platform": "Raspberry Pi 5 (BCM2712 Cortex-A76)",
+  "config": {
+    "num_threads": 1,
+    "batch_size": 1,
+    "profiling_runs": 10,
+    "warmup_runs": 5
+  },
+  "node_counts": [
+    {
+      "model_path": "models/ptq/mobilenetv2_int8.onnx",
+      "model_size_mb": 2.302,
+      "total_nodes": 487,
+      "quantize_linear": 0,
+      "dequantize_linear": 0,
+      "op_counts": {
+        "Constant": 70,
+        "DynamicQuantizeLinear": 53,
+        "Reshape": 52,
+        "Mul": 106,
+        "ConvInteger": 52,
+        "Cast": 53,
+        "Add": 63,
+        "Clip": 35,
+        "GlobalAveragePool": 1,
+        "Flatten": 1,
+        "MatMulInteger": 1
+      },
+      "q_dq_total": 0,
+      "q_dq_ratio": 0.0
+    },
+    {
+      "model_path": "models/ptq/shufflenetv2_int8.onnx",
+      "model_size_mb": 1.468,
+      "total_nodes": 1240,
+      "quantize_linear": 0,
+      "dequantize_linear": 0,
+      "op_counts": {
+        "Constant": 302,
+        "DynamicQuantizeLinear": 54,
+        "Reshape": 88,
+        "Mul": 140,
+        "ConvInteger": 56,
+        "Cast": 89,
+        "Add": 70,
+        "Relu": 37,
+        "MaxPool": 1,
+        "Concat": 48,
+        "Shape": 77,
+        "Gather": 77,
+        "Unsqueeze": 128,
+        "Div": 29,
+        "Transpose": 16,
+        "Slice": 26,
+        "ReduceMean": 1,
+        "MatMulInteger": 1
+      },
+      "q_dq_total": 0,
+      "q_dq_ratio": 0.0
+    },
+    {
+      "model_path": "models/ptq/efficientnet_b0_int8.onnx",
+      "model_size_mb": 4.161,
+      "total_nodes": 730,
+      "quantize_linear": 0,
+      "dequantize_linear": 0,
+      "op_counts": {
+        "Reshape": 81,
+        "DynamicQuantizeLinear": 82,
+        "Mul": 229,
+        "ConvInteger": 81,
+        "Cast": 82,
+        "Add": 91,
+        "Sigmoid": 65,
+        "GlobalAveragePool": 17,
+        "Flatten": 1,
+        "MatMulInteger": 1
+      },
+      "q_dq_total": 0,
+      "q_dq_ratio": 0.0
+    },
+    {
+      "model_path": "models/onnx/mobilenetv2_fp32.onnx",
+      "model_size_mb": 8.477,
+      "total_nodes": 170,
+      "quantize_linear": 0,
+      "dequantize_linear": 0,
+      "op_counts": {
+        "Conv": 52,
+        "Constant": 70,
+        "Clip": 35,
+        "Add": 10,
+        "GlobalAveragePool": 1,
+        "Flatten": 1,
+        "Gemm": 1
+      },
+      "q_dq_total": 0,
+      "q_dq_ratio": 0.0
+    },
+    {
+      "model_path": "models/onnx/shufflenetv2_fp32.onnx",
+      "model_size_mb": 4.888,
+      "total_nodes": 902,
+      "quantize_linear": 0,
+      "dequantize_linear": 0,
+      "op_counts": {
+        "Conv": 56,
+        "Relu": 37,
+        "MaxPool": 1,
+        "Concat": 48,
+        "Shape": 77,
+        "Constant": 302,
+        "Gather": 77,
+        "Div": 29,
+        "Cast": 32,
+        "Unsqueeze": 128,
+        "Reshape": 32,
+        "Transpose": 16,
+        "Add": 13,
+        "Mul": 26,
+        "Slice": 26,
+        "ReduceMean": 1,
+        "Gemm": 1
+      },
+      "q_dq_total": 0,
+      "q_dq_ratio": 0.0
+    },
+    {
+      "model_path": "models/onnx/efficientnet_b0_fp32.onnx",
+      "model_size_mb": 15.298,
+      "total_nodes": 239,
+      "quantize_linear": 0,
+      "dequantize_linear": 0,
+      "op_counts": {
+        "Conv": 81,
+        "Sigmoid": 65,
+        "Mul": 65,
+        "GlobalAveragePool": 17,
+        "Add": 9,
+        "Flatten": 1,
+        "Gemm": 1
+      },
+      "q_dq_total": 0,
+      "q_dq_ratio": 0.0
+    }
+  ],
+  "ort_profiles": [
+    {
+      "model": "mobilenetv2",
+      "latency_mean_ms": 52.91,
+      "latency_std_ms": 1.23,
+      "runs": 10,
+      "node_timing": {
+        "total_duration_us": 756678,
+        "total_duration_ms": 756.68,
+        "operators": [
+          {
+            "op_type": "Conv_quant_kernel_time",
+            "total_us": 416599,
+            "total_ms": 416.6,
+            "count": 780,
+            "percentage": 55.1
+          },
+          {
+            "op_type": "Clip_output_0_QuantizeLinear_kernel_time",
+            "total_us": 97247,
+            "total_ms": 97.25,
+            "count": 510,
+            "percentage": 12.9
+          },
+          {
+            "op_type": "Conv_output_0_bias_add_kernel_time",
+            "total_us": 69469,
+            "total_ms": 69.47,
+            "count": 780,
+            "percentage": 9.2
+          },
+          {
+            "op_type": "Conv_quant_output_scale_mul_kernel_time",
+            "total_us": 58757,
+            "total_ms": 58.76,
+            "count": 780,
+            "percentage": 7.8
+          },
+          {
+            "op_type": "Conv_output_0_output_quantized_cast_kernel_time",
+            "total_us": 47646,
+            "total_ms": 47.65,
+            "count": 780,
+            "percentage": 6.3
+          },
+          {
+            "op_type": "Clip_kernel_time",
+            "total_us": 43128,
+            "total_ms": 43.13,
+            "count": 525,
+            "percentage": 5.7
+          },
+          {
+            "op_type": "Conv_quant_scales_mul_kernel_time",
+            "total_us": 6804,
+            "total_ms": 6.8,
+            "count": 780,
+            "percentage": 0.9
+          },
+          {
+            "op_type": "Conv_output_0_QuantizeLinear_kernel_time",
+            "total_us": 5919,
+            "total_ms": 5.92,
+            "count": 105,
+            "percentage": 0.8
+          },
+          {
+            "op_type": "Add_output_0_QuantizeLinear_kernel_time",
+            "total_us": 4281,
+            "total_ms": 4.28,
+            "count": 150,
+            "percentage": 0.6
+          },
+          {
+            "op_type": "input_QuantizeLinear_kernel_time",
+            "total_us": 3046,
+            "total_ms": 3.05,
+            "count": 15,
+            "percentage": 0.4
+          },
+          {
+            "op_type": "Add_kernel_time",
+            "total_us": 2849,
+            "total_ms": 2.85,
+            "count": 150,
+            "percentage": 0.4
+          },
+          {
+            "op_type": "GlobalAveragePool_kernel_time",
+            "total_us": 446,
+            "total_ms": 0.45,
+            "count": 15,
+            "percentage": 0.1
+          },
+          {
+            "op_type": "Gemm_MatMul_quant_kernel_time",
+            "total_us": 390,
+            "total_ms": 0.39,
+            "count": 15,
+            "percentage": 0.1
+          },
+          {
+            "op_type": "Flatten_kernel_time",
+            "total_us": 97,
+            "total_ms": 0.1,
+            "count": 15,
+            "percentage": 0.0
+          }
+        ]
+      }
+    },
+    {
+      "model": "shufflenetv2",
+      "latency_mean_ms": 23.5,
+      "latency_std_ms": 2.02,
+      "runs": 10,
+      "node_timing": {
+        "total_duration_us": 291064,
+        "total_duration_ms": 291.06,
+        "operators": [
+          {
+            "op_type": "Conv_quant_kernel_time",
+            "total_us": 144030,
+            "total_ms": 144.03,
+            "count": 840,
+            "percentage": 49.5
+          },
+          {
+            "op_type": "Conv_output_0_bias_add_kernel_time",
+            "total_us": 18639,
+            "total_ms": 18.64,
+            "count": 840,
+            "percentage": 6.4
+          },
+          {
+            "op_type": "Conv_quant_output_scale_mul_kernel_time",
+            "total_us": 15386,
+            "total_ms": 15.39,
+            "count": 840,
+            "percentage": 5.3
+          },
+          {
+            "op_type": "Conv_output_0_output_quantized_cast_kernel_time",
+            "total_us": 13373,
+            "total_ms": 13.37,
+            "count": 840,
+            "percentage": 4.6
+          },
+          {
+            "op_type": "Relu_output_0_QuantizeLinear_kernel_time",
+            "total_us": 11273,
+            "total_ms": 11.27,
+            "count": 240,
+            "percentage": 3.9
+          },
+          {
+            "op_type": "Conv_output_0_QuantizeLinear_kernel_time",
+            "total_us": 8955,
+            "total_ms": 8.96,
+            "count": 285,
+            "percentage": 3.1
+          },
+          {
+            "op_type": "Transpose_kernel_time",
+            "total_us": 8128,
+            "total_ms": 8.13,
+            "count": 240,
+            "percentage": 2.8
+          },
+          {
+            "op_type": "Relu_kernel_time",
+            "total_us": 7718,
+            "total_ms": 7.72,
+            "count": 555,
+            "percentage": 2.7
+          },
+          {
+            "op_type": "Slice_1_output_0_QuantizeLinear_kernel_time",
+            "total_us": 6832,
+            "total_ms": 6.83,
+            "count": 195,
+            "percentage": 2.3
+          },
+          {
+            "op_type": "Conv_quant_scales_mul_kernel_time",
+            "total_us": 6148,
+            "total_ms": 6.15,
+            "count": 840,
+            "percentage": 2.1
+          },
+          {
+            "op_type": "Concat_kernel_time",
+            "total_us": 5415,
+            "total_ms": 5.42,
+            "count": 240,
+            "percentage": 1.9
+          },
+          {
+            "op_type": "Slice_kernel_time",
+            "total_us": 3711,
+            "total_ms": 3.71,
+            "count": 195,
+            "percentage": 1.3
+          },
+          {
+            "op_type": "MaxPool_kernel_time",
+            "total_us": 3622,
+            "total_ms": 3.62,
+            "count": 15,
+            "percentage": 1.2
+          },
+          {
+            "op_type": "input_QuantizeLinear_kernel_time",
+            "total_us": 3308,
+            "total_ms": 3.31,
+            "count": 15,
+            "percentage": 1.1
+          },
+          {
+            "op_type": "Slice_1_kernel_time",
+            "total_us": 3207,
+            "total_ms": 3.21,
+            "count": 195,
+            "percentage": 1.1
+          },
+          {
+            "op_type": "Reshape_1_output_0_QuantizeLinear_kernel_time",
+            "total_us": 2682,
+            "total_ms": 2.68,
+            "count": 45,
+            "percentage": 0.9
+          },
+          {
+            "op_type": "Concat_1_kernel_time",
+            "total_us": 2236,
+            "total_ms": 2.24,
+            "count": 240,
+            "percentage": 0.8
+          },
+          {
+            "op_type": "Concat_2_kernel_time",
+            "total_us": 1712,
+            "total_ms": 1.71,
+            "count": 240,
+            "percentage": 0.6
+          },
+          {
+            "op_type": "Gather_2_kernel_time",
+            "total_us": 1565,
+            "total_ms": 1.56,
+            "count": 240,
+            "percentage": 0.5
+          },
+          {
+            "op_type": "Reshape_kernel_time",
+            "total_us": 1474,
+            "total_ms": 1.47,
+            "count": 240,
+            "percentage": 0.5
+          },
+          {
+            "op_type": "Reshape_1_kernel_time",
+            "total_us": 1445,
+            "total_ms": 1.45,
+            "count": 240,
+            "percentage": 0.5
+          },
+          {
+            "op_type": "Unsqueeze_1_kernel_time",
+            "total_us": 1432,
+            "total_ms": 1.43,
+            "count": 240,
+            "percentage": 0.5
+          },
+          {
+            "op_type": "MaxPool_output_0_QuantizeLinear_kernel_time",
+            "total_us": 1369,
+            "total_ms": 1.37,
+            "count": 15,
+            "percentage": 0.5
+          },
+          {
+            "op_type": "Gather_1_kernel_time",
+            "total_us": 1343,
+            "total_ms": 1.34,
+            "count": 240,
+            "percentage": 0.5
+          },
+          {
+            "op_type": "Gather_kernel_time",
+            "total_us": 1329,
+            "total_ms": 1.33,
+            "count": 240,
+            "percentage": 0.5
+          },
+          {
+            "op_type": "Div_kernel_time",
+            "total_us": 1299,
+            "total_ms": 1.3,
+            "count": 240,
+            "percentage": 0.4
+          },
+          {
+            "op_type": "Unsqueeze_5_kernel_time",
+            "total_us": 1259,
+            "total_ms": 1.26,
+            "count": 240,
+            "percentage": 0.4
+          },
+          {
+            "op_type": "Div_1_kernel_time",
+            "total_us": 1249,
+            "total_ms": 1.25,
+            "count": 195,
+            "percentage": 0.4
+          },
+          {
+            "op_type": "Add_kernel_time",
+            "total_us": 1144,
+            "total_ms": 1.14,
+            "count": 195,
+            "percentage": 0.4
+          },
+          {
+            "op_type": "Gather_3_kernel_time",
+            "total_us": 1135,
+            "total_ms": 1.14,
+            "count": 240,
+            "percentage": 0.4
+          },
+          {
+            "op_type": "Unsqueeze_2_kernel_time",
+            "total_us": 1134,
+            "total_ms": 1.13,
+            "count": 240,
+            "percentage": 0.4
+          },
+          {
+            "op_type": "Unsqueeze_3_kernel_time",
+            "total_us": 1125,
+            "total_ms": 1.12,
+            "count": 240,
+            "percentage": 0.4
+          },
+          {
+            "op_type": "Unsqueeze_kernel_time",
+            "total_us": 1107,
+            "total_ms": 1.11,
+            "count": 240,
+            "percentage": 0.4
+          },
+          {
+            "op_type": "Shape_2_kernel_time",
+            "total_us": 1101,
+            "total_ms": 1.1,
+            "count": 195,
+            "percentage": 0.4
+          },
+          {
+            "op_type": "Mul_1_kernel_time",
+            "total_us": 1077,
+            "total_ms": 1.08,
+            "count": 195,
+            "percentage": 0.4
+          },
+          {
+            "op_type": "Gather_4_kernel_time",
+            "total_us": 1060,
+            "total_ms": 1.06,
+            "count": 195,
+            "percentage": 0.4
+          },
+          {
+            "op_type": "Shape_kernel_time",
+            "total_us": 965,
+            "total_ms": 0.96,
+            "count": 195,
+            "percentage": 0.3
+          },
+          {
+            "op_type": "ReduceMean_kernel_time",
+            "total_us": 395,
+            "total_ms": 0.4,
+            "count": 15,
+            "percentage": 0.1
+          },
+          {
+            "op_type": "Gemm_MatMul_quant_kernel_time",
+            "total_us": 392,
+            "total_ms": 0.39,
+            "count": 15,
+            "percentage": 0.1
+          },
+          {
+            "op_type": "Shape_1_kernel_time",
+            "total_us": 290,
+            "total_ms": 0.29,
+            "count": 45,
+            "percentage": 0.1
+          }
+        ]
+      }
+    },
+    {
+      "model": "efficientnet_b0",
+      "latency_mean_ms": 88.64,
+      "latency_std_ms": 1.49,
+      "runs": 10,
+      "node_timing": {
+        "total_duration_us": 1276471,
+        "total_duration_ms": 1276.47,
+        "operators": [
+          {
+            "op_type": "Conv_quant_kernel_time",
+            "total_us": 695394,
+            "total_ms": 695.39,
+            "count": 1215,
+            "percentage": 54.5
+          },
+          {
+            "op_type": "_kernel_time",
+            "total_us": 220379,
+            "total_ms": 220.38,
+            "count": 735,
+            "percentage": 17.3
+          },
+          {
+            "op_type": "Mul_output_0_QuantizeLinear_kernel_time",
+            "total_us": 109884,
+            "total_ms": 109.88,
+            "count": 720,
+            "percentage": 8.6
+          },
+          {
+            "op_type": "Conv_output_0_bias_add_kernel_time",
+            "total_us": 72084,
+            "total_ms": 72.08,
+            "count": 1215,
+            "percentage": 5.6
+          },
+          {
+            "op_type": "Conv_quant_output_scale_mul_kernel_time",
+            "total_us": 63161,
+            "total_ms": 63.16,
+            "count": 1215,
+            "percentage": 4.9
+          },
+          {
+            "op_type": "Conv_output_0_output_quantized_cast_kernel_time",
+            "total_us": 48872,
+            "total_ms": 48.87,
+            "count": 1215,
+            "percentage": 3.8
+          },
+          {
+            "op_type": "Mul_kernel_time",
+            "total_us": 20586,
+            "total_ms": 20.59,
+            "count": 240,
+            "percentage": 1.6
+          },
+          {
+            "op_type": "GlobalAveragePool_kernel_time",
+            "total_us": 15064,
+            "total_ms": 15.06,
+            "count": 255,
+            "percentage": 1.2
+          },
+          {
+            "op_type": "Conv_quant_scales_mul_kernel_time",
+            "total_us": 10095,
+            "total_ms": 10.1,
+            "count": 1215,
+            "percentage": 0.8
+          },
+          {
+            "op_type": "Conv_output_0_QuantizeLinear_kernel_time",
+            "total_us": 6166,
+            "total_ms": 6.17,
+            "count": 105,
+            "percentage": 0.5
+          },
+          {
+            "op_type": "Add_output_0_QuantizeLinear_kernel_time",
+            "total_us": 4081,
+            "total_ms": 4.08,
+            "count": 135,
+            "percentage": 0.3
+          },
+          {
+            "op_type": "input_QuantizeLinear_kernel_time",
+            "total_us": 3087,
+            "total_ms": 3.09,
+            "count": 15,
+            "percentage": 0.2
+          },
+          {
+            "op_type": "GlobalAveragePool_output_0_QuantizeLinear_kernel_time",
+            "total_us": 2835,
+            "total_ms": 2.83,
+            "count": 240,
+            "percentage": 0.2
+          },
+          {
+            "op_type": "Add_kernel_time",
+            "total_us": 2579,
+            "total_ms": 2.58,
+            "count": 135,
+            "percentage": 0.2
+          },
+          {
+            "op_type": "Sigmoid_kernel_time",
+            "total_us": 1673,
+            "total_ms": 1.67,
+            "count": 240,
+            "percentage": 0.1
+          },
+          {
+            "op_type": "Gemm_MatMul_quant_kernel_time",
+            "total_us": 425,
+            "total_ms": 0.42,
+            "count": 15,
+            "percentage": 0.0
+          },
+          {
+            "op_type": "Flatten_kernel_time",
+            "total_us": 106,
+            "total_ms": 0.11,
+            "count": 15,
+            "percentage": 0.0
+          }
+        ]
+      }
+    }
+  ],
+  "analysis": {
+    "key_findings": [
+      "INT8 dynamic PTQ does NOT insert QuantizeLinear/DequantizeLinear nodes into the ONNX graph. Instead, ORT applies quantization at runtime via ConvInteger + DynamicQuantizeLinear + Mul (dequant scale).",
+      "Node expansion FP32\u2192INT8: MobileNetV2 2.86x (170\u2192487), ShuffleNetV2 1.37x (902\u21921240), EfficientNet-B0 3.05x (239\u2192730).",
+      "DynamicQuantizeLinear nodes: MobileNetV2 53, ShuffleNetV2 54, EfficientNet-B0 82. MobileNetV2 has 53 depthwise separable convolutions that each require independent quantization.",
+      "ORT profiling confirms quantization overhead (10 runs, batch=1, 1 thread): MobileNetV2 29.2%, ShuffleNetV2 20.7%, EfficientNet-B0 24.9% of total inference time spent on quant/dequant kernels.",
+      "Conv_quant_kernel is the dominant bottleneck: MobileNetV2 55.1%, ShuffleNetV2 49.5%, EfficientNet-B0 54.5% of total time (per-operator us from ort_profiles; corrected 2026-09-26, previous 20.2/14.9/19.0 used a wrong denominator).",
+      "DequantizeLinear is fused into Conv_quant kernel (not separate events in ORT profiling). The 29.2% quant overhead for MobileNetV2 correlates with its 30.1x INT8 slowdown vs 6.4x for ShuffleNetV2."
+    ],
+    "node_expansion": {
+      "mobilenetv2": {
+        "fp32_nodes": 170,
+        "int8_nodes": 487,
+        "expansion": 2.86
+      },
+      "shufflenetv2": {
+        "fp32_nodes": 902,
+        "int8_nodes": 1240,
+        "expansion": 1.37
+      },
+      "efficientnet_b0": {
+        "fp32_nodes": 239,
+        "int8_nodes": 730,
+        "expansion": 3.05
+      }
+    },
+    "quant_overhead_pct": {
+      "mobilenetv2": 29.2,
+      "shufflenetv2": 20.7,
+      "efficientnet_b0": 24.9
+    }
+  }
+}

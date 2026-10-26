@@ -120,7 +120,7 @@ EfficientNet-B0 & 98.55 [97.97, 99.07] & 10.42 [8.97, 11.92] & 88.13 & 98.22 (98
 The EfficientNet-B0 collapse is characterized in Table~\ref{tab:eb0static} with selective ablations (Table~\ref{tab:ablation}) and family SQNR diagnostics (Table~\ref{tab:sqnr}).
 
 \begin{table}[htbp]
-\caption{EfficientNet-B0 static QDQ diagnostic (MinMax; first 100 class-ordered train images, Coccidiosis only). Balanced rows: 25/class replication (retrained model FP32 98.15\%; single-class on same model: 9.32/90.74).}
+\caption{EfficientNet-B0 static QDQ diagnostic (MinMax; first 100 class-ordered train images, Coccidiosis only). Balanced rows: 25/class replication (retrained model FP32 98.15\%; single-class on same model: 9.32/90.74; source \texttt{balanced\_replication/poin1\_poin2\_box.json}).}
 \label{tab:eb0static}
 \centering
 \resizebox{\linewidth}{!}{\begin{tabular}{lccccc}

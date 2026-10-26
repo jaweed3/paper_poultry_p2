@@ -1,0 +1,9 @@
+{
+  "train_n": 5100,
+  "val_n": 1325,
+  "test_n": 1728,
+  "best_val_acc": 97.96,
+  "test_acc": 98.15,
+  "onnx": "/mnt/c/Users/MASTER CORE TI/project/poultry_paper/models/onnx/efficientnet_b0_fp32_sterile5100_fp32.onnx",
+  "onnx_mb": 15.3
+}

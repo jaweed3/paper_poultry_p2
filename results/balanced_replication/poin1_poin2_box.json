@@ -1,0 +1,61 @@
+{
+  "model": "efficientnet_b0_fp32_sterile5100_fp32.onnx",
+  "configs": {
+    "fp32": {
+      "acc": 98.15,
+      "n": 1728,
+      "per_class": {
+        "cocci": 98.3,
+        "healthy": 97.62,
+        "ncd": 96.45,
+        "salmo": 98.92
+      },
+      "size_mb": 15.3
+    },
+    "static_per_tensor_single": {
+      "acc": 9.32,
+      "n": 1728,
+      "per_class": {
+        "cocci": 0.38,
+        "healthy": 0.79,
+        "ncd": 99.29,
+        "salmo": 2.71
+      },
+      "size_mb": 4.29
+    },
+    "static_per_channel_single": {
+      "acc": 90.74,
+      "n": 1728,
+      "per_class": {
+        "cocci": 91.68,
+        "healthy": 91.47,
+        "ncd": 87.23,
+        "salmo": 90.07
+      },
+      "size_mb": 4.67
+    },
+    "static_per_tensor_balanced": {
+      "acc": 27.14,
+      "n": 1728,
+      "per_class": {
+        "cocci": 2.08,
+        "healthy": 44.05,
+        "ncd": 96.45,
+        "salmo": 18.05
+      },
+      "size_mb": 4.29
+    },
+    "static_per_channel_balanced": {
+      "acc": 93.4,
+      "n": 1728,
+      "per_class": {
+        "cocci": 92.82,
+        "healthy": 93.25,
+        "ncd": 86.52,
+        "salmo": 95.85
+      },
+      "size_mb": 4.67
+    }
+  },
+  "test_n": 1728
+}
