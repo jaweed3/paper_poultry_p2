@@ -5,11 +5,11 @@ description = "Paper 2: Diagnosing INT8 Quantization Collapse in EfficientNet-B0
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
-  "torch>=2.4",
-  "torchvision>=0.19",
+  "torch==2.5.1",
+  "torchvision",
   "torchaudio",
-  "onnx>=1.16",
-  "onnxruntime>=1.19",
+  "onnx==1.22.0",
+  "onnxruntime==1.29.0",
   "onnxscript",
   "torch-pruning>=1.6",
   "numpy",
@@ -18,6 +18,9 @@ dependencies = [
   "psutil",
   "pyyaml",
   "matplotlib",
+  "scikit-learn",   # confusion matrix + classification report
+  "pyarrow",        # baca HF arrow cache langsung (rebuild sterile)
+  "datasets",       # fallback materialisasi HF
 ]
 
 [tool.uv]
@@ -25,6 +28,8 @@ managed = true
 
 [tool.uv.sources]
 torch = { index = "pytorch-cu121" }
+torchvision = { index = "pytorch-cu121" }
+torchaudio = { index = "pytorch-cu121" }
 
 [[tool.uv.index]]
 name = "pytorch-cu121"
