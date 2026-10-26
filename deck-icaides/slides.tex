@@ -1,0 +1,280 @@
+% =============================================================================
+% ICAIDES 2026 — Localizing INT8 Quantization Collapse in EfficientNet-B0
+% Paper ID 1571359798. Presenter: Fatih. Video: max 10 min, 720p, mp4, 16:9.
+%
+% Build: xelatex twice (remember-picture overlays). No \newcommand inside frames.
+% Attribution: theme "midcentury modern" by Jules Leguy, CC BY 4.0.
+% Changes vs upstream listed in tdstyle.tex. Fonts bundled under fonts/.
+% =============================================================================
+\documentclass[aspectratio=169]{beamer}
+
+\usepackage{beamerthememidcenturymodern}
+\usepackage{tcolorbox}
+\tcbuselibrary{skins, raster}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{microtype}
+\usepackage{listings}
+\usetikzlibrary{positioning, arrows.meta, fit, backgrounds}
+
+\input{tdstyle}
+\oliveTheme
+
+% --- preamble commands only ---
+\newcommand{\srcline}[1]{%
+  \noindent\hangindent=1.0em\hangafter=1
+  \textcolor{oliveGreen}{\textbullet}\hspace{0.5em}#1\par}
+
+\lstset{
+  basicstyle=\ttfamily\scriptsize\color{oliveInk!85},
+  backgroundcolor=\color{oliveGreen!6},
+  frame=none, xleftmargin=0.6em, xrightmargin=0.6em,
+  framexleftmargin=0.6em, framexrightmargin=0.6em,
+  aboveskip=0.7em, belowskip=0.5em,
+  breaklines=false, showstringspaces=false, columns=fullflexible,
+}
+
+\title[INT8 Collapse in EfficientNet-B0]{%
+  Localizing INT8 Quantization Collapse\\in EfficientNet-B0}
+\subtitle{Edge poultry disease detection on Raspberry Pi 5}
+\author[Fatih]{Fatih Jawwad Al Mumtaz \\ Amirul Al Aziz \and Muhammad Iqbal Hidayatullah}
+\institute{Universitas Darussalam Gontor — ICAIDES 2026 (ID 1571359798)}
+
+\date{\makebox[2.413cm][l]{\MakeUppercase{November 2026}}}
+\titlegraphic{\includegraphics[height=1.5cm]{figures/logo-trim.png}}
+
+\AtBeginSection[]{%
+  \begin{frame}[plain, noframenumbering]
+    \sectionpage
+  \end{frame}
+}
+
+\begin{document}
+
+\begin{frame}[plain]
+  \titlepage
+\end{frame}
+
+% =============================================================================
+\tdsection{Why edge, why this benchmark}{%
+  Poultry disease costs; lab diagnosis out of reach; the deploy gap.}
+% =============================================================================
+
+\begin{frame}{The gap this paper closes}
+
+  \slidelead{Farm-level detection needs models that run on a Pi, not a GPU.}
+
+  Poultry disease (Coccidiosis, Salmonellosis, Newcastle) causes major losses,
+  yet lab diagnosis is out of reach for small farms. Prior work hits
+  \acb{99.12\%} (EfficientNet-B0) and \acb{97.1\%} (MobileNetV2) — but targets
+  the cloud, not the edge.
+
+  Two questions drive this work: which lightweight architectures survive
+  \code{INT8} on CPU, and what does the accuracy-latency tradeoff look like
+  on a \acb{Raspberry Pi 5}?
+
+  \aside{Scope: three models, one board, one runtime (ORT 1.29.0). No claimed
+  generality beyond the measured stack.}
+
+\end{frame}
+
+\begin{frame}{The benchmark, and what was wrong with it}
+
+  \slidelead{8,770 published images — audited, then deduplicated to 8,153.}
+
+  \begin{stepflow}{3}
+    \stepcard{claimed}{8,770 leak-free images (FecalFed benchmark)}
+    \steparrow
+    \stepcard{audit}{pHash audit: 617 near-duplicate pairs, 94 test images byte-identical to train}
+    \steparrow
+    \stepcard{used}{sterile 8,153 split, test n = 1,728, seed 42}
+  \end{stepflow}
+
+  \vspace{0.7em}
+  {\small
+  \acb{All reported numbers use the deduplicated split.} Four classes:
+  Coccidiosis, Healthy, Salmonella, Newcastle (NCD underrepresented: 141 test).
+  \par}
+
+\end{frame}
+
+% =============================================================================
+\tdsection{What survives INT8, and what collapses}{%
+  Dynamic INT8 keeps two models, destroys the third.}
+% =============================================================================
+
+\begin{frame}{Dynamic INT8: two survive, one collapses}
+
+  {\footnotesize
+  \begin{tabular}{@{}>{\raggedright\arraybackslash}p{3.0cm}
+                    >{\raggedright\arraybackslash}p{3.2cm}
+                    >{\raggedright\arraybackslash}p{3.2cm}
+                    >{\raggedright\arraybackslash}p{3.4cm}@{}}
+    \toprule
+    & \thead{MNV2} & \thead{SNV2} & \thead{EB0} \\
+    \midrule
+    \textbf{FP32} & 97.92\% & 97.69\% & 98.55\% \\
+    \textbf{INT8 dyn} & 97.28\% & 97.63\% & \textbf{10.42\%} \\
+    \textbf{Drop} & 0.64 pp & 0.06 pp & \textbf{88.13 pp} \\
+    \bottomrule
+  \end{tabular}\par}
+
+  \vspace{0.5em}
+  {\small
+  Paired McNemar on the same 1,728 test images: MNv2 discordant
+  (b=18, c=7, p=0.0455), SNv2 not (b=6, c=5, p=1.0). EB0 degenerates to a
+  \acb{near-single-class predictor} — 1,676 of 1,728 land in the Newcastle column.
+  \par}
+
+\end{frame}
+
+\begin{frame}{Where exactly EB0 fails}
+
+  \centering
+  \includegraphics[width=0.78\linewidth]{figures/confusion_eb0_2panel.png}
+
+  \vspace{0.4em}
+  {\raggedright\fontsize{6.6}{8.4}\selectfont\color{oliveInk!70}%
+   FP32 (left) vs dynamic INT8 (right). Per-class INT8 recall: cocci 2.27\%,
+   healthy 4.76\%, salmo 0.54\%, NCD 100\%. Matrices for MNv2/SNv2 in the repo.\par}
+
+\end{frame}
+
+\begin{frame}{Per-channel recovers it: 9.32\% vs 94.56\%}
+
+  {\footnotesize
+  \begin{tabular}{@{}>{\raggedright\arraybackslash}p{4.6cm}
+                    >{\raggedright\arraybackslash}p{2.6cm}
+                    >{\raggedright\arraybackslash}p{2.6cm}
+                    >{\raggedright\arraybackslash}p{3.0cm}@{}}
+    \toprule
+    & \thead{acc} & \thead{size} & \thead{Pi t=4} \\
+    \midrule
+    \textbf{dynamic} & 10.42\% & 4.16 MB & 63.99 ms \\
+    \textbf{static per-tensor} & 9.32\% & 4.29 MB & 13.63 ms \\
+    \textbf{static per-channel} & \textbf{94.56\%} & 4.67 MB & \textbf{13.50 ms} \\
+    \bottomrule
+  \end{tabular}\par}
+
+  \vspace{0.5em}
+  {\small
+  Per-channel vs dynamic, paired: b=14, c=1468, \acb{p $<$ 1e-15}. Against FP32
+  the gap is still real (b=75, c=7, p $\sim$ 1e-13) — \acb{recovery, not parity}.
+  Balanced 25/class replication on a retrained model: per-tensor 27.14\% vs
+  per-channel 93.40\%. \par}
+
+\end{frame}
+
+\begin{frame}{Why depthwise: the selective ablation}
+
+  \slidelead{Depthwise per-channel alone recovers the model; without it, collapse.}
+
+  {\footnotesize
+  \begin{tabular}{@{}>{\raggedright\arraybackslash}p{6.4cm}
+                    >{\raggedright\arraybackslash}p{2.2cm}
+                    >{\raggedright\arraybackslash}p{2.2cm}
+                    >{\raggedright\arraybackslash}p{2.0cm}@{}}
+    \toprule
+    & \thead{config} & \thead{acc} & \thead{collapse} \\
+    \midrule
+    \textbf{C depthwise per-ch, rest per-tensor} & 4.33 MB & \textbf{93.46\%} & no \\
+    \textbf{D all per-ch except depthwise} & 4.51 MB & 8.33\% & yes \\
+    \textbf{E depthwise left in FP32} & 4.69 MB & 97.16\% & no \\
+    \textbf{F SE left in FP32} & 5.91 MB & 12.44\% & yes \\
+    \bottomrule
+  \end{tabular}\par}
+
+  \vspace{0.5em}
+  {\small
+  Mechanism: shared per-tensor scale is set by the largest channel; depthwise
+  channel ranges spread up to \acb{112x} (median P95/P5 39.94x), worst channels
+  quantize to a constant (0 dB). Prior work flagged this family
+  (Sheng 2018); our contribution is the localized case study + runtime behavior.
+  \par}
+
+\end{frame}
+
+% =============================================================================
+\tdsection{What the Pi actually does}{%
+  Dynamic INT8 slows down; static per-channel speeds up 2.34x.}
+% =============================================================================
+
+\begin{frame}{On the Pi: dynamic INT8 is slower than FP32}
+
+  {\footnotesize
+  \begin{tabular}{@{}>{\raggedright\arraybackslash}p{3.2cm}
+                    >{\raggedright\arraybackslash}p{2.4cm}
+                    >{\raggedright\arraybackslash}p{2.4cm}
+                    >{\raggedright\arraybackslash}p{2.6cm}
+                    >{\raggedright\arraybackslash}p{2.2cm}@{}}
+    \toprule
+    & \thead{FP32 t=4} & \thead{INT8 t=4} & \thead{scaling} & \thead{slowdown} \\
+    \midrule
+    \textbf{MNv2} & 14.23 ms & 39.83 ms & 1.10x & 2.80x \\
+    \textbf{SNv2} & 6.19 ms & 11.95 ms & 1.14x & 1.93x \\
+    \textbf{EB0} & 31.56 ms & 64.39 ms & 1.19x & 2.04x \\
+    \bottomrule
+  \end{tabular}\par}
+
+  \vspace{0.5em}
+  {\small
+  FP32 scales 2.20--2.33x from 1 to 4 threads; INT8 manages 1.10--1.19x.
+  Kernel evidence: each Conv expands into DynamicQuantizeLinear + ConvInteger +
+  Mul + Cast (1.37--3.05x node growth), quantization kernels add 20.7--29.2\%
+  overhead. \par}
+
+\end{frame}
+
+\begin{frame}{Static flips it: 2.34x faster than FP32}
+
+  \centering
+  \includegraphics[width=0.62\linewidth]{figures/rpi5_thread_scaling_gate0.png}
+
+  \vspace{0.4em}
+  {\raggedright\fontsize{6.6}{8.4}\selectfont\color{oliveInk!70}%
+   EB0 static per-channel: 13.50 ms vs FP32 31.53 ms at 4 threads. Same board,
+   same runtime, separate session within 0.7\% of the sweep. Static is faster
+   AND more accurate here — but one board, one runtime, one seed.\par}
+
+\end{frame}
+
+\begin{frame}{So which model do you ship?}
+
+  \begin{stepflow}{3}
+    \stepcard{fastest}{SNv2 FP32: 6.19 ms, 97.69\%}
+    \steparrow
+    \stepcard{balanced}{MNv2 FP32: 14.23 ms, 97.92\%}
+    \steparrow
+    \stepcard{accurate}{EB0 static per-ch: 13.50 ms, 94.56\%}
+  \end{stepflow}
+
+  \vspace{0.7em}
+  {\small
+  \acb{Best and worst FP32 differ by 0.86 pp — let hardware and scheme decide.}
+  3.3--3.7x size shrink with INT8; RAM at inference barely moves, so do not
+  claim memory savings on this stack. \par}
+
+  \aside{Limitation, stated plainly: single Coccidiosis-only calibration slice;
+  one seed; energy not measured (current telemetry null).}
+
+\end{frame}
+
+% =============================================================================
+\tdsection{Close}{%
+  Deployment depends on architecture, runtime, and granularity jointly.}
+% =============================================================================
+
+\begin{frame}{Takeaway and artifact}
+
+  \slidelead{INT8 is not one thing: scheme $\times$ granularity $\times$ runtime decides.}
+
+  \srcline{\textbf{Dynamic INT8} preserves MNv2/SNv2, collapses EB0 to 10.42\%}
+  \srcline{\textbf{Per-channel static} recovers EB0 to 94.56\%, 2.34x faster than FP32}
+  \srcline{\textbf{Depthwise granularity} is the localized cause (93.46\% vs 8.33\%)}
+  \srcline{Artifact: \code{github.com/jaweed3/paper\_poultry\_p2} + Zenodo 10.5281/zenodo.23374216}
+
+  \aside{Thank you. Questions welcome — the failure modes are in the paper.}
+
+\end{frame}
+
+\end{document}

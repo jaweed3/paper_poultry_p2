@@ -1,0 +1,705 @@
+% =============================================================================
+% tdstyle.tex — everything this deck adds on top of the stock template.
+%
+% Kept apart from beamerthememidcenturymodern.sty so that file stays a verbatim
+% copy of upstream and can be replaced wholesale when it updates. Load after it.
+%
+% ATTRIBUTION. The theme underneath is "midcentury modern" by Jules Leguy,
+% https://github.com/jules-leguy/midcenturymodern, used under CC BY 4.0. That
+% licence requires the creator to be named, the source and licence given, and
+% CHANGES INDICATED — so, in one place, what was changed:
+%
+%   - recoloured to the olive palette below;
+%   - retargeted from LuaLaTeX to XeLaTeX, with the fonts bundled and loaded by
+%     filename rather than by fontconfig family name;
+%   - the section page redrawn to stop it hyphenating a divider title;
+%   - added: \ac, \acb, \code, \aside, \slidelead, stepflow/\stepcard/\steparrow,
+%     \tdsection, \tdstudy, and \parskip.
+%
+% The .sty itself is untouched, so none of the above is a change to Leguy's
+% file — it is all here.
+% =============================================================================
+
+% -----------------------------------------------------------------------------
+% THE OLIVE PALETTE
+%
+% The commands are named olive*, not for the institution the green came from.
+% A template published on its own should not put someone's name in the command
+% you type; where the colour came from is a fact, and it is recorded in the
+% next paragraph, which is the right place for it.
+%
+% #5A7411 (RGB 90-116-17, CMYK 48-0-100-53). It began as a university's brand
+% green; here it is simply the primary.
+% Everything else is derived from it rather than picked independently, so the
+% deck recolours from one line if the brand ever changes.
+%
+% The stock \mcmTheme only knows Kraft and DeepBlue, so this sets the same
+% twelve semantic aliases by hand and then calls the template's own
+% \mcm@applytheme to push them into beamer's colour registers. That is the
+% supported shape of a third theme — it just has no public name.
+%
+% Alert and example are the two colours NOT derived from the green, and they
+% are the ones that carry meaning, so they have to be distinguishable from it
+% under a projector rather than merely different in hex. Burnt orange and deep
+% teal are the classic mid-century partners for olive: one warm and advancing,
+% one cool and receding, both clearly not the primary.
+% -----------------------------------------------------------------------------
+\definecolor{oliveGreen}{HTML}{5A7411}   % the brand colour, untouched
+\definecolor{oliveDark}{HTML}{3C4D0B}    % hairline under the title footer strip
+\definecolor{oliveCream}{HTML}{F0EEDC}   % title text sitting on the green
+\definecolor{olivePale}{HTML}{DDE3C2}    % subtitle / frame-title subtitle
+\definecolor{oliveRust}{HTML}{C1502E}    % alert
+\definecolor{oliveRustBg}{HTML}{F8ECE4}
+\definecolor{oliveTeal}{HTML}{2F6F73}    % example
+\definecolor{oliveTealBg}{HTML}{E7F0F0}
+
+\makeatletter
+\newcommand{\oliveTheme}{%
+  \colorlet{mcmPrimary}{oliveGreen}%
+  \colorlet{mcmPrimaryDark}{oliveDark}%
+  \colorlet{mcmPrimaryFg}{oliveCream}%
+  \colorlet{mcmPrimaryAccent}{olivePale}%
+  \colorlet{mcmPrimaryMuted}{oliveGreen!12}%
+  \colorlet{mcmPip}{oliveGreen}%
+  \colorlet{mcmBlockTitleFg}{oliveGreen}%
+  \colorlet{mcmScanLine}{oliveGreen!55}%
+  \colorlet{mcmAlert}{oliveRust}%
+  \colorlet{mcmAlertBg}{oliveRustBg}%
+  \colorlet{mcmExample}{oliveTeal}%
+  \colorlet{mcmExampleBg}{oliveTealBg}%
+  \mcm@applytheme
+}
+\makeatother
+
+% -----------------------------------------------------------------------------
+% FONTS — Montserrat, bundled
+%
+% Montserrat is retro by design rather than
+% by association: Julieta Ulanovsky drew it from the street signage of the
+% Montserrat district of Buenos Aires, first half of the twentieth century.
+% Geometric, large apertures, near-monoline — the same family of shapes the
+% template's mid-century styling is built on. A neutral contemporary grotesque
+% — Roboto and its relatives — is the opposite: designed not to be noticed,
+% which would fight the template rather than sit in it.
+%
+% Loaded from fonts/ by path, not by family name. Naming a family lets
+% fontconfig answer, and when it cannot it answers with something else: the
+% template's own \IfFontExistsTF{Lato}{...}{Helvetica} fallback is why this deck
+% rendered in Lato on one machine and Helvetica on another with no warning.
+% Bundling removes the question — and it is the same argument stage one of the
+% deck makes about vendoring a JSON-LD context.
+%
+% If the files are missing the build STOPS. A deck that silently renders in a
+% substitute font is worse than one that refuses to build, because the
+% substitution is only discovered when it is projected.
+% -----------------------------------------------------------------------------
+\IfFileExists{fonts/montserrat/Montserrat-Regular.otf}{}{%
+  \PackageError{tdstyle}{%
+    Montserrat not found in fonts/montserrat/.\MessageBreak
+    Put the family (SIL OFL) from\MessageBreak
+    https://github.com/JulietaUla/Montserrat there —\MessageBreak
+    at least Regular, Italic, SemiBold, SemiBoldItalic as .otf%
+  }{See the FONTS section of tdstyle.tex.}%
+}
+
+% .otf, not .ttf. Both builds carry the same feature table here, but the OTF is
+% the PostScript-outline original and is what the foundry treats as canonical.
+% Scale 0.95 is not decoration, it buys slides. Montserrat is a geometric face
+% with wide letterforms, and swapping it in for Lato at the same nominal size
+% pushed the specimen card frame 35pt past the bottom of the slide — a frame
+% that had fit with room to spare. 0.96 was enough to clear it; 0.95 leaves a
+% little headroom for the denser slides still to be converted.
+%
+% Legibility does not suffer: Montserrat has a large x-height, so at 0.95 it
+% still reads bigger than Lato did at 1.0. Measure with check.sh before
+% changing this — the number was arrived at by bisection, not by eye.
+\setsansfont{Montserrat}[
+  Path = fonts/montserrat/,
+  Scale = 0.95,
+  Extension = .otf,
+  UprightFont = *-Regular,
+  ItalicFont = *-Italic,
+  BoldFont = *-SemiBold,
+  BoldItalicFont = *-SemiBoldItalic,
+]
+\renewcommand{\familydefault}{\sfdefault}
+
+% -----------------------------------------------------------------------------
+% DISPLAY FACE — EB Garamond, an old-style serif to pair with the sans
+%
+% Chosen to sit with a logo set in an old-style serif — the tell there was the
+% Q, a long fine tail sweeping out to the lower right, which is a Garamond
+% signature. Checked against every serif TeX Live ships: Palatino's tail is
+% short and
+% stubby, Times's is short and thick, Century Schoolbook's hooks down-left,
+% Bookman's curls under the bowl. None of them is close. EB Garamond is the
+% free revival that has it, and it carries real small capitals and old-style
+% figures besides.
+%
+% Titles only. Garamond has a small x-height and fine strokes: lovely on paper,
+% weak on a projector at the sizes the asides are set in. So the display face
+% takes the cover, the section dividers and the frame titles, where the type is
+% large, and Montserrat above keeps the body and the small print, where
+% legibility at distance is what matters.
+%
+% VERSION MATTERS. This is Duffner's EB Garamond 0.016, which ships optical
+% sizes (08 for small text, 12 for large) and NO BOLD — Regular and Italic only.
+% The Google Fonts release is a different animal: one optical size, weights 400
+% to 800. Swapping one for the other silently changes what \bfseries resolves
+% to, so the release is named in the path.
+%
+% No bold is not a problem to work around, it is the correct setting. An
+% old-style serif used for display was never bolded; \bfseries on a face with no
+% bold makes fontspec synthesise one by smearing the outline, which on Garamond
+% looks like a printing fault. The title fonts below are therefore set at medium
+% weight explicitly, so nothing asks for a bold that does not exist.
+% -----------------------------------------------------------------------------
+\IfFileExists{fonts/EBGaramond-0.016/otf/EBGaramond12-Regular.otf}{}{%
+  \PackageError{tdstyle}{%
+    EB Garamond 0.016 not found in fonts/EBGaramond-0.016/otf/.\MessageBreak
+    Get it (SIL OFL) from\MessageBreak
+    https://github.com/octaviopardo/EBGaramond12%
+  }{See the DISPLAY FACE section of tdstyle.tex.}%
+}
+
+\newfontfamily\mcmDisplayFont{EBGaramond12}[
+  Path = fonts/EBGaramond-0.016/otf/, Extension = .otf,
+  UprightFont = *-Regular, ItalicFont = *-Italic,
+  BoldFont = *-Regular, BoldItalicFont = *-Italic,
+]
+
+% Letterspaced full capitals, for the cover and the section dividers — the
+% mid-century poster convention, and it needs no `smcp`.
+%
+% Reserved for SHORT strings. Letterspaced capitals are wide: measured against
+% this deck's own titles, `CREATION · DATABAT-KGC-KNXPROJ` already fills most of
+% a 16:9 slide, and a frame title like "The ontology, the file, and what it was
+% used for · Fatokun et al., 2023" would not fit at all. Frame titles use small
+% capitals instead, which are compact.
+\newfontfamily\mcmDisplayFontLS{EBGaramond12}[
+  Path = fonts/EBGaramond-0.016/otf/, Extension = .otf,
+  UprightFont = *-Regular, BoldFont = *-Regular,
+  LetterSpace = 12,
+]
+\newcommand{\displaycaps}[1]{{\mcmDisplayFontLS\MakeUppercase{#1}}}
+
+% Which register each element belongs to.
+%
+% Garamond takes everything that is displayed — the cover entire, the section
+% dividers, the frame titles. Montserrat takes everything that is read — body,
+% cards, asides, tables. The frame title sits on the boundary and is Garamond,
+% so each content slide opens in the display voice and drops into the reading
+% one, which is the join the two faces were chosen for.
+%
+% The cover is all-Garamond rather than Garamond-title-over-sans-everything:
+% with the author line left in Montserrat the page reads as two compositions
+% stacked, because the texture changes halfway down for no reason the reader
+% can see.
+%
+% `series=\mdseries` on every one of these is load-bearing, not tidiness.
+% Beamer's defaults ask for \bfseries, EB Garamond 0.016 has no bold, and
+% fontspec answers a missing bold by smearing the outline into a fake one.
+%
+% Use \setbeamerfont with the full specification, not \addtobeamerfont{}{family=}
+% — the latter was tried here and did not take.
+\setbeamerfont{title}{size={\fontsize{21}{23}}, series=\mdseries,
+                      family=\mcmDisplayFont}
+\setbeamerfont{frametitle}{size=\large, series=\mdseries,
+                           family=\mcmDisplayFont}
+\setbeamerfont{subtitle}{size=\large, series=\mdseries,
+                         family=\mcmDisplayFont}
+\setbeamerfont{author}{size=\Large, family=\mcmDisplayFont}
+\setbeamerfont{institute}{size=\small, family=\mcmDisplayFont}
+\setbeamerfont{date}{size=\scriptsize, family=\mcmDisplayFont}
+
+% -----------------------------------------------------------------------------
+% TITLE CASE — small capitals rather than full caps
+%
+% The template sets titles with \MakeUppercase. That flattens the one thing
+% these titles carry information in: five of them are repository paths, and
+% CoSWoT, KNX, RDF, TD are proper nouns whose capitalisation is the point.
+% DATABAT-KGC-KNXPROJ tells the reader nothing that databat-kgc-knxproj did not.
+%
+% Small capitals keep the distinction. Real capitals stay full height and
+% lowercase becomes small caps, so CoSWoT still shows C, SW and T standing
+% above the o's, and the reader can still see where a name's capitals fall.
+%
+% Loading the font needs care. `\setmainfont{TeX Gyre Heros}` resolves through
+% fontconfig, which hands back a version with no `smcp` table, and fontspec then
+% warns that the feature is unavailable and silently sets the text unchanged —
+% small caps that are not small caps. Naming the file instead forces the OTF,
+% which does carry smcp. Both fonts ship with TeX Live, so this renders the same
+% on any machine rather than depending on what is installed locally.
+%
+% The 1.2 of tracking is because small caps set at the letterfit of lowercase
+% read tight; the figure is small enough not to look like a design gesture.
+% -----------------------------------------------------------------------------
+\newfontfamily\mcmTitleFontSC{EBGaramond12}[
+  Path = fonts/EBGaramond-0.016/otf/, Extension = .otf,
+  UprightFont = *-Regular, BoldFont = *-Regular,
+  Letters = SmallCaps, LetterSpace = 1.2]
+
+% Both branches now resolve to the display face, so a frame title is Garamond
+% either way and the flag only decides small caps versus title case.
+\renewcommand{\mcmTitleFormat}[1]{%
+  {\ifmcmTitleUppercase\mcmTitleFontSC\else\mcmDisplayFont\fi #1}%
+}
+
+% ON. EBGaramond12-Regular.otf reports `smcp`, checked rather than assumed —
+% this release also ships EBGaramondSC12-Regular as a separate small-caps font,
+% but the feature inside the regular face makes that unnecessary.
+%
+%   python3 -c "from fontTools.ttLib import TTFont; \
+%     f=TTFont('fonts/EBGaramond-0.016/otf/EBGaramond12-Regular.otf'); \
+%     print('smcp' in {r.FeatureTag for r in f['GSUB'].table.FeatureList.FeatureRecord})"
+%
+% \mcmTitleUppercasefalse gives plain title case instead.
+\mcmTitleUppercasetrue
+
+% -----------------------------------------------------------------------------
+% SECTION PAGE — same layout as the template, without the hyphenation
+%
+% The stock template sets the section title in a TikZ node of fixed text width
+% and lets TeX break it wherever it likes, which turned "How five running
+% systems use a Thing Description" into "Thing De-\newline scription". A hyphen
+% inside a divider title reads as a mistake: the line is display type, short,
+% and has room to break at a space instead.
+%
+% Copied from beamerthememidcenturymodern.sty rather than patched, so that file
+% stays a verbatim upstream copy. Two things are new: `align=flush left` and
+% \hyphenchar. If the section page changes upstream, re-copy it and re-add them.
+%
+% Getting here took three attempts, and the two that failed are worth recording
+% because the obvious fixes are the ones that do not work.
+%
+%   \hyphenpenalty=10000 — no effect. In ordinary TeX that value forbids the
+%   break outright, and it still hyphenated.
+%
+%   \raggedright — no effect either. The giveaway was the word spacing: the
+%   first line came out justified, spaces stretched to reach the margin.
+%
+% Both are paragraph parameters, and both were being overridden. pgf's `align=`
+% key installs its own paragraph settings when the node is typeset, after the
+% content has begun, so anything set at the head of the node text is discarded.
+% Which is why the fix is not a paragraph parameter at all:
+%
+%   \hyphenchar\font=-1 — a FONT property. It removes the hyphen character from
+%   the font, so there is nothing for the line breaker to insert. pgf's align
+%   handling does not touch it.
+%
+% And the alignment is set through pgf's own key rather than fought with:
+% `align=flush left` is genuine ragged right, where `align=left` was justifying.
+% Display type at this size shows stretched word spacing badly.
+%
+% The SECTION label sits at yshift=0.55cm rather than the template's 0.18cm.
+% 0.18 was clear of Montserrat's ascenders but not of Garamond's, which are
+% taller relative to the x-height, so the label and the title ran together.
+% -----------------------------------------------------------------------------
+\setbeamertemplate{section page}{%
+  \begin{tikzpicture}[remember picture, overlay]
+    \fill[mcmBg]
+      (current page.south west) rectangle (current page.north east);
+    \fill[mcmPrimary]
+      (current page.south west)
+      rectangle ([xshift=0.45cm]current page.north west);
+    \fill[mcmPrimary!45]
+      ([xshift=0.45cm]current page.south west)
+      rectangle ([xshift=0.60cm]current page.north west);
+    \node[anchor=south west, inner sep=0pt,
+          font=\small\bfseries, text=mcmPrimary!55]
+      at ([xshift=1.1cm, yshift=0.55cm]current page.west)
+      {\MakeUppercase{Section}\ \insertsectionnumber};
+    \node[anchor=west, text width=0.80\paperwidth,
+          align=flush left, inner sep=0pt]
+      at ([xshift=1.1cm, yshift=-0.55cm]current page.west)
+      {\usebeamerfont{title}\hyphenchar\font=-1\relax
+       \color{mcmPrimary}\insertsection};
+    % The Slidev deck gave every divider a sentence under the title saying what
+    % the section covers and on what evidence. Beamer's \section carries a title
+    % only, so \tdsection supplies the rest. Set in the body face: it is a
+    % sentence to be read, not display type, and Garamond at this size on a pale
+    % ground is the combination that goes soft on a projector.
+    \ifx\tdsecsub\empty\else
+      \node[anchor=north west, text width=0.72\paperwidth,
+            align=flush left, inner sep=0pt]
+        at ([xshift=1.1cm, yshift=-1.6cm]current page.west)
+        {\usebeamerfont*{normal text}\small\color{mcmBlack!65}\tdsecsub};
+    \fi
+  \end{tikzpicture}%
+}
+
+% \tdsection{title}{subtitle} — one command taking both, rather than a separate
+% \sectionsubtitle. \AtBeginSection typesets the divider at the moment \section
+% runs, so a subtitle set on the line AFTER \section arrives too late and is
+% silently dropped. Taking both arguments at once removes the ordering trap.
+%
+% Pass an empty second argument for a divider with no subtitle.
+\newcommand{\tdsecsub}{}
+\newcommand{\tdsection}[2]{\renewcommand{\tdsecsub}{#2}\section{#1}}
+
+% -----------------------------------------------------------------------------
+% STUDY PAGE — \tdstudy{short}{full title}{authors · venue}
+%
+% Section 3 gives each study three pages, and the three page titles are the same
+% three questions both times: the ontology and its file / how it was used / what
+% is worth taking. The part that changes sits in \textnormal after a middle dot,
+% at the tail of the line, so the eye finds no boundary between one study and
+% the next. This puts a divider there, and gives the paper its real title and
+% authors — which the deck otherwise never states.
+%
+% Quieter than a section page on purpose: no coloured spine, no page-wide fill,
+% since it divides inside a section rather than between sections.
+\newcommand{\tdstudy}[3]{%
+  \begin{frame}[plain, noframenumbering]
+    \begin{tikzpicture}[remember picture, overlay]
+      \fill[mcmBg]
+        (current page.south west) rectangle (current page.north east);
+      \fill[mcmPrimary!45]
+        (current page.south west)
+        rectangle ([xshift=0.15cm]current page.north west);
+      % The block sits 0.35cm higher than it first did. Section 3's dividers
+      % carry a citation — four lines at most — and were balanced for that;
+      % section 5's carry a paragraph, and at five lines the old placement ran
+      % the last line to the foot of the page. Raising the group leaves the
+      % same margin under a long body as under a short one.
+      \node[anchor=south west, inner sep=0pt,
+            font=\small\bfseries, text=mcmPrimary!55]
+        at ([xshift=1.1cm, yshift=1.10cm]current page.west)
+        {\MakeUppercase{#1}};
+      \node[anchor=west, text width=0.80\paperwidth,
+            align=flush left, inner sep=0pt]
+        at ([xshift=1.1cm, yshift=0.32cm]current page.west)
+        {\usebeamerfont{subtitle}\hyphenchar\font=-1\relax
+         \color{mcmPrimary}#2};
+      \node[anchor=north west, text width=0.72\paperwidth,
+            align=flush left, inner sep=0pt]
+        at ([xshift=1.1cm, yshift=-0.85cm]current page.west)
+        {\usebeamerfont*{normal text}\small\color{mcmBlack!65}#3};
+    \end{tikzpicture}%
+  \end{frame}%
+}
+
+% -----------------------------------------------------------------------------
+% PARAGRAPH SPACING
+%
+% Beamer leaves \parskip and \parindent both at zero, so consecutive paragraphs
+% have neither a gap nor an indent between them and run together into one
+% block. On a slide of continuous prose — which most of this deck is — the
+% reader gets no signal that an argument has finished and a new one started.
+%
+% Rubber, not fixed. The stretch lets a slide with room to spare open up, and
+% the shrink lets a tight one give the space back before it overflows, which
+% means the setting does not cost a page that was only just fitting.
+%
+% This makes the crowded slides measurably worse in check.sh, and that is the
+% intended trade. The gap is a real typographic need; a slide that only fits
+% because its paragraphs are jammed together is a slide with too much on it,
+% and the honest response is to cut it rather than to hide it.
+% -----------------------------------------------------------------------------
+\setlength{\parskip}{0.6em plus 0.25em minus 0.2em}
+
+% -----------------------------------------------------------------------------
+% ACCENT
+%
+% The Slidev deck marked ~190 phrases with a span that coloured them. \ac is the
+% direct equivalent, so the prose converts phrase-for-phrase; \acb is the bold
+% variant used for the pseudo-headings that open most slides.
+% -----------------------------------------------------------------------------
+% -----------------------------------------------------------------------------
+% NAMES YOU TYPE IN A SLIDE
+%
+% The stock theme prefixes its colours mcm — for "mid-century modern", the
+% template this one is built on. Nothing in a slide of yours should have to
+% carry that history, so the three that ever appear in slide source have plain
+% aliases here. \oliveTheme has already pointed mcmPrimary at the brand green.
+%
+% Aliases, not renames: the .sty is upstream verbatim and refers to mcm*
+% throughout. Renaming inside it would mean giving up the ability to drop in a
+% new upstream release, for a prefix that would then appear in nothing but a
+% file no one edits.
+% -----------------------------------------------------------------------------
+\colorlet{oliveInk}{mcmBlack}     % body text; use oliveInk!70 and so on for grey
+\colorlet{olivePaper}{mcmBg}      % the page ground
+% oliveGreen is already defined above and is what mcmPrimary points at.
+
+\newcommand{\ac}[1]{\textcolor{mcmPrimary}{#1}}
+\newcommand{\acb}[1]{\textcolor{mcmPrimary}{\textbf{#1}}}
+
+% \code is for literals — things typed exactly as shown into a document or a
+% terminal: op values like readproperty, keys like @context and href, media
+% types, filenames, IRIs.
+%
+% Separate from \ac because the two were doing different jobs in the same
+% colour. \ac marks a term the sentence is drawing attention to; \code marks a
+% string that has to be reproduced character for character. Setting a literal
+% in the running face invites the reader to treat its capitalisation as
+% incidental, and in `readproperty` — one lowercase word, per the specification
+% — it is not.
+%
+% \footnotesize, not \small: the fallback mono has a large x-height next to
+% Montserrat at 0.95, and set at the running size a literal reads as though it
+% were being shouted. Matched by eye against surrounding body text.
+% Relative, not \footnotesize. The size was written in when every use of \code
+% sat in body text; inside a figure set at 6.6pt, or in a caption at the same
+% size, a hard \footnotesize made every monospace fragment the largest thing on
+% the line. \tsc is the correction the mono face needs against the body face —
+% it is set here once so that \code follows whatever size it lands in.
+\makeatletter
+\newcommand{\tdCodeScale}{1.05}
+% \upshape as well as \ttfamily: inside an italic run — a figure caption, an
+% \emph — the mono face was being slanted, and slanted monospace stops reading
+% as code.
+\newcommand{\code}[1]{{\ttfamily\upshape\textcolor{mcmBlack!85}{%
+  \fontsize{\dimexpr\tdCodeScale\dimexpr\f@size pt\relax\relax}{0pt}%
+  \selectfont #1}}}
+\makeatother
+
+% A slide's opening line. In Slidev these were bold accent spans doing the job
+% of a heading while the real frame title stayed empty; here the frame title is
+% the band at the top, so this is the second-level label under it.
+\newcommand{\slidelead}[1]{{\large\acb{#1}}\par\vspace{0.4em}}
+
+% -----------------------------------------------------------------------------
+% STEP FLOW — the card diagrams
+%
+% Seven slides show a left-to-right flow: N boxes with arrows between them. The
+% row is one tcbraster so tcolorbox equalises the box heights itself; without
+% that the boxes are as tall as their own text and the row looks ragged.
+%
+% Arrows occupy raster columns of their own rather than being squeezed between
+% boxes, which is what keeps them vertically centred on boxes whose height is
+% not known until the row is typeset. Each card spans 4 columns and each arrow
+% 1, so a row of N cards needs 5N-1 columns: 14 for three cards, 19 for four.
+% \stepflow works that out, so the caller says how many cards there are and
+% never counts columns.
+%
+% The 4:1 ratio is doing real work. At 2:1 an arrow took an eighth of the slide
+% — as much horizontal room as a third of a card — and the width it stole came
+% out of the cards, which then wrapped their text over more lines and made the
+% whole row taller. Height is the scarce resource on these slides and width is
+% not, so the arrow gets the narrowest column that still reads as an arrow.
+% -----------------------------------------------------------------------------
+% A rule, a heading, and text. No frame, no fill.
+%
+% The first version of this used tcolorbox: filled panels with a border and an
+% accent bar, ported straight from the Slidev deck. That is a web idiom, and it
+% stopped matching the deck once the type became Garamond over Montserrat with
+% hairline rules — panels read as UI, not as print. Dropping the frame also
+% dropped the border and the padding it needed, which is what made the specimen
+% frame stop feeling cramped. On a deck with thirteen slides still to fit, the
+% vertical space a border costs is not a rounding error.
+%
+% What the frame was doing — saying "these three things are separate objects" —
+% the rule and the gap do just as well, and the arrows carry the sequence.
+\newlength{\tdStepW}
+\newlength{\tdStepGap}
+\setlength{\tdStepGap}{2.6em}   % room for one arrow plus the air around it
+
+% \begin{stepflow}{<number of cards>} ... \end{stepflow}
+%
+% N cards leave N-1 gaps, hence the arithmetic. Passing the count rather than
+% measuring it keeps the macro simple; the caller already knows the number.
+\newenvironment{stepflow}[1]{%
+  \setlength{\tdStepW}{\dimexpr(\textwidth-#1\tdStepGap+\tdStepGap)/#1\relax}%
+  \par\noindent\ignorespaces
+}{\par}
+
+% One card. #1 = heading, #2 = body.
+%
+% \raggedright, not justified. These columns are narrow enough that justifying
+% them opens visible rivers between words — the first draft of this layout had
+% "read that archive and write" stretched across the column.
+% Optional first argument: a width multiplier, default 1. The multipliers in a
+% row should add up to the number of cards, so the row still spans the measure.
+%
+% Equal widths make the row as tall as its wordiest card while the shortest one
+% sits half empty — on the nodegen slide the first card ran three lines and the
+% other two ran six. Widening the full ones and narrowing the short one levels
+% the line counts and takes height off the whole row.
+\newcommand{\stepcard}[3][1]{%
+  \begin{minipage}[t]{\dimexpr#1\tdStepW\relax}
+    \raggedright
+    % \par INSIDE each size group. LaTeX sets a whole paragraph with the
+    % \baselineskip in force when the paragraph ends, so a \par written outside
+    % the braces ends the paragraph at the restored size and every line of the
+    % card body is led as if it were normalsize — 40% too open, and only on the
+    % lines the size change was meant to cover.
+    {\color{mcmPrimary}\rule{\linewidth}{1.2pt}\par}\vspace{0.45em}
+    {\footnotesize\bfseries #2\par}\vspace{0.3em}
+    {\scriptsize #3\par}
+  \end{minipage}%
+}
+
+% The arrow between two cards.
+%
+% \unskip and \ignorespaces make it safe to put each card on its own source
+% line: without them the newline either side contributes an interword space
+% that fights the \hfill and pushes the row off centre.
+%
+% The \vspace aligns the arrow with the heading rather than the top rule, which
+% is where the eye reads the relation between one step and the next.
+\newcommand{\steparrow}{%
+  \unskip\hfill
+  \begin{minipage}[t]{1.4em}%
+    \vspace{1.9em}{\color{mcmPrimary}\footnotesize$\rightarrow$}%
+  \end{minipage}%
+  \hfill\ignorespaces
+}
+
+% -----------------------------------------------------------------------------
+% ASIDE
+%
+% The grey small-print blocks that closed many Slidev slides — definitions of
+% KNX, SHACL and so on. A rule above and smaller type, so they read as
+% apparatus rather than as body text that happens to be short.
+% -----------------------------------------------------------------------------
+% \vfill first: the aside sinks to the bottom of the frame rather than trailing
+% whatever paragraph happens to precede it. Two reasons. Apparatus in the same
+% place on every slide is apparatus the audience can find without looking; and
+% an aside pressed against the paragraph above reads as a continuation of it,
+% which is the opposite of what it is.
+%
+% Costs nothing on a full slide — there is no slack for \vfill to take — so the
+% crowded slides are unaffected and only the sparse ones change.
+% The \vfill pushes the note to the foot of the frame, but on a full page there
+% is nothing left for it to push with and the rule lands against the last line
+% of prose. Hence the 0.9em: a gap that is there by default and that \vfill adds
+% to whenever the page has room. It is shrinkable, not rigid — a rigid 0.9em put
+% two already-fitting frames back over the edge, and a hairline of extra gap is
+% not worth an overflow.
+\newcommand{\aside}[1]{%
+  \par\vspace{0.9em minus 0.85em}\vfill
+  {\color{mcmBlack!25}\hrule height 0.4pt}%
+  \vspace{0.3em}%
+  {\scriptsize\color{mcmBlack!70}\setlength{\parskip}{0pt} #1\par}%
+}
+
+% -----------------------------------------------------------------------------
+% TABLES
+% Booktabs rules in the brand colour, and a compact row height, because every
+% table in this deck is prose in cells rather than numbers.
+% -----------------------------------------------------------------------------
+\setlength{\aboverulesep}{0pt}
+\setlength{\belowrulesep}{0pt}
+\renewcommand{\arraystretch}{1.25}
+\newcommand{\thead}[1]{{\scriptsize\bfseries\color{mcmBlack!55}\MakeUppercase{#1}}}
+
+% -----------------------------------------------------------------------------
+% TITLE PAGE — centred rather than ranged right
+%
+% The template ranges the whole title block right. With a two-line title and a
+% two-line subtitle that leaves a ragged left edge alternating long and short,
+% which reads as an accident rather than a choice. Centring settles it: the two
+% title lines are near enough the same length that the symmetry looks intended,
+% and a centred old-style serif in small capitals is the form a book title page
+% has taken for four hundred years.
+%
+% Only \mcm@tbuild is replaced, not the whole title page template — this is the
+% one macro the template exposes, and the ~90 lines of auto-fit machinery around
+% it are left alone. Copied from beamerthememidcenturymodern.sty with a single
+% change, \raggedleft to \centering; re-copy if the template changes upstream.
+%
+% The block does not need repositioning. Its minipage is 0.88\paperwidth wide
+% and anchored 0.06\paperwidth in from the right edge, so it spans 0.06 to 0.94
+% and its centre already falls on the centre of the page.
+%
+% The date is a separate box inside the title page template with its own
+% \raggedleft, so centring this macro would have left it alone in the corner.
+% It is centred from slides.tex instead — \date{\centering\today} — because
+% \centering issued inside the date content overrides the \raggedleft already
+% in effect, and that is one line against copying the whole template.
+% -----------------------------------------------------------------------------
+\makeatletter
+\renewcommand{\mcm@tbuild}{%
+  \sbox{\mcmTitleBlockBox}{%
+    \begin{minipage}{\mcmTitleBlockWidth}%
+      \centering
+      \hyphenpenalty=5000\relax \exhyphenpenalty=5000\relax
+      \mcm@tifny{\inserttitle}{%
+        {\spaceskip=\fontdimen2\font plus \fontdimen3\font minus \fontdimen4\font
+         \advance\spaceskip by \mcm@tsc{\mcmTitleWordSpacing}%
+         \usebeamerfont{title}\mcm@tfs{\mcmTitleFS}{1.10}%
+         \color{mcmPrimaryFg}\mcmTitleFormat{\inserttitle}\par}}%
+      \mcm@tifny{\insertsubtitle}{%
+        \vskip\mcm@tsc{\mcmTitleSubtitleSep}%
+        {\usebeamerfont{subtitle}\mcm@tfs{\mcmSubtitleFS}{1.25}%
+         \color{mcmPrimaryAccent!60!white}\insertsubtitle\par}}%
+      \mcm@tifny{\insertauthor}{%
+        \vskip\mcm@tsc{\mcmTitleAuthorSep}%
+        {\usebeamerfont{author}\mcm@tfs{\mcmAuthorFS}{1.20}%
+         \color{mcmPrimaryFg}\insertauthor\par}}%
+      \mcm@tifny{\insertinstitute}{%
+        \vskip\mcm@tsc{\mcmTitleInstituteSep}%
+        {\usebeamerfont{institute}\mcm@tfs{\mcmInstituteFS}{1.30}%
+         \color{mcmPrimaryFg}\insertinstitute\par}}%
+    \end{minipage}}%
+}
+\makeatother
+
+
+% ---- the palette this template mixes from ----------------------------------
+%
+% helpful/harmful take the two colours the deck already reserves for meaning —
+% teal for the example, rust for the alert — and the two origins take the
+% primary and the ink. Every quadrant is then half of one axis and half of the
+% other, at a tint low enough that the grid stays quieter than the text in it.
+\colorlet{swotHelpful} {oliveTeal!55}
+\colorlet{swotHarmful} {oliveRust!55}
+\colorlet{swotInternal}{oliveGreen!28}
+\colorlet{swotExternal}{oliveInk!18}
+\colorlet{swotInk}{oliveInk}
+\colorlet{S}{swotHelpful!50!swotInternal}
+\colorlet{W}{swotHarmful!50!swotInternal}
+\colorlet{O}{swotHelpful!50!swotExternal}
+\colorlet{T}{swotHarmful!50!swotExternal}
+
+\tcbset{
+  swotbox/.style     ={size=normal, boxrule=0pt, colback=#1,
+                       watermark text=#1, width=.5\linewidth-5mm},
+  swotheader/.style  ={size=small, boxrule=0pt, width=.5\linewidth-5mm,
+                       colback=#1, valign=center, halign=center},
+  swotfirstcol/.style={swotheader=#1, width=1cm},
+}
+% -----------------------------------------------------------------------------
+% SWOT
+%
+% \swot{strengths}{weaknesses}{opportunities}{threats} — a 3x3 raster: a blank
+% corner, two column headers, and two rows each opening with a rotated label.
+%
+% The four quadrant colours are MIXED rather than picked, which is what keeps
+% the grid readable: every quadrant is half "helpful/harmful" and half
+% "internal/external", so the two axes are legible in the colour itself and a
+% reader can place a quadrant without reading its label.
+%
+% The letter watermarked in each quadrant is the tcolorbox colour name. That is
+% deliberate — it labels the quadrant without spending a line on a heading.
+% -----------------------------------------------------------------------------
+\newcommand{\swotAxisHelpful}{Helpful\par\tiny (to achieve the objective)}
+\newcommand{\swotAxisHarmful}{Harmful\par\tiny (to achieve the objective)}
+\newcommand{\swotAxisInternal}{Internal origin\\\tiny (of the thing itself)}
+\newcommand{\swotAxisExternal}{External origin\\\tiny (of its environment)}
+
+\newcommand{\swot}[4]{%
+  \begin{center}
+  \begin{tcbitemize}[raster columns=3, raster rows=3, enhanced, sharp corners,
+                     raster valign=center,
+                     raster equal height=rows, raster force size=false,
+                     raster column skip=0pt, raster row skip=0pt]
+    \tcbitem[blankest, width=1cm]
+    \tcbitem[swotheader=swotHelpful] {\color{swotInk}\swotAxisHelpful}
+    \tcbitem[swotheader=swotHarmful] {\color{swotInk}\swotAxisHarmful}
+
+    \tcbitem[swotfirstcol=swotInternal]
+      {\rotatebox[origin=c]{90}{\parbox[t]{2.4cm}{\centering
+        \color{swotInk}\swotAxisInternal\par}}}
+    \tcbitem[swotbox=S] #1
+    \tcbitem[swotbox=W] #2
+
+    \tcbitem[swotfirstcol=swotExternal]
+      {\rotatebox[origin=c]{90}{\parbox[b]{2.4cm}{\centering
+        \color{swotInk}\swotAxisExternal\par}}}
+    \tcbitem[swotbox=O] #3
+    \tcbitem[swotbox=T] #4
+  \end{tcbitemize}
+  \end{center}%
+}

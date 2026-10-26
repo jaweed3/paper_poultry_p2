@@ -1,0 +1,773 @@
+% =============================================================================
+% beamerthememidcenturymodern.sty
+% A mid-century modern Beamer template. Requires LuaLaTeX.
+%
+% Upstream: https://github.com/jules-leguy/midcenturymodern
+% Author:   Jules Leguy.  Licence: CC BY 4.0.
+% Retrieved unmodified apart from these six comment lines. The palette and
+% every addition live in tdstyle.tex, not here, so this file can be replaced
+% wholesale when upstream updates.
+%
+% Used under CC BY 4.0, which requires changes to be indicated: the list of what
+% this deck changes is at the top of tdstyle.tex.
+%
+% COLOUR THEMES
+%
+%   Two built-in themes: DeepBlue (default) and Kraft.
+%   Select in your preamble before \begin{document}:
+%
+%     \usepackage{beamerthememidcenturymodern}
+%     \mcmTheme{Kraft}
+%
+% FONTS
+%
+%   Body: Lato (fallback: Helvetica).
+%   Titles: TeX Gyre Heros (fallback: default sans).
+%
+%   Override in your preamble after loading the template:
+%     \setsansfont{Font Name}
+%     \renewfontfamily\mcmTitleFont{Font Name}
+%
+% =============================================================================
+\ProvidesPackage{beamerthememidcenturymodern}[2025/01/01 Mid-Century Modern Beamer Template]
+
+\setbeamersize{text margin left=2em, text margin right=2em}
+
+\RequirePackage{calc}
+\RequirePackage{tikz}
+\RequirePackage{etoolbox}
+\RequirePackage{fontspec}
+\RequirePackage{hyperref}
+\RequirePackage{ragged2e}
+\defaultfontfeatures{Ligatures=TeX}
+
+\setbeamertemplate{frametitle continuation}{}
+
+% ---------------------------------------------------------------------------
+% FONTS
+% ---------------------------------------------------------------------------
+\IfFontExistsTF{Lato}{%
+  \setsansfont{Lato}%
+}{%
+  \IfFontExistsTF{Helvetica}{\setsansfont{Helvetica}}{}%
+}
+\renewcommand{\familydefault}{\sfdefault}
+
+\IfFontExistsTF{TeX Gyre Heros}{%
+  \newfontfamily\mcmTitleFont{TeX Gyre Heros}%
+}{%
+  \let\mcmTitleFont\sffamily
+}
+
+% Uppercase titles (default on). Disable: \mcmTitleUppercasefalse
+\newif\ifmcmTitleUppercase
+\mcmTitleUppercasetrue
+
+% Extra word spacing on the title page (default 0.5em)
+\newlength{\mcmTitleWordSpacing}
+\setlength{\mcmTitleWordSpacing}{0.5em}
+
+% Helper: apply title font + optional uppercase
+\newcommand{\mcmTitleFormat}[1]{%
+  {\mcmTitleFont
+   \ifmcmTitleUppercase\MakeUppercase{#1}\else#1\fi}%
+}
+
+\mode<presentation>{
+  \usetheme{default}
+  \usefonttheme{professionalfonts}
+  \setbeamertemplate{navigation symbols}{}
+}
+
+% ---------------------------------------------------------------------------
+% COLOUR PALETTE
+% ---------------------------------------------------------------------------
+\definecolor{mcmDeepGreen}{HTML}{09342A}
+\definecolor{mcmGreen}{HTML}{177F6B}
+\definecolor{mcmLightGreen}{HTML}{EEFAF4}
+\definecolor{mcmBg}{HTML}{F8F6F2}
+\definecolor{mcmMintBlock}{HTML}{EAF8F2}
+\definecolor{mcmMintTitle}{HTML}{4DB896}
+\definecolor{mcmLightGray}{HTML}{F5F5F5}
+\definecolor{mcmBlack}{HTML}{1A1A1A}
+\definecolor{mcmDeepBlue}{HTML}{002d4d}
+\definecolor{mcmDarkBlue}{HTML}{1a2a3b}
+\definecolor{mcmLightBlue}{HTML}{BFE5EE}
+\definecolor{mcmTerracotta}{HTML}{9C4732}
+\definecolor{mcmKraft}{HTML}{DEC5A6}
+\definecolor{mcmKraftLight}{HTML}{E8D5B5}
+\definecolor{mcmPink}{HTML}{E8637D}
+\definecolor{mcmLightPink}{HTML}{FCEEF1}
+\definecolor{mcmAmber}{HTML}{DB6720}
+\definecolor{mcmLightAmber}{HTML}{FAEBD7}
+\definecolor{mcmSage}{HTML}{6B7F3A}
+\definecolor{mcmLightSage}{HTML}{EFF2E6}
+
+% ---------------------------------------------------------------------------
+% SEMANTIC COLOUR ALIASES — set by \mcmTheme
+% ---------------------------------------------------------------------------
+\colorlet{mcmPrimary}{mcmDeepBlue}
+\colorlet{mcmPrimaryDark}{mcmDarkBlue}
+\colorlet{mcmPrimaryFg}{mcmLightGray}
+\colorlet{mcmPrimaryAccent}{mcmLightBlue}
+\colorlet{mcmPrimaryMuted}{mcmDeepBlue!10}
+\colorlet{mcmPip}{mcmDeepBlue}
+\colorlet{mcmBlockTitleFg}{mcmDeepBlue}
+\colorlet{mcmScanLine}{mcmDeepBlue!55}
+\colorlet{mcmAlert}{mcmPink}
+\colorlet{mcmAlertBg}{mcmLightPink}
+\colorlet{mcmExample}{mcmMintTitle}
+\colorlet{mcmExampleBg}{mcmMintBlock}
+
+% ---------------------------------------------------------------------------
+% THEME COMMAND
+% ---------------------------------------------------------------------------
+\newcommand{\mcmTheme}[1]{%
+  \def\mcm@theme{#1}%
+  \ifstrequal{#1}{Kraft}{%
+    \colorlet{mcmPrimary}{mcmTerracotta}%
+    \colorlet{mcmPrimaryDark}{mcmTerracotta!80!black}%
+    \colorlet{mcmPrimaryFg}{mcmKraft}%
+    \colorlet{mcmPrimaryAccent}{mcmKraftLight}%
+    \colorlet{mcmPrimaryMuted}{mcmTerracotta!10}%
+    \colorlet{mcmPip}{mcmTerracotta}%
+    \colorlet{mcmBlockTitleFg}{mcmTerracotta}%
+    \colorlet{mcmScanLine}{mcmTerracotta!55}%
+    \colorlet{mcmAlert}{mcmAmber}%
+    \colorlet{mcmAlertBg}{mcmLightAmber}%
+    \colorlet{mcmExample}{mcmSage}%
+    \colorlet{mcmExampleBg}{mcmLightSage}%
+    \mcm@applytheme
+  }{%
+    \colorlet{mcmPrimary}{mcmDeepBlue}%
+    \colorlet{mcmPrimaryDark}{mcmDarkBlue}%
+    \colorlet{mcmPrimaryFg}{mcmLightGray}%
+    \colorlet{mcmPrimaryAccent}{mcmLightBlue}%
+    \colorlet{mcmPrimaryMuted}{mcmDeepBlue!10}%
+    \colorlet{mcmPip}{mcmDeepBlue}%
+    \colorlet{mcmBlockTitleFg}{mcmDeepBlue}%
+    \colorlet{mcmScanLine}{mcmDeepBlue!55}%
+    \colorlet{mcmAlert}{mcmPink}%
+    \colorlet{mcmAlertBg}{mcmLightPink}%
+    \colorlet{mcmExample}{mcmMintTitle}%
+    \colorlet{mcmExampleBg}{mcmMintBlock}%
+    \mcm@applytheme
+  }%
+}
+
+\newcommand{\mcm@applytheme}{%
+  \setbeamercolor{frametitle}{fg=mcmPrimaryFg, bg=mcmPrimary}%
+  \setbeamercolor{block title}{fg=mcmBlockTitleFg, bg=mcmBg}%
+  \setbeamercolor{block title alerted}{fg=mcmAlert, bg=mcmAlertBg}%
+  \setbeamercolor{block body alerted}{fg=mcmBlack, bg=mcmAlertBg}%
+  \setbeamercolor{block title example}{fg=mcmExample, bg=mcmExampleBg}%
+  \setbeamercolor{block body example}{fg=mcmBlack, bg=mcmExampleBg}%
+  \setbeamercolor{alerted text}{fg=mcmAlert}%
+  \setbeamercolor{example text}{fg=mcmExample}%
+  \setbeamercolor{section in toc}{fg=mcmPip}%
+  \setbeamercolor{subsection in toc}{fg=mcmPip}%
+  \setbeamercolor{bibliography entry author}{fg=mcmPip}%
+  \setbeamercolor{bibliography entry cite}{fg=mcmPip}%
+  \renewcommand{\mcmBulletColor}{mcmPip}%
+  \hypersetup{urlcolor=mcmPrimary, linkcolor=mcmPrimary, citecolor=mcmPrimary}%
+}
+
+% ---------------------------------------------------------------------------
+% GLOBAL COLOURS (theme-independent)
+% ---------------------------------------------------------------------------
+\setbeamercolor{normal text}{fg=mcmBlack, bg=mcmBg}
+\setbeamercolor{structure}{fg=mcmDeepGreen}
+\setbeamercolor{block body}{fg=mcmBlack, bg=mcmBg}
+\setbeamercolor{bibliography entry title}{fg=mcmBlack}
+\setbeamercolor{bibliography entry location}{fg=mcmBlack}
+\setbeamercolor{bibliography entry note}{fg=mcmBlack}
+
+% Bullet colour macro (must be defined before first \mcmTheme call)
+\newcommand{\mcmBulletColor}{mcmPip}
+
+% Apply default theme
+\mcmTheme{DeepBlue}
+
+% ---------------------------------------------------------------------------
+% FONT ASSIGNMENTS
+% ---------------------------------------------------------------------------
+\setbeamerfont{title}{size={\fontsize{21}{23}}, series=\bfseries}
+\setbeamerfont{subtitle}{size=\large, series=\mdseries}
+\setbeamerfont{author}{size=\Large}
+\setbeamerfont{institute}{size=\small}
+\setbeamerfont{date}{size=\scriptsize}
+\setbeamerfont{frametitle}{size=\large, series=\bfseries}
+\setbeamerfont{block title}{size=\normalsize, series=\bfseries}
+\setbeamerfont{section in toc}{size=\normalsize, series=\bfseries}
+\setbeamerfont{subsection in toc}{size=\small}
+
+% ---------------------------------------------------------------------------
+% FRAME TITLE — coloured band with accent line below
+%
+% Left padding: \mcmFrameTitleLeft (default 0.35cm)
+% ---------------------------------------------------------------------------
+\newlength{\mcmFrameTitleLeft}
+\setlength{\mcmFrameTitleLeft}{0.35cm}
+
+\setbeamertemplate{frametitle}{%
+  \nointerlineskip
+  \begin{beamercolorbox}[%
+      wd=\paperwidth,
+      ht=1.10cm, dp=0.0cm,
+      leftskip=\mcmFrameTitleLeft, rightskip=0.4cm]{frametitle}%
+    \vbox to 1.10cm{%
+      \vfil
+      \usebeamerfont{frametitle}\mcmTitleFormat{\insertframetitle}%
+      \ifx\insertframesubtitle\@empty\else
+        \hspace{0.4em}{\small\color{mcmPrimaryAccent!70}\insertframesubtitle}%
+      \fi
+      \vfil
+    }%
+  \end{beamercolorbox}%
+  \nointerlineskip
+  \begin{tikzpicture}[remember picture, overlay]
+    \fill[mcmPrimaryFg]
+      ([yshift=-1.10cm]current page.north west)
+      rectangle ([yshift=-1.10cm - 0.8pt]current page.north east);
+  \end{tikzpicture}%
+}
+
+% ---------------------------------------------------------------------------
+% BLOCKS — pip + title, single colorbox per block
+%
+% Internal padding: \mcmBlockPad (default 0.45em)
+% Title indent: \mcmBlockTitleIndent (default 0.3em)
+% Gap to neighbours: \mcmBlockSep (default 1em)
+%
+% \mcmBlockSep is the *visible* gap a block leaves around itself, and stacking
+% blocks needs no manual \vspace: half of it is placed above and half below.
+%
+% Getting that gap to look the same for every block type takes one correction.
+% Each block is a beamercolorbox whose background is inset by \mcmBlockPad
+% (colsep*) plus 0.5ex (sep) on every side. On alert/example blocks that inset
+% is visible — it is the coloured margin around the text. On a plain block the
+% background is mcmBg, the same colour as the page, so the identical inset is
+% invisible whitespace, and two stacked plain blocks read as though they were
+% pushed 2*(\mcmBlockPad+0.5ex) further apart than two coloured ones.
+%
+% So a plain block subtracts that invisible inset back out of the skips around
+% it, and coloured blocks do not. The visible gap then comes out at
+% \mcmBlockSep for every combination — plain/plain, plain/coloured,
+% coloured/coloured.
+%
+% The correction applies to the *skips*, never to the box: the inset itself is
+% identical for all three types, so blocks of different types side by side in a
+% columns[T] row still line their titles up. That is also why the skip *above*
+% a plain block is conditional. Subtracting it unconditionally would raise a
+% plain block above a coloured one in the neighbouring column, and demo.tex
+% puts block/alertblock/exampleblock in exactly that arrangement. It is only
+% correct to subtract when something sits above for the gap to be measured
+% against — i.e. when this block directly follows another block, which is
+% precisely when \lastskip is still one of the two skips below. A columns[T]
+% column instead opens with beamer's own \vskip-1ex, and body text leaves a
+% box rather than glue (\lastskip = 0pt), so neither is mistaken for a block.
+%
+% The \nointerlineskip below each block is what makes the gap come out at
+% \mcmBlockSep exactly rather than approximately. Left to itself TeX adds
+% interline glue of \baselineskip minus the previous depth minus the height of
+% whatever box comes next, so the gap would quietly depend on what follows: a
+% following block is tall and gets the \lineskip minimum, but a columns[T] row
+% is an \hbox of \vtops whose height is only its first line, which used to add
+% some 15bp on top of the intended gap. Suppressing it makes a block leave the
+% same space above a columns row as above another block.
+%
+% (The subtraction assumes the plain "block body" colour keeps a bg — beamer
+% only applies colsep* when one is set. Blanking it would over-subtract.)
+% ---------------------------------------------------------------------------
+\newlength{\mcmBlockPad}
+\setlength{\mcmBlockPad}{0.45em}
+
+\newlength{\mcmBlockTitleIndent}
+\setlength{\mcmBlockTitleIndent}{0.3em}
+
+\newlength{\mcmBlockSep}
+\setlength{\mcmBlockSep}{1em}
+
+% The inset beamer draws inside a block's background box. The 0.5ex must match
+% the sep= given to each beamercolorbox below.
+\newcommand{\mcmBlockInset}{\dimexpr\mcmBlockPad+0.5ex\relax}
+
+% Half of \mcmBlockSep, less the invisible inset of a plain block.
+\newcommand{\mcmBlockHalfSep}{\dimexpr0.5\mcmBlockSep-\mcmBlockInset\relax}
+
+\newcommand{\mcmBlockAbove}{%
+  \ifdim\lastskip=\mcmBlockHalfSep\relax      % follows a plain block
+    \vskip\mcmBlockHalfSep
+  \else\ifdim\lastskip=0.5\mcmBlockSep\relax  % follows a coloured block
+    \vskip\mcmBlockHalfSep
+  \else                                       % starts a column, or follows text
+    \vskip0.5\mcmBlockSep%
+  \fi\fi}
+\newcommand{\mcmBlockBelow}{\vskip\mcmBlockHalfSep\nointerlineskip}
+
+% Coloured blocks need no correction: their inset is visible, so it reads as
+% part of the block rather than as part of the gap.
+\newcommand{\mcmBlockAboveColoured}{\vskip0.5\mcmBlockSep}
+\newcommand{\mcmBlockBelowColoured}{\vskip0.5\mcmBlockSep\nointerlineskip}
+
+\setbeamertemplate{block begin}{%
+  \par\mcmBlockAbove%
+  \begin{beamercolorbox}[%
+      wd=\textwidth, colsep*=\mcmBlockPad,
+      sep=0.5ex]{block body}%
+    {\hspace{\mcmBlockTitleIndent}%
+     \llap{\textcolor{mcmPip}{\rule{3pt}{1.75ex}}\hspace{0.45em}}%
+     \usebeamerfont{block title}\usebeamercolor[fg]{block title}%
+     \insertblocktitle\par}%
+    \vskip0.4ex
+    \usebeamerfont{block body}\usebeamercolor[fg]{block body}%
+}
+\setbeamertemplate{block end}{%
+  \end{beamercolorbox}\mcmBlockBelow%
+}
+
+\setbeamertemplate{block alerted begin}{%
+  \par\mcmBlockAboveColoured%
+  \begin{beamercolorbox}[%
+      wd=\textwidth, colsep*=\mcmBlockPad,
+      sep=0.5ex]{block body alerted}%
+    {\hspace{\mcmBlockTitleIndent}%
+     \llap{\textcolor{mcmAlert}{\rule{3pt}{1.75ex}}\hspace{0.45em}}%
+     \usebeamerfont{block title}\usebeamercolor[fg]{block title alerted}%
+     \insertblocktitle\par}%
+    \vskip0.4ex
+    \usebeamerfont{block body}\usebeamercolor[fg]{block body alerted}%
+}
+\setbeamertemplate{block alerted end}{%
+  \end{beamercolorbox}\mcmBlockBelowColoured%
+}
+
+\setbeamertemplate{block example begin}{%
+  \par\mcmBlockAboveColoured%
+  \begin{beamercolorbox}[%
+      wd=\textwidth, colsep*=\mcmBlockPad,
+      sep=0.5ex]{block body example}%
+    {\hspace{\mcmBlockTitleIndent}%
+     \llap{\textcolor{mcmExample}{\rule{3pt}{1.75ex}}\hspace{0.45em}}%
+     \usebeamerfont{block title}\usebeamercolor[fg]{block title example}%
+     \insertblocktitle\par}%
+    \vskip0.4ex
+    \usebeamerfont{block body}\usebeamercolor[fg]{block body example}%
+}
+\setbeamertemplate{block example end}{%
+  \end{beamercolorbox}\mcmBlockBelowColoured%
+}
+
+% ---------------------------------------------------------------------------
+% ITEMIZE / ENUMERATE — geometric bullets, colour follows theme
+% ---------------------------------------------------------------------------
+\addtobeamertemplate{block alerted begin}{\renewcommand{\mcmBulletColor}{mcmAlert}}{}
+\addtobeamertemplate{block alerted end}{\renewcommand{\mcmBulletColor}{mcmPip}}{}
+\addtobeamertemplate{block example begin}{\renewcommand{\mcmBulletColor}{mcmExample}}{}
+\addtobeamertemplate{block example end}{\renewcommand{\mcmBulletColor}{mcmPip}}{}
+
+% The mark is the running font's own en dash, at every level: it inherits the
+% font, the series and — crucially — the size of the level it sits on, so the
+% three levels need no separate calibration and stay right if the body size
+% ever changes. Hierarchy is carried by the indentation, as in Swiss practice.
+\setbeamertemplate{itemize item}{\textcolor{\mcmBulletColor}{\textendash}}
+\setbeamertemplate{itemize subitem}{\textcolor{\mcmBulletColor}{\textendash}}
+\setbeamertemplate{itemize subsubitem}{\textcolor{\mcmBulletColor}{\textendash}}
+
+% Numerals, bare: bold at level 1, light below. Each numeral is one step
+% smaller than the body text of its own level.
+%
+% Trap: \usebeamerfont*{itemize subitem} does NOT shrink a label — it resets it
+% to \normalsize, so a nested numeral comes out at level-1 size beside \small
+% text. The size must come from the *body* font names below, plus the explicit
+% one-step reduction.
+\setbeamertemplate{enumerate item}{%
+  {\usebeamerfont*{itemize/enumerate body}\small
+   \color{\mcmBulletColor}\bfseries\insertenumlabel}%
+}
+\setbeamertemplate{enumerate subitem}{%
+  {\usebeamerfont*{itemize/enumerate subbody}\footnotesize
+   \color{\mcmBulletColor}\insertsubenumlabel}%
+}
+\setbeamertemplate{enumerate subsubitem}{%
+  {\usebeamerfont*{itemize/enumerate subsubbody}\scriptsize
+   \color{\mcmBulletColor}\insertsubsubenumlabel}%
+}
+% ---------------------------------------------------------------------------
+% TABLE OF CONTENTS
+% ---------------------------------------------------------------------------
+\setbeamertemplate{section in toc}{%
+  \hspace{0.1cm}%
+  \raisebox{0.2ex}{\tikz{\fill[mcmPip](0,0) rectangle (0.14,0.14);}}%
+  \hspace{0.25cm}%
+  {\usebeamerfont{section in toc}\inserttocsection}\par%
+}
+\setbeamertemplate{subsection in toc}{%
+  \hspace{0.65cm}%
+  \raisebox{0.0ex}{\tikz{\fill[mcmPip] (0,0) circle(0.055);}}%
+  \hspace{0.2cm}%
+  {\usebeamerfont{subsection in toc}\inserttocsubsection}\par%
+}
+
+% ---------------------------------------------------------------------------
+% FOOTLINE — progress bar, suppressed on the title page
+% ---------------------------------------------------------------------------
+\newif\if@mcmtitlepage
+\@mcmtitlepagefalse
+
+\addtobeamertemplate{frametitle}{\global\@mcmtitlepagefalse}{}
+\BeforeBeginEnvironment{frame}{\global\@mcmtitlepagefalse}
+
+\newcommand{\mcmFootlineContent}{%
+  \begin{tikzpicture}[remember picture, overlay]
+    \fill[mcmPrimaryMuted]
+      (current page.south west)
+      rectangle ([yshift=0.06cm]current page.south east);
+    % min(...) guards against \inserttotalframenumber defaulting to 1 on a
+    % fresh compile (no .aux yet): without it, \mcmprog would equal the raw
+    % frame number past the first pass of any 40+ frame deck, and
+    % \mcmprog\paperwidth below would overflow TeX's max dimension.
+    \pgfmathsetmacro{\mcmprog}{min(1, \insertframenumber / \inserttotalframenumber)}%
+    \fill[mcmPrimary]
+      (current page.south west)
+      rectangle ([xshift=\mcmprog\paperwidth, yshift=0.06cm]current page.south west);
+    \node[anchor=south west, inner sep=0pt]
+      at ([xshift=0.4cm, yshift=0.10cm]current page.south west)
+      {{\tiny\color{mcmBlack!45}\insertshortauthor}};
+    \node[anchor=south, inner sep=0pt]
+      at ([yshift=0.10cm]current page.south)
+      {{\tiny\color{mcmBlack!45}\insertshorttitle}};
+    \node[anchor=south east, inner sep=0pt]
+      at ([xshift=-0.4cm, yshift=0.10cm]current page.south east)
+      {{\tiny\color{mcmBlack!45}\textbf{\insertframenumber}\,/\,\inserttotalframenumber}};
+  \end{tikzpicture}%
+  \leavevmode\hbox to \paperwidth{\vbox to 0.45cm{}\hss}%
+}
+
+\setbeamertemplate{footline}{%
+  \if@mcmtitlepage\else\mcmFootlineContent\fi%
+}
+
+% ---------------------------------------------------------------------------
+% SECTION PAGE
+% ---------------------------------------------------------------------------
+\setbeamertemplate{section page}{%
+  \begin{tikzpicture}[remember picture, overlay]
+    \fill[mcmBg]
+      (current page.south west) rectangle (current page.north east);
+    \fill[mcmPrimary]
+      (current page.south west)
+      rectangle ([xshift=0.45cm]current page.north west);
+    \fill[mcmPrimary!45]
+      ([xshift=0.45cm]current page.south west)
+      rectangle ([xshift=0.60cm]current page.north west);
+    \node[anchor=south west, inner sep=0pt,
+          font=\small\bfseries, text=mcmPrimary!55]
+      at ([xshift=1.1cm, yshift=0.18cm]current page.west)
+      {\MakeUppercase{Section}\ \insertsectionnumber};
+    \node[anchor=west, text width=0.80\paperwidth,
+          align=left, inner sep=0pt]
+      at ([xshift=1.1cm, yshift=-0.55cm]current page.west)
+      {{\usebeamerfont{title}\color{mcmPrimary}\insertsection}};
+  \end{tikzpicture}%
+}
+
+% ---------------------------------------------------------------------------
+% SUBSECTION PAGE
+% ---------------------------------------------------------------------------
+\setbeamertemplate{subsection page}{%
+  \begin{tikzpicture}[remember picture, overlay]
+    \fill[mcmBg]
+      (current page.south west) rectangle (current page.north east);
+    \fill[mcmPrimary]
+      (current page.north west)
+      rectangle ([yshift=-0.18cm]current page.north east);
+    \node[anchor=north west, inner sep=0pt,
+          font=\small, text=mcmPrimary!50]
+      at ([xshift=1.1cm, yshift=-0.38cm]current page.north west)
+      {\insertsection\ \textbf{/}};
+    \node[anchor=west, text width=0.80\paperwidth,
+          align=left, inner sep=0pt]
+      at ([xshift=1.1cm, yshift=0.4cm]current page.west)
+      {%
+        {\small\color{mcmPrimary!60}\MakeUppercase{Section}\ %
+         \insertsectionnumber.\insertsubsectionnumber}\\[0.3cm]
+        {\usebeamerfont{frametitle}\color{mcmPrimary}\insertsubsection}%
+      };
+  \end{tikzpicture}%
+}
+
+
+% ---------------------------------------------------------------------------
+% TITLE PAGE
+%
+% Layout knobs
+%   \mcmFooterHeight       footer strip height              (default 5em)
+%   \mcmLogoVOffset        logo vertical offset             (default 0cm)
+%   \mcmLineSpacing        scan line spacing                (default 0.18cm)
+%   \mcmTitleBlockWidth    width of the text block          (default 0.88\paperwidth)
+%   \mcmTitleRightMargin   its distance to the right edge   (default 0.06\paperwidth)
+%   \mcmTitleTopMargin     clearance below the top edge     (default 0.75cm)
+%   \mcmTitleFooterGap     clearance above the footer strip (default 0.5cm)
+%
+% Type sizes and vertical rhythm (all scaled together by the auto-fit below)
+%   \mcmTitleFS \mcmSubtitleFS \mcmAuthorFS \mcmInstituteFS \mcmDateFS
+%   \mcmTitleSubtitleSep \mcmTitleAuthorSep \mcmTitleInstituteSep
+%   \mcmTitleDateSep
+%
+% AUTO-FIT.  Title, subtitle, author and institute are typeset into a single
+% box which is then measured.  Too tall for the space between the top margin
+% and the date line?  Every type size and every gap is scaled down in 4%
+% steps until it fits (floor \mcmTitleMinScale).  Much shorter than that
+% space?  They are scaled *up* the same way (ceiling \mcmTitleMaxScale) so a
+% two-word title does not look lost on an empty slide.  The block is then
+% centred in whatever room is left.  That is what lets one template carry a
+% two-word title and a thirty-word one.
+%
+% Empty fields cost nothing: each element is measured before it is emitted,
+% so an absent subtitle/author/institute/date leaves no gap behind.  (Do not
+% go back to `\ifx\insertsubtitle\@empty' — beamer never makes that test
+% true, so the subtitle gap was always inserted, even with no subtitle.)
+%
+% The logo is automatically positioned so that there is always 0.75cm of
+% scan lines to its right. The gap width adapts to the logo size.
+% Both gap edges use cosine-modulated rounding for an organic shape.
+% ---------------------------------------------------------------------------
+\newsavebox{\mcmTitleGraphicBox}
+\newlength{\mcmLogoW}
+\newlength{\mcmLogoH}
+\newlength{\mcmFooterHeight}
+\setlength{\mcmFooterHeight}{5em}
+\newlength{\mcmLogoVOffset}
+\setlength{\mcmLogoVOffset}{0cm}
+\newif\if@mcmhaslogo
+
+\newlength{\mcmLineSpacing}
+\setlength{\mcmLineSpacing}{0.18cm}
+
+% --- Text block geometry ---------------------------------------------------
+\newlength{\mcmTitleBlockWidth}
+\newlength{\mcmTitleRightMargin}
+\newlength{\mcmTitleTopMargin}
+\setlength{\mcmTitleTopMargin}{0.75cm}
+\newlength{\mcmTitleFooterGap}
+\setlength{\mcmTitleFooterGap}{0.5cm}
+% (set here, not \AtBeginDocument, so a preamble override wins)
+\setlength{\mcmTitleBlockWidth}{0.88\paperwidth}
+\setlength{\mcmTitleRightMargin}{0.06\paperwidth}
+
+% --- Type sizes and vertical rhythm on the title page ----------------------
+\newlength{\mcmTitleFS}     \setlength{\mcmTitleFS}{21pt}
+\newlength{\mcmSubtitleFS}  \setlength{\mcmSubtitleFS}{12.3pt}
+\newlength{\mcmAuthorFS}    \setlength{\mcmAuthorFS}{14.4pt}
+\newlength{\mcmInstituteFS} \setlength{\mcmInstituteFS}{9pt}
+\newlength{\mcmDateFS}      \setlength{\mcmDateFS}{7pt}
+
+\newlength{\mcmTitleSubtitleSep}  \setlength{\mcmTitleSubtitleSep}{0.25cm}
+\newlength{\mcmTitleAuthorSep}    \setlength{\mcmTitleAuthorSep}{0.50cm}
+\newlength{\mcmTitleInstituteSep} \setlength{\mcmTitleInstituteSep}{0.08cm}
+\newlength{\mcmTitleDateSep}      \setlength{\mcmTitleDateSep}{0.45cm}
+
+% --- Auto-fit bounds, in percent of the nominal size -----------------------
+\newcommand{\mcmTitleMinScale}{55}   % never shrink below 55%
+\newcommand{\mcmTitleMaxScale}{145}  % never grow above 145%
+\newcommand{\mcmTitleFillScale}{62}  % grow while shorter than 62% of the room
+
+% --- Machinery -------------------------------------------------------------
+\newsavebox{\mcmTitleBlockBox}
+\newsavebox{\mcmTitleDateBox}
+\newsavebox{\mcmTitleProbeBox}
+\newlength{\mcmTitleAvail}   % vertical room the block must fit in
+\newlength{\mcmTitleBase}    % y of the bottom of that room, from page south
+\newlength{\mcmTitleTop}     % y of the top of the block, from page south
+\newlength{\mcmTitleFSa}
+\newlength{\mcmTitleFSb}
+\newcount\mcm@tpc            % current scale, in percent
+\newif\if@mcmTitleFit
+
+% Scale a length by the current auto-fit percentage.
+\newcommand{\mcm@tsc}[1]{\dimexpr#1*\mcm@tpc/100\relax}
+
+% Select a font at a scaled size; #1 = nominal size, #2 = leading factor.
+\newcommand{\mcm@tfs}[2]{%
+  \setlength{\mcmTitleFSa}{\mcm@tsc{#1}}%
+  \setlength{\mcmTitleFSb}{#2\mcmTitleFSa}%
+  \fontsize{\the\mcmTitleFSa}{\the\mcmTitleFSb}\selectfont}
+
+% Emit #2 only if #1 typesets to something. Measured in a parbox so that
+% fields containing \\ (multi-line institutes, author lists) are legal.
+\newcommand{\mcm@tifny}[2]{%
+  \sbox{\mcmTitleProbeBox}{\parbox{\mcmTitleBlockWidth}{#1}}%
+  \ifdim\dimexpr\ht\mcmTitleProbeBox+\dp\mcmTitleProbeBox\relax>\z@ #2\fi}
+
+% Height (height + depth) of a box, as a dimen expression.
+\newcommand{\mcm@tboxh}[1]{\dimexpr\ht#1+\dp#1\relax}
+
+% Typeset the title/subtitle/author/institute block at the current scale.
+\newcommand{\mcm@tbuild}{%
+  \sbox{\mcmTitleBlockBox}{%
+    \begin{minipage}{\mcmTitleBlockWidth}%
+      \raggedleft
+      % Discourage hyphenation strongly (a hyphen inside an uppercase title
+      % reads badly) but do not forbid it: a word longer than the block still
+      % has to break somewhere, or it runs off both edges of the slide.
+      \hyphenpenalty=5000\relax \exhyphenpenalty=5000\relax
+      \mcm@tifny{\inserttitle}{%
+        {\spaceskip=\fontdimen2\font plus \fontdimen3\font minus \fontdimen4\font
+         \advance\spaceskip by \mcm@tsc{\mcmTitleWordSpacing}%
+         \usebeamerfont{title}\mcm@tfs{\mcmTitleFS}{1.10}%
+         \color{mcmPrimaryFg}\mcmTitleFormat{\inserttitle}\par}}%
+      \mcm@tifny{\insertsubtitle}{%
+        \vskip\mcm@tsc{\mcmTitleSubtitleSep}%
+        {\usebeamerfont{subtitle}\mcm@tfs{\mcmSubtitleFS}{1.25}%
+         \color{mcmPrimaryAccent!60!white}\insertsubtitle\par}}%
+      \mcm@tifny{\insertauthor}{%
+        \vskip\mcm@tsc{\mcmTitleAuthorSep}%
+        {\usebeamerfont{author}\mcm@tfs{\mcmAuthorFS}{1.20}%
+         \color{mcmPrimaryFg}\insertauthor\par}}%
+      \mcm@tifny{\insertinstitute}{%
+        \vskip\mcm@tsc{\mcmTitleInstituteSep}%
+        {\usebeamerfont{institute}\mcm@tfs{\mcmInstituteFS}{1.30}%
+         \color{mcmPrimaryFg}\insertinstitute\par}}%
+    \end{minipage}}%
+}
+
+% Shrink, then grow, until the block sits well in \mcmTitleAvail.
+\newcommand{\mcm@tfit}{%
+  \mcm@tpc=100\relax
+  \mcm@tbuild
+  \@mcmTitleFittrue
+  \loop\if@mcmTitleFit
+    \ifdim\mcm@tboxh{\mcmTitleBlockBox}>\mcmTitleAvail
+      \ifnum\mcm@tpc>\mcmTitleMinScale\relax
+        \advance\mcm@tpc by -4\relax \mcm@tbuild
+      \else \@mcmTitleFitfalse \fi
+    \else \@mcmTitleFitfalse \fi
+  \repeat
+  \ifnum\mcm@tpc=100\relax
+    \@mcmTitleFittrue
+    \loop\if@mcmTitleFit
+      \ifdim\mcm@tboxh{\mcmTitleBlockBox}<\dimexpr\mcmTitleAvail*\mcmTitleFillScale/100\relax
+        \ifnum\mcm@tpc<\mcmTitleMaxScale\relax
+          \advance\mcm@tpc by 4\relax \mcm@tbuild
+        \else \@mcmTitleFitfalse \fi
+      \else \@mcmTitleFitfalse \fi
+    \repeat
+    % A growth step may overshoot the room; walk back until it fits again.
+    \@mcmTitleFittrue
+    \loop\if@mcmTitleFit
+      \ifdim\mcm@tboxh{\mcmTitleBlockBox}>\mcmTitleAvail
+        \advance\mcm@tpc by -4\relax \mcm@tbuild
+      \else \@mcmTitleFitfalse \fi
+    \repeat
+  \fi}
+
+\setbeamertemplate{title page}{%
+  \global\@mcmtitlepagetrue
+  \sbox{\mcmTitleGraphicBox}{\inserttitlegraphic}%
+  \setlength{\mcmLogoW}{\wd\mcmTitleGraphicBox}%
+  \setlength{\mcmLogoH}{\ht\mcmTitleGraphicBox}%
+  \addtolength{\mcmLogoH}{\dp\mcmTitleGraphicBox}%
+  \ifdim\mcmLogoW>0pt \@mcmhaslogotrue\else\@mcmhaslogofalse\fi
+  %
+  % Background and footer strip
+  \begin{tikzpicture}[remember picture, overlay]
+    \fill[mcmPrimary]
+      (current page.south west) rectangle (current page.north east);
+    \fill[mcmBg]
+      (current page.south west)
+      rectangle ([yshift=\mcmFooterHeight]current page.south east);
+    \draw[line width=0.3pt, color=mcmPrimaryDark]
+      ([yshift=\mcmFooterHeight]current page.south west) --
+      ([yshift=\mcmFooterHeight]current page.south east);
+  \end{tikzpicture}%
+  %
+  % Scan lines and logo, centred in the footer strip.
+  % Right segments are always 0.75cm long (ending 0.3cm from the right edge).
+  % The gap width adapts to the logo; the logo is centred within the gap.
+  % Both gap edges use cosine-modulated rounding for an organic shape.
+  \if@mcmhaslogo
+    \begin{tikzpicture}[remember picture, overlay]
+      \pgfmathsetlengthmacro{\rightfixed}{\paperwidth - 1.05cm}
+      \pgfmathsetlengthmacro{\logocx}{\rightfixed - 0.5\mcmLogoW}
+      % Place logo
+      \node[anchor=center] (mcmlogo)
+        at ([xshift=\logocx,
+             yshift=0.5\mcmFooterHeight + \mcmLogoVOffset]current page.south west)
+        {\usebox{\mcmTitleGraphicBox}};
+      % Draw scan lines
+      \foreach \i in {0,...,6}{%
+        \pgfmathsetmacro{\imid}{3}%
+        \pgfmathsetlengthmacro{\ysh}{%
+          0.5\mcmFooterHeight + (\i - \imid) * \mcmLineSpacing}
+        \pgfmathsetmacro{\thet}{(\i - \imid) * 3.14159 / 6}
+        \pgfmathsetmacro{\cf}{abs(cos(\thet r))}
+        \pgfmathsetlengthmacro{\xm}{0.25cm * (0.4 + 0.8 * \cf)}
+        % Left segment
+        \pgfmathsetlengthmacro{\leftend}{\logocx - 0.5\mcmLogoW - \xm}
+        \draw[line width=0.5pt, color=mcmScanLine]
+          ([xshift=0.3cm, yshift=\ysh]current page.south west)
+            -- ([xshift=\leftend, yshift=\ysh]current page.south west);
+        % Right segment
+        \pgfmathsetlengthmacro{\rightstart}{\logocx + 0.5\mcmLogoW + \xm}
+        \draw[line width=0.5pt, color=mcmScanLine]
+          ([xshift=\rightstart, yshift=\ysh]current page.south west)
+            -- ([xshift=-0.3cm, yshift=\ysh]current page.south east);
+      }
+    \end{tikzpicture}%
+  \else
+    \begin{tikzpicture}[remember picture, overlay]
+      \foreach \i in {0,...,6}{%
+        \pgfmathsetmacro{\imid}{3}%
+        \pgfmathsetlengthmacro{\ysh}{%
+          0.5\mcmFooterHeight + (\i - \imid) * \mcmLineSpacing}
+        \draw[line width=0.5pt, color=mcmScanLine]
+          ([xshift=0.3cm, yshift=\ysh]current page.south west)
+            -- ([xshift=-0.3cm, yshift=\ysh]current page.south east);
+      }
+    \end{tikzpicture}%
+  \fi
+  %
+  % Date: pinned just above the footer strip, at its nominal size (it is
+  % small enough already), and its height is reserved before the main block
+  % is fitted so the two can never collide.
+  \sbox{\mcmTitleDateBox}{%
+    \begin{minipage}{\mcmTitleBlockWidth}\raggedleft
+      \mcm@tifny{\insertdate}{%
+        {\usebeamerfont{date}\fontsize{\the\mcmDateFS}{1.35\mcmDateFS}\selectfont
+         \color{mcmPrimaryFg}\insertdate\par}}%
+    \end{minipage}}%
+  %
+  % Room available to the title block, and the y of its floor.
+  \setlength{\mcmTitleBase}{\dimexpr\mcmFooterHeight+\mcmTitleFooterGap\relax}%
+  \ifdim\mcm@tboxh{\mcmTitleDateBox}>\z@
+    \addtolength{\mcmTitleBase}{\dimexpr\mcm@tboxh{\mcmTitleDateBox}
+                                       +\mcmTitleDateSep\relax}%
+  \fi
+  \setlength{\mcmTitleAvail}{\dimexpr\paperheight-\mcmTitleTopMargin
+                                    -\mcmTitleBase\relax}%
+  \mcm@tfit
+  %
+  % Top edge of the block: centred in the room that is left, but never above
+  % the top margin (which is where it lands if the block is still too tall at
+  % \mcmTitleMinScale).
+  \setlength{\mcmTitleTop}{\dimexpr\mcmTitleBase+0.5\mcmTitleAvail
+                                  +0.5\ht\mcmTitleBlockBox
+                                  +0.5\dp\mcmTitleBlockBox\relax}%
+  \ifdim\mcmTitleTop>\dimexpr\paperheight-\mcmTitleTopMargin\relax
+    \setlength{\mcmTitleTop}{\dimexpr\paperheight-\mcmTitleTopMargin\relax}%
+  \fi
+  \begin{tikzpicture}[remember picture, overlay]
+    \node[anchor=north east, inner sep=0pt]
+      at ([xshift=-\mcmTitleRightMargin, yshift=\mcmTitleTop]current page.south east)
+      {\usebox{\mcmTitleBlockBox}};
+    \ifdim\mcm@tboxh{\mcmTitleDateBox}>\z@
+      \node[anchor=south east, inner sep=0pt]
+        at ([xshift=-\mcmTitleRightMargin,
+             yshift=\dimexpr\mcmFooterHeight+\mcmTitleFooterGap\relax]current page.south east)
+        {\usebox{\mcmTitleDateBox}};
+    \fi
+  \end{tikzpicture}%
+}
+
+\endinput

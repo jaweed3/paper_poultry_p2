@@ -1,0 +1,55 @@
+This directory contains work under three different licences. They are listed
+separately because they came from three different places.
+
+
+1. THE BEAMER THEME
+-------------------
+beamerthememidcenturymodern.sty
+
+    "midcentury modern", copyright Jules Leguy.
+    https://github.com/jules-leguy/midcenturymodern
+    Licensed under Creative Commons Attribution 4.0 International (CC BY 4.0).
+    https://creativecommons.org/licenses/by/4.0/
+
+    Included here unmodified apart from six comment lines in its header.
+    CC BY 4.0 requires modifications to be indicated: the list of what this
+    template changes is at the top of tdstyle.tex. Those changes are made in
+    tdstyle.tex, not in Leguy's file.
+
+
+2. EVERYTHING ADDED HERE
+------------------------
+tdstyle.tex, slides.tex, check.sh, figures/trim.py, README.md
+
+    Copyright the contributors to this repository.
+    Licensed under Creative Commons Attribution 4.0 International (CC BY 4.0),
+    the same terms as the theme it extends.
+
+    You may copy, adapt and redistribute this, including commercially, provided
+    you give appropriate credit, link to the licence, and indicate whether you
+    made changes.
+
+
+3. THE FONTS
+------------
+fonts/EBGaramond-0.016/   EB Garamond, by Georg Duffner and Octavio Pardo.
+                          SIL Open Font Licence 1.1 — see fonts/EBGaramond-0.016/COPYING
+
+fonts/montserrat/         Montserrat, by Julieta Ulanovsky and contributors.
+                          SIL Open Font Licence 1.1 — see fonts/montserrat/OFL.txt
+
+    Both are redistributed unmodified, with their own licence files alongside
+    them as the OFL requires. Neither is relicensed by anything above.
+
+    Note on EB Garamond: this is Duffner's release, which has optical sizes
+    (08, 12) and separate small-caps faces but NO bold. The Google Fonts family
+    of the same name is a different font with weights 400-800. tdstyle.tex loads
+    the faces by filename, not by family name, partly for this reason and partly
+    because the smcp feature is only reliably found that way.
+
+
+NOT INCLUDED
+------------
+No university logo is distributed with this template. figures/ expects a
+logo-trim.png of your own; see README.md. An institution's mark is its
+trademark, and a licence on the surrounding files does not extend to it.

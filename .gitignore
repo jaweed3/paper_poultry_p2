@@ -27,3 +27,7 @@ literature/*.pdf
 *.log
 *.out
 results/baseline_p1
+# icaides deck: fonts bundled locally (18MB, SIL OFL), build + per-slide QA are regenerable
+deck-icaides/fonts/
+deck-icaides/_build/
+deck-icaides/qa/slide-*.jpg
