@@ -36,4 +36,7 @@ deck-icaides/*.synctex
 deck-icaides/*.synctex.*
 deck-icaides/.*
 
+CAMERA_READY_STATUS.md 
+REVISION_CHECKLIST.md 
+
 
