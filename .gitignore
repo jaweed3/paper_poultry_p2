@@ -31,3 +31,9 @@ results/baseline_p1
 deck-icaides/fonts/
 deck-icaides/_build/
 deck-icaides/qa/slide-*.jpg
+deck-icaides/*.log
+deck-icaides/*.synctex
+deck-icaides/*.synctex.*
+deck-icaides/.*
+
+
