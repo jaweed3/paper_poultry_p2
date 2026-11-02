@@ -15,6 +15,7 @@
 \usepackage{array}
 \usepackage{microtype}
 \usepackage{listings}
+\usepackage{tikz}
 \usetikzlibrary{positioning, arrows.meta, fit, backgrounds}
 
 \input{tdstyle}
@@ -38,11 +39,11 @@
   Localizing INT8 Quantization Collapse\\in EfficientNet-B0}
 \subtitle{Edge poultry disease detection on Raspberry Pi 5}
 \author[Fatih]{Fatih Jawwad Al Mumtaz \\ Amirul Al Aziz \and Muhammad Iqbal Hidayatullah}
-\institute{Universitas Darussalam Gontor — ICAIDES 2026 (ID 1571359798)}
+\institute{Universitas Darussalam Gontor — ICAIDES 2026}
 
 \date{\makebox[2.413cm][l]{\MakeUppercase{November 2026}}}
-\titlegraphic{\includegraphics[height=1.5cm]{figures/logo-trim.png}}
 
+% Dividers: keep each on screen only ~2 s when recording (or cut in editing).
 \AtBeginSection[]{%
   \begin{frame}[plain, noframenumbering]
     \sectionpage
@@ -51,7 +52,10 @@
 
 \begin{document}
 
+% The theme draws its logo box from \logo (not \titlegraphic). Set inside the
+% frame so the logo appears on the title slide only.
 \begin{frame}[plain]
+  \logo{\includegraphics[height=1.15cm]{logo.png}}
   \titlepage
 \end{frame}
 
@@ -121,22 +125,66 @@
 
   \vspace{0.5em}
   {\small
-  Paired McNemar on the same 1,728 test images: MNv2 discordant
-  (b=18, c=7, p=0.0455), SNv2 not (b=6, c=5, p=1.0). EB0 degenerates to a
-  \acb{near-single-class predictor} — 1,676 of 1,728 land in the Newcastle column.
+  EB0 degenerates to a \acb{near-single-class predictor} — 1,676 of 1,728
+  test images land in the Newcastle column. MNv2 and SNv2 lose under 1 pp.
   \par}
+
+  \vspace{0.3em}
+  {\fontsize{8}{10}\selectfont\color{oliveInk!70}%
+  Paired McNemar on the same 1,728 images: MNv2 b=18, c=7, p=0.0455;
+  SNv2 b=6, c=5, p=1.0.\par}
 
 \end{frame}
 
 \begin{frame}{Where exactly EB0 fails}
 
   \centering
-  \includegraphics[width=0.78\linewidth]{figures/confusion_eb0_2panel.png}
+  \includegraphics[width=0.74\linewidth]{figures/confusion_eb0_2panel.png}
 
-  \vspace{0.4em}
-  {\raggedright\fontsize{6.6}{8.4}\selectfont\color{oliveInk!70}%
+  \vspace{0.3em}
+  {\raggedright\fontsize{8}{10}\selectfont\color{oliveInk!70}%
    FP32 (left) vs dynamic INT8 (right). Per-class INT8 recall: cocci 2.27\%,
-   healthy 4.76\%, salmo 0.54\%, NCD 100\%. Matrices for MNv2/SNv2 in the repo.\par}
+   healthy 4.76\%, salmo 0.54\%, NCD 100\%.\par}
+
+\end{frame}
+
+\begin{frame}{Why (hypothesis): one shared scale, 127 levels}
+
+  \slidelead{Per-tensor: the widest channel sets the scale for every channel.}
+
+  \begin{center}
+  \begin{tikzpicture}[x=0.0385cm, y=1cm]
+    % per-tensor: widest channel
+    \node[anchor=west, font=\footnotesize] at (-127,2.9)
+      {Per-tensor: widest channel spans all 127 levels each side};
+    \draw[line width=4pt, oliveGreen] (-127,2.55) -- (127,2.55);
+
+    % per-tensor: narrow channel (112x smaller range => ~1.13 levels)
+    \node[anchor=west, font=\footnotesize] at (-127,1.95)
+      {Per-tensor: a channel with 112$\times$ smaller range gets $127/112 \approx 1$ level};
+    \node[anchor=west, font=\footnotesize] at (-127,1.6)
+      {$\Rightarrow$ quantized to a near-constant (channels at 0\,dB, audit JSON)};
+    \draw[line width=4pt, red!70!black] (-1.13,1.25) -- (1.13,1.25);
+
+    % per-channel: same narrow channel, own scale
+    \node[anchor=west, font=\footnotesize] at (-127,0.6)
+      {Per-channel: that channel gets its own scale and the full range back};
+    \draw[line width=4pt, oliveGreen!70] (-127,0.25) -- (127,0.25);
+
+    % axis
+    \draw[oliveInk!50] (-127,-0.25) -- (127,-0.25);
+    \foreach \t in {-127,0,127}
+      \draw[oliveInk!60] (\t,-0.35) -- (\t,-0.15);
+    \node[font=\scriptsize, below] at (-127,-0.35) {-127};
+    \node[font=\scriptsize, below] at (0,-0.35) {0};
+    \node[font=\scriptsize, below] at (127,-0.35) {+127};
+  \end{tikzpicture}
+  \end{center}
+
+  {\small
+  EB0's depthwise layers: median channel-range ratio \acb{39.94$\times$}
+  (P95/P5), worst layer \acb{112$\times$}. MobileNetV2's median is only
+  9.20$\times$ and ShuffleNetV2's 5.32$\times$, and both survive. Supported by SQNR and the family ablation; a single-layer ablation would test it.\par}
 
 \end{frame}
 
@@ -158,16 +206,18 @@
 
   \vspace{0.5em}
   {\small
-  Per-channel vs dynamic, paired: b=14, c=1468, \acb{p $<$ 1e-15}. Against FP32
-  the gap is still real (b=75, c=7, p $\sim$ 1e-13) — \acb{recovery, not parity}.
+  \acb{Recovery, not parity}: still 3.9 pp below FP32 (98.50\% on the ONNX graph).
   Balanced 25/class replication on a retrained model: per-tensor 27.14\% vs
-  per-channel 93.40\%. \par}
+  per-channel 93.40\%.\par}
+
+  \aside{Caveat up front: calibration used 100 images, \emph{all Coccidiosis}
+  (class-ordered loader). Diagnostic evidence, not a robustness claim.}
 
 \end{frame}
 
-\begin{frame}{Why depthwise: the selective ablation}
+\begin{frame}{Which layers matter: the selective ablation}
 
-  \slidelead{Depthwise per-channel alone recovers the model; without it, collapse.}
+  \slidelead{Depthwise granularity decides collapse in this setup.}
 
   {\footnotesize
   \begin{tabular}{@{}>{\raggedright\arraybackslash}p{6.4cm}
@@ -175,7 +225,7 @@
                     >{\raggedright\arraybackslash}p{2.2cm}
                     >{\raggedright\arraybackslash}p{2.0cm}@{}}
     \toprule
-    & \thead{config} & \thead{acc} & \thead{collapse} \\
+    & \thead{size} & \thead{acc} & \thead{collapse} \\
     \midrule
     \textbf{C depthwise per-ch, rest per-tensor} & 4.33 MB & \textbf{93.46\%} & no \\
     \textbf{D all per-ch except depthwise} & 4.51 MB & 8.33\% & yes \\
@@ -186,11 +236,10 @@
 
   \vspace{0.5em}
   {\small
-  Mechanism: shared per-tensor scale is set by the largest channel; depthwise
-  channel ranges spread up to \acb{112x} (median P95/P5 39.94x), worst channels
-  quantize to a constant (0 dB). Prior work flagged this family
-  (Sheng 2018); our contribution is the localized case study + runtime behavior.
-  \par}
+  Ablation is at \emph{family} level, on EB0 only. Whether individual severe
+  layers drive the collapse is a hypothesis; a single-layer ablation would test it.
+  Depthwise sensitivity is known (Sheng 2018); our contribution is the case study
+  plus runtime behavior.\par}
 
 \end{frame}
 
@@ -219,43 +268,61 @@
   \vspace{0.5em}
   {\small
   FP32 scales 2.20--2.33x from 1 to 4 threads; INT8 manages 1.10--1.19x.
-  Kernel evidence: each Conv expands into DynamicQuantizeLinear + ConvInteger +
-  Mul + Cast (1.37--3.05x node growth), quantization kernels add 20.7--29.2\%
-  overhead. \par}
+  Each Conv expands into DynamicQuantizeLinear + ConvInteger + Mul + Cast;
+  quantization kernels add 20.7--29.2\% overhead.\par}
+
+  \aside{Setup: Raspberry Pi 5, ONNX Runtime 1.29.0, CPU only, batch 1,
+  model-only timing, 200 runs after 10 warmup.}
 
 \end{frame}
 
-\begin{frame}{Static flips it: 2.34x faster than FP32}
+\begin{frame}{Static flips it: 2.3x faster than FP32}
 
   \centering
-  \includegraphics[width=0.62\linewidth]{figures/rpi5_thread_scaling_gate0.png}
+  \begin{tikzpicture}[x=1cm, y=1cm]
+    \draw[oliveInk!50] (-1,0) -- (10,0);
+    \foreach \x/\v/\a/\l/\c in {%
+        0/31.53/98.50/FP32/oliveInk!55,
+        3/63.99/10.42/dynamic INT8/red!70!black,
+        6/13.63/9.32/static per-tensor/red!70!black,
+        9/13.50/94.56/static per-channel/oliveGreen} {
+      \fill[\c] (\x-0.7,0) rectangle (\x+0.7,{\v*0.045});
+      \node[above, font=\footnotesize] at (\x,{\v*0.045}) {\v\,ms};
+      \node[below, font=\scriptsize, align=center, text width=2.6cm] at (\x,-0.05) {\l};
+      \node[below, font=\footnotesize\bfseries, align=center] at (\x,-0.75) {\a\%\ acc.};
+    }
+  \end{tikzpicture}
 
-  \vspace{0.4em}
-  {\raggedright\fontsize{6.6}{8.4}\selectfont\color{oliveInk!70}%
-   EB0 static per-channel: 13.50 ms vs FP32 31.53 ms at 4 threads. Same board,
-   same runtime, separate session within 0.7\% of the sweep. Static is faster
-   AND more accurate here — but one board, one runtime, one seed.\par}
+  \vspace{0.6em}
+  {\raggedright\fontsize{8}{10}\selectfont\color{oliveInk!70}%
+   EfficientNet-B0, Raspberry Pi 5, 4 threads, batch 1. Faster and more accurate
+   than dynamic INT8 — but one board, one runtime, one seed. FP32 here is a
+   separate session (31.53 ms) and accuracy is on the exported ONNX graph (98.50\%);
+   the earlier sweep and the PyTorch evaluation give 31.56 ms and 98.55\%.\par}
 
 \end{frame}
 
 \begin{frame}{So which model do you ship?}
 
+  \slidelead{INT8 here is a diagnostic result, not a shipping recommendation.}
+
   \begin{stepflow}{3}
-    \stepcard{fastest}{SNv2 FP32: 6.19 ms, 97.69\%}
+    \stepcard{ship}{SNv2 FP32: 6.19 ms, 97.69\%}
     \steparrow
-    \stepcard{balanced}{MNv2 FP32: 14.23 ms, 97.92\%}
+    \stepcard{most accurate}{EB0 FP32: 31.56 ms, 98.55\%}
     \steparrow
-    \stepcard{accurate}{EB0 static per-ch: 13.50 ms, 94.56\%}
+    \stepcard{dominated}{EB0 static per-ch: 13.50 ms, 94.56\%}
   \end{stepflow}
 
   \vspace{0.7em}
   {\small
-  \acb{Best and worst FP32 differ by 0.86 pp — let hardware and scheme decide.}
-  3.3--3.7x size shrink with INT8; RAM at inference barely moves, so do not
-  claim memory savings on this stack. \par}
+  EB0 static per-channel loses to SNv2 FP32 on \acb{both} speed and accuracy, and
+  to MNv2 FP32 (97.92\%) on accuracy at similar latency. FP32 accuracy spans only
+  0.86 pp, so hardware and scheme should decide. INT8 shrinks the model 3.3--3.7x
+  but RAM at inference barely moves.\par}
 
-  \aside{Limitation, stated plainly: single Coccidiosis-only calibration slice;
-  one seed; energy not measured (current telemetry null).}
+  \aside{Limitations: single Coccidiosis-only calibration slice; one seed;
+  energy not measured.}
 
 \end{frame}
 
@@ -269,8 +336,8 @@
   \slidelead{INT8 is not one thing: scheme $\times$ granularity $\times$ runtime decides.}
 
   \srcline{\textbf{Dynamic INT8} preserves MNv2/SNv2, collapses EB0 to 10.42\%}
-  \srcline{\textbf{Per-channel static} recovers EB0 to 94.56\%, 2.34x faster than FP32}
-  \srcline{\textbf{Depthwise granularity} is the localized cause (93.46\% vs 8.33\%)}
+  \srcline{\textbf{Per-channel static} recovers EB0 to 94.56\% and is 2.34x faster than FP32 — but still loses to SNv2 FP32}
+  \srcline{\textbf{Depthwise granularity} decides collapse in this setup (93.46\% vs 8.33\%)}
   \srcline{Artifact: \code{github.com/jaweed3/paper\_poultry\_p2} + Zenodo 10.5281/zenodo.23374216}
 
   \aside{Thank you. Questions welcome — the failure modes are in the paper.}
