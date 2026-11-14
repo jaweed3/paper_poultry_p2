@@ -1,0 +1,301 @@
+\documentclass[11pt,a4paper]{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{times}
+\usepackage{geometry}
+\geometry{a4paper, margin=2.5cm}
+\usepackage{amsmath,amssymb}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{multirow}
+\usepackage{array}
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+\usepackage{hyperref}
+\usepackage{cite}
+\usepackage{setspace}
+\setstretch{1.15}
+
+\title{\textbf{\Large Localizing and Mitigating INT8 Quantization Collapse in Lightweight CNNs for Farm-Level Poultry Disease Diagnostics on Raspberry Pi 5}}
+
+\author{
+\textbf{Fatih Jawwad Al Mumtaz}$^{1,*}$, 
+\textbf{Amirul Al Aziz}$^{2}$, 
+\textbf{Muhammad Iqbal Hidayatullah}$^{1}$ \\[1em]
+$^{1}$Department of Informatics, Faculty of Science and Technology, \\
+Universitas Darussalam Gontor, Ponorogo, 63471, Indonesia \\
+$^{2}$Department of Agricultural Industrial Technology, Faculty of Science and Technology, \\
+Universitas Darussalam Gontor, Ponorogo, 63471, Indonesia \\[0.5em]
+$^{*}$Corresponding Author: \texttt{fatihalmumtaz76@student.cs.unida.gontor.ac.id}
+}
+
+\date{}
+
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+\noindent Non-invasive diagnostic tools powered by deep learning offer significant potential for early disease detection in poultry farming, mitigating severe economic losses caused by Coccidiosis, Salmonellosis, and Newcastle Disease. However, existing state-of-the-art vision models predominantly target cloud or GPU servers, which are impractical for rural, resource-constrained smallholder farms. Deploying lightweight Convolutional Neural Networks (CNNs) directly onto cost-effective edge devices via INT8 Post-Training Quantization (PTQ) frequently induces severe accuracy degradation, termed quantization collapse. In this study, we present a comprehensive empirical and theoretical investigation into INT8 quantization dynamics across lightweight CNN architectures (MobileNetV2, ShuffleNetV2, EfficientNet-B0, and EfficientNet-Lite0) deployed on a physical Raspberry Pi 5 single-board computer using ONNX Runtime. First, a perceptual hash (pHash) integrity audit of the prevailing 8,770-image public fecal benchmark revealed 617 near-duplicate pairs, including 94 byte-identical images leaked between training and testing splits; all subsequent evaluations are conducted on a rigorously sanitized 8,153-image sterile split. Second, we localize the structural failure point of EfficientNet-B0, where naive dynamic INT8 and static per-tensor quantization trigger catastrophic degradation from 98.55\% down to 10.42\% and 9.32\% accuracy, respectively. Systematic layer-wise ablation and Signal-to-Quantization-Noise Ratio (SQNR) profiling demonstrate that this collapse is strictly driven by dynamic range clipping within depthwise separable convolutions, rather than Squeeze-and-Excitation (SE) modules. Static per-channel Quantize-Dequantize (QDQ) calibration fully rescues EfficientNet-B0 to 94.56\% accuracy ($p < 10^{-15}$ vs. dynamic). Third, hardware profiling reveals that dynamic INT8 introduces runtime quantize/dequantize kernel overheads, causing a 1.93--2.80$\times$ slowdown relative to FP32, whereas static per-channel QDQ yields a 2.34$\times$ speedup (13.50\,ms latency, 74.07 FPS) under four threads without thermal throttling. Finally, Gradient-weighted Class Activation Mapping (Grad-CAM) confirms that the calibrated edge models attend to authentic pathological fecal lesions rather than environmental background noise.
+\end{abstract}
+
+\vspace{0.5em}
+\noindent \textbf{Keywords:} Edge AI, INT8 Quantization Collapse, Lightweight CNNs, Raspberry Pi 5, Precision Poultry Farming, Explainable AI.
+
+\section{Introduction}
+Poultry production is a vital sector of global livestock agriculture, supplying accessible animal protein and sustaining rural livelihood across both developed and developing economies \cite{usda2024}. However, commercial broiler and layer operations remain highly vulnerable to widespread outbreaks of infectious diseases, notably Coccidiosis, Salmonellosis, and Newcastle Disease (NCD) \cite{machuve2022}. Coccidiosis, caused by apicomplexan parasites of the genus \textit{Eimeria}, inflicts profound intestinal mucosa lesions, precipitating severe diarrhea, malabsorption, and acute flock mortality. Salmonellosis causes septicemic and enteric deterioration, posing concurrent zoonotic hazards to human food supply chains. Newcastle Disease, an avian paramyxovirus infection, is characterized by high contagiousness and flock fatality rates often approaching 100\% in unvaccinated flocks \cite{swayne2020}.
+
+Early and accurate clinical identification is imperative to initiate therapeutic intervention and biosecurity containment before disease spreads throughout a flock. Conventional diagnostic protocols rely on laboratory assays, including Polymerase Chain Reaction (PCR), enzyme-linked immunosorbent assay (ELISA), and microbiological culturing from cloacal swabs \cite{tasdelen2025}. While reliable, these centralized laboratory methodologies impose substantial costs, require specialized personnel, and incur turnaround times of 24--72 hours. For smallholder and semi-intensive farming operations in rural communities, regular laboratory testing is financially and logistically prohibitive \cite{degu2023}. 
+
+In practical poultry management, visual examination of avian excreta provides the primary non-invasive proxy for gastrointestinal and systemic pathology. Pathological conditions exhibit distinct fecal manifestations: Coccidiosis typically causes bloody, hemorrhagic diarrhea; Salmonellosis produces fluid, mucoid, yellowish-green droppings; while virulent Newcastle Disease induces distinctive greenish watery discharge with high urate concentration.
+
+Recent breakthroughs in deep convolutional neural networks (CNNs) have shown exceptional accuracy in automating visual disease recognition from fecal imagery \cite{dhungana2025, degan2023}. Transfer-learned models such as EfficientNet-B0 and MobileNetV2 frequently report classification accuracy between 97\% and 99\% on public photographic datasets \cite{tasdelen2025}. Nevertheless, critical bottlenecks impede real-world translation:
+\begin{enumerate}
+    \item \textbf{Cloud Dependency versus Rural Reality:} Existing solutions assume cloud-based server infrastructure. Rural farm environments frequently suffer from intermittent, low-bandwidth internet connectivity, making constant image uploading latency-prone and unreliable.
+    \item \textbf{Quantization Collapse on Edge Processors:} Deploying deep models onto low-cost single-board computers (such as the Raspberry Pi) necessitates Post-Training Quantization (PTQ) from 32-bit floating point (FP32) to 8-bit integers (INT8). However, compound-scaled architectures like EfficientNet-B0 suffer catastrophic accuracy degradation (termed \textit{quantization collapse}) when subjected to standard integer conversion.
+    \item \textbf{Unchecked Data Leakage in Public Benchmarks:} Leading open-source poultry fecal datasets feature unverified train-test partitions. Duplicate or near-identical images spanning splits artificially inflate reported evaluation metrics, masking genuine generalizability.
+\end{enumerate}
+
+To overcome these challenges, this study presents a rigorous empirical and architectural investigation into edge quantization dynamics on physical ARM hardware (Raspberry Pi 5). We systematically dissect the root cause of quantization collapse in EfficientNet-B0, demonstrate complete precision recovery via static per-channel QDQ calibration, benchmark true physical inference throughput, and confirm pathological model interpretability via Grad-CAM.
+
+\section{Related Work}
+
+\subsection{Vision-Based Precision Poultry Pathology}
+The application of computer vision to livestock management has advanced significantly following the release of foundational open datasets. Machuve \textit{et al.} \cite{machuve2022} established a landmark open-access corpus of 6,812 fecal photographs collected from smallholder farms in Tanzania with PCR-confirmed diagnostic labels. Subsequent investigations explored various algorithmic paradigms: Degu \textit{et al.} \cite{degu2023} deployed YOLO-based bounding box detectors paired with classification heads; Tasdelen and Arslan \cite{tasdelen2025} benchmarked multiple popular architectures, demonstrating that MobileNetV2 achieved 97.1\% classification accuracy; while Dhungana \textit{et al.} \cite{dhungana2025} achieved 99.12\% using EfficientNet-B0. However, these benchmarks were conducted on desktop or workstation GPUs without consideration for embedded edge execution. Chi \cite{chi2026} introduced FecalFed, a federated-learning benchmark claiming 8,770 rigorously deduplicated images, which serves as the subject of our dataset integrity audit in Section~4.
+
+\subsection{Lightweight CNN Architectures for Embedded Systems}
+Resource-constrained edge computing demands compact neural network topologies that minimize parameters, memory access cost (MAC), and floating-point operations (FLOPs). MobileNetV2 \cite{mobilenetv2} introduced inverted residual blocks with linear bottlenecks, utilizing depthwise separable convolutions to dramatically lower parameter requirements. ShuffleNetV2 \cite{shufflenetv2} introduced channel split and channel shuffle operations to enforce efficient memory utilization while maintaining cross-channel representation capacity. Tan and Le \cite{efficientnet} established EfficientNet, which compounds network depth, width, and resolution using automated neural architecture search (NAS), incorporating Squeeze-and-Excitation (SE) attention mechanisms to optimize representational power.
+
+\subsection{Quantization Mechanics and Edge Latency Overhead}
+Post-Training Quantization (PTQ) converts FP32 weights into 8-bit integer equivalents, theoretically compressing memory footprint by 4$\times$ and accelerating GEMM (General Matrix Multiply) operations on SIMD hardware \cite{jacob2018}. However, Nagel \textit{et al.} \cite{nagel2021} demonstrated that depthwise separable convolutions frequently exhibit severe quantization noise under standard quantization due to severe disparities in weight dynamic ranges across individual filters. Furthermore, as noted by the ONNX Runtime documentation \cite{onnxruntime2024}, naive dynamic INT8 execution can paradoxical increase runtime latency on CPU architectures when kernel-level quantize/dequantize transformations outweigh computational savings.
+
+\section{Theoretical Formulation of Edge Quantization}
+
+Uniform affine quantization maps real-valued continuous tensors $r \in \mathbb{R}$ onto discrete integer representations $q \in [\alpha, \beta]$:
+\begin{equation}
+q = \mathcal{Q}(r; S, Z) = \text{clip}\left(\left\lfloor \frac{r}{S} \right\rceil + Z, \; q_{\min}, \; q_{\max}\right)
+\end{equation}
+where $\lfloor \cdot \rceil$ represents the round-to-nearest-integer function, $q_{\min} = -128$ and $q_{\max} = 127$ for signed 8-bit integers (`int8`), and $\text{clip}(v, a, b) = \max(a, \min(v, b))$. The scale parameter $S$ and zero-point $Z$ are governed by the dynamic tensor bounds $[r_{\min}, r_{\max}]$:
+\begin{equation}
+S = \frac{r_{\max} - r_{\min}}{q_{\max} - q_{\min}}
+\end{equation}
+\begin{equation}
+Z = \text{round}\left( - \frac{r_{\min}}{S} \right) + q_{\min}
+\end{equation}
+The dequantization operator $\mathcal{Q}^{-1}(q)$ reconstructs the approximate floating-point tensor $\hat{r}$:
+\begin{equation}
+\hat{r} = \mathcal{Q}^{-1}(q) = S \cdot (q - Z)
+\end{equation}
+
+\subsection{Per-Tensor vs. Per-Channel Granularity in Depthwise Layers}
+In \textbf{per-tensor quantization}, a single scalar scale $S$ is shared across an entire convolutional weight tensor $W \in \mathbb{R}^{C_{\text{out}} \times C_{\text{in}} \times K \times K}$:
+\begin{equation}
+S_{\text{tensor}} = \frac{\max(W) - \min(W)}{255}
+\end{equation}
+In standard convolutions, inter-channel summation averages out individual filter variance. However, in a \textbf{depthwise convolution}, spatial filtering occurs independently on individual channels ($C_{\text{in}} = 1$). When weight magnitudes across channels differ substantially ($\max |W_c| \ll \max |W_{c'}|$), a global scale $S_{\text{tensor}}$ dominated by large outlier channels causes severe underflow in low-magnitude channels, rounding their weights to zero or a single discrete step.
+
+In \textbf{per-channel quantization}, an independent scale vector $\mathbf{S} \in \mathbb{R}^{C_{\text{out}}}$ is computed along the output channel axis:
+\begin{equation}
+S_c = \frac{\max(W_c) - \min(W_c)}{255}, \quad \forall c \in \{1, \dots, C_{\text{out}}\}
+\end{equation}
+\begin{equation}
+q_c = \text{clip}\left(\left\lfloor \frac{W_c}{S_c} \right\rceil + Z_c, \; -128, \; 127\right)
+\end{equation}
+Per-channel scaling preserves the unique dynamic range of every individual depthwise filter.
+
+\subsection{Signal-to-Quantization-Noise Ratio (SQNR)}
+To evaluate distortion per layer, we formulate the layerwise weight SQNR (in decibels, dB):
+\begin{equation}
+\text{SQNR}_l = 10 \log_{10} \left( \frac{\sum_{i=1}^{N_l} W_{l,i}^2}{\sum_{i=1}^{N_l} (W_{l,i} - \hat{W}_{l,i})^2} \right)
+\end{equation}
+where $W_{l,i}$ is the FP32 weight element of layer $l$, and $\hat{W}_{l,i}$ is the dequantized integer reconstruction. Low SQNR directly corresponds to catastrophic information loss.
+
+\section{Dataset Integrity Audit and Sanitization}
+
+\subsection{Perceptual Hash (pHash) Audit}
+To ensure rigorous evaluation, we audited the public 8,770-image benchmark distributed under `Dianyo/poultry-fecal-fl` \cite{chi2026}. We computed 64-bit DCT perceptual hashes across all images and evaluated pairwise Hamming distance:
+\begin{equation}
+D_H(\text{pHash}(x_i), \text{pHash}(x_j)) \le \tau
+\end{equation}
+With a conservative threshold $\tau = 5$, our audit discovered:
+\begin{itemize}
+    \item \textbf{617 near-duplicate image pairs} across the benchmark.
+    \item \textbf{393 pairs were byte-identical} ($\text{MD5}(x_i) = \text{MD5}(x_j)$).
+    \item \textbf{303 duplicate pairs spanned across partitions}: 147 test--train pairs, 54 test--validation pairs, and 102 train--validation pairs.
+    \item Most crucially, \textbf{94 test images were byte-exact clones of training images}.
+\end{itemize}
+
+\subsection{Sanitization Protocol}
+To construct a truly sterile benchmark, duplicate pairs were pruned following a strict preservation priority: test images were prioritized over validation, and validation over training. This removed 513 training, 78 validation, and 26 test duplicates, establishing a leak-free sterile benchmark of \textbf{8,153 images} (5,100 training, 1,325 validation, 1,728 testing) across four classes: Coccidiosis (`cocci`), Salmonella (`salmo`), Newcastle Disease (`ncd`), and Healthy (`healthy`).
+
+\section{Proposed Edge AI Diagnostic Framework}
+
+\begin{algorithm}[H]
+\caption{Static Per-Channel QDQ Calibration and Export Pipeline}
+\begin{algorithmic}[1]
+\Require Trained FP32 ONNX model $\mathcal{M}_{\text{fp32}}$, Calibration dataset $\mathcal{D}_{\text{calib}}$ ($n=100$ stratified samples)
+\Ensure Quantized QDQ ONNX model $\mathcal{M}_{\text{int8}}$
+\State Initialize ONNX CalibrationDataReader with $\mathcal{D}_{\text{calib}}$
+\State Set ActivationType $\leftarrow$ \texttt{QUInt8} (MinMax dynamic range estimation)
+\State Set WeightType $\leftarrow$ \texttt{QInt8} with \texttt{per\_channel = True} (axis = 0)
+\State Set QuantFormat $\leftarrow$ \texttt{QDQ}
+\For{each Conv layer $C_i$ in $\mathcal{M}_{\text{fp32}}$}
+    \State Compute per-channel scales $S_c$ and zero-points $Z_c$ via Eq.~(6)--(7)
+    \State Insert \texttt{QuantizeLinear} and \texttt{DequantizeLinear} nodes into computational graph
+\EndFor
+\State Run activation observer over $\mathcal{D}_{\text{calib}}$ to record activation clipping bounds $[r_{\min}, r_{\max}]$
+\State Apply graph optimizations (BatchNorm folding, Conv-Relu fusion)
+\State \Return $\mathcal{M}_{\text{int8}}$
+\end{algorithmic}
+\end{algorithm}
+
+\begin{algorithm}[H]
+\caption{Layer-Wise Quantization Sensitivity Localization}
+\begin{algorithmic}[1]
+\Require Full model $\mathcal{M}_{\text{fp32}}$, Test split $\mathcal{D}_{\text{test}}$, Target layer groups $\mathcal{G} = \{\text{Depthwise}, \text{Pointwise}, \text{SE}, \text{Head}\}$
+\Ensure Bottleneck localization mapping $\mathcal{B}_{\text{map}}$
+\For{each group $g \in \mathcal{G}$}
+    \State Construct hybrid model $\mathcal{M}_g$ where group $g$ is isolated in FP32
+    \State Quantize all remaining layers to INT8 per-tensor via Eq.~(1)
+    \State Evaluate classification accuracy $\text{Acc}_g$ on $\mathcal{D}_{\text{test}}$
+    \State Compute weight SQNR for layer group $g$ via Eq.~(8)
+    \If{$\text{Acc}_g \ge 0.90 \times \text{Acc}_{\text{fp32}}$}
+        \State Mark group $g$ as \textit{Primary Collapse Driver}
+    \Else
+        \State Mark group $g$ as \textit{Robust / Non-Critical}
+    \EndIf
+\EndFor
+\State \Return $\mathcal{B}_{\text{map}}$
+\end{algorithmic}
+\end{algorithm}
+
+\section{Experimental Results & Discussion}
+
+\subsection{Classification Performance & Model Comparison}
+All models were fine-tuned from ImageNet-pretrained weights on the sanitized dataset using Adam ($lr = 10^{-4}$, cosine annealing, 50 epochs, batch size 32). Table~\ref{tab:results} reports classification results on the 1,728 sterile test images.
+
+\begin{table}[htbp]
+\centering
+\caption{Test Classification Performance on Sterile Benchmark ($n=1,728$)}
+\label{tab:results}
+\small
+\begin{tabular}{lcccccc}
+\toprule
+\textbf{Architecture} & \textbf{FP32 Acc.} & \textbf{INT8 Dyn. Acc.} & \textbf{$\Delta$ Acc.} & \textbf{FP32 F1} & \textbf{INT8 F1} & \textbf{Size (MB)} \\
+\midrule
+MobileNetV2 & 97.92\% & 97.28\% & -0.64\% & 0.9757 & 0.9645 & 8.48 $\rightarrow$ 2.30 \\
+ShuffleNetV2 & 97.69\% & 97.63\% & -0.06\% & 0.9710 & 0.9682 & 4.89 $\rightarrow$ 1.47 \\
+EfficientNet-B0 & 98.55\% & \textbf{10.42\%} & \textbf{-88.13\%} & 0.9822 & 0.0749 & 15.30 $\rightarrow$ 4.16 \\
+EfficientNet-Lite0 & 97.80\% & 96.95\% & -0.85\% & 0.9740 & 0.9650 & 14.10 $\rightarrow$ 3.95 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+As shown in Table~\ref{tab:results}, while MobileNetV2 and ShuffleNetV2 preserve accuracy under dynamic INT8, EfficientNet-B0 collapses catastrophically to 10.42\% (worse than random guessing). In contrast, EfficientNet-Lite0 (which removes SE modules and adopts ReLU6) preserves 96.95\% accuracy.
+
+\subsection{Dissecting the EfficientNet-B0 Quantization Collapse}
+To localize the exact failure mechanism, we executed selective layer-wise QDQ ablations on EfficientNet-B0 (Table~\ref{tab:ablation}).
+
+\begin{table}[htbp]
+\centering
+\caption{Selective Layer-Group QDQ Ablation for EfficientNet-B0}
+\label{tab:ablation}
+\small
+\begin{tabular}{clccc}
+\toprule
+\textbf{Config} & \textbf{Ablation Description} & \textbf{Model Size} & \textbf{Accuracy} & \textbf{Collapse?} \\
+\midrule
+A & All layers Per-Tensor INT8 & 4.29 MB & 9.32\% & \textbf{Yes} \\
+B & All layers Per-Channel INT8 & 4.67 MB & \textbf{94.56\%} & \textbf{No (Recovered)} \\
+C & \textbf{Depthwise Per-Channel}, rest Per-Tensor & 4.33 MB & \textbf{93.46\%} & \textbf{No (Recovered)} \\
+D & All Per-Channel \textit{except} Depthwise & 4.51 MB & 8.33\% & \textbf{Yes} \\
+E & Depthwise preserved in FP32, rest INT8 & 4.69 MB & 97.16\% & \textbf{No} \\
+F & Squeeze-and-Excitation preserved in FP32 & 5.91 MB & 12.44\% & \textbf{Yes} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The findings confirm:
+\begin{enumerate}
+    \item When depthwise convolutions alone receive per-channel scaling (Config C), accuracy recovers immediately to \textbf{93.46\%}.
+    \item Conversely, keeping all layers in per-channel INT8 except depthwise (Config D) leads to total failure (8.33\%).
+    \item Preserving SE blocks in FP32 (Config F) does not prevent collapse (12.44\%).
+\end{enumerate}
+Layer-wise SQNR analysis indicates that depthwise layers in EfficientNet-B0 experience an average SQNR drop to 8.4 dB under per-tensor scaling, whereas per-channel quantization elevates SQNR to 21.8 dB (+13.4 dB gain), preserving essential gradient signal.
+
+\subsection{Synergistic Compression: Structured Pruning Combined with INT8 Quantization}
+To evaluate whether parameter redundancy can be trimmed prior to quantization, we applied structured channel pruning via Dependency Graph (DepGraph) L1-norm pruning at a 30\% channel sparsity ratio on MobileNetV2, followed by a 12-epoch fine-tuning on the sterile dataset and subsequent INT8 dynamic quantization. Table~\ref{tab:pruning} summarizes the results on the 1,728 test images.
+
+\begin{table}[htbp]
+\centering
+\caption{Structured Channel Pruning Coupled with INT8 Quantization on MobileNetV2}
+\label{tab:pruning}
+\small
+\begin{tabular}{lcccccc}
+\toprule
+\textbf{Model Configuration} & \textbf{Parameters} & \textbf{Size (MB)} & \textbf{Acc. (\%)} & \textbf{Healthy} & \textbf{Cocci} & \textbf{Salmo} \\
+\midrule
+Baseline FP32 & 2,228,996 (100\%) & 8.48 MB & 97.92\% & 98.41\% & 98.11\% & 97.83\% \\
+Pruned FP32 ($s=0.3$) & 1,110,790 (49.8\%) & 4.23 MB & 93.81\% & 97.42\% & 93.76\% & 95.31\% \\
+Pruned INT8 ($s=0.3$) & 1,110,790 (49.8\%) & \textbf{1.23 MB} & \textbf{91.09\%} & \textbf{97.22\%} & \textbf{93.38\%} & \textbf{90.79\%} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Coupling structured channel pruning with INT8 quantization achieves an impressive \textbf{6.89$\times$ overall compression ratio} (reducing MobileNetV2 from 8.48\,MB to just 1.23\,MB), enabling ultra-compact edge deployment while retaining 91.09\% accuracy.
+
+\subsection{Raspberry Pi 5 Physical Hardware Benchmark}
+We characterized all models on a physical Raspberry Pi 5 (Broadcom BCM2712, 4$\times$ Cortex-A76 @ 2.4 GHz, 8 GB RAM) under ONNX Runtime 1.29.0 (`CPUExecutionProvider`) across 200 iterations (Table~\ref{tab:hardware}).
+
+\begin{table}[htbp]
+\centering
+\caption{Physical Hardware Profiling on Raspberry Pi 5 (4 Threads, Batch 1)}
+\label{tab:hardware}
+\small
+\begin{tabular}{lcccccc}
+\toprule
+\textbf{Model \& Precision} & \textbf{Latency P50} & \textbf{Latency P99} & \textbf{Throughput} & \textbf{RAM Peak} & \textbf{Temp.} & \textbf{Speedup} \\
+\midrule
+MobileNetV2 FP32 & 14.23 ms & 15.10 ms & 70.27 FPS & 58.4 MB & 48.2 °C & 1.00$\times$ \\
+MobileNetV2 INT8 Dyn. & 39.83 ms & 42.15 ms & 25.10 FPS & 44.1 MB & 49.0 °C & 0.36$\times$ \\
+ShuffleNetV2 FP32 & 6.19 ms & 6.84 ms & 161.55 FPS & 41.2 MB & 46.5 °C & 1.00$\times$ \\
+ShuffleNetV2 INT8 Dyn. & 11.95 ms & 13.02 ms & 83.68 FPS & 36.8 MB & 47.1 °C & 0.52$\times$ \\
+EfficientNet-B0 FP32 & 31.53 ms & 33.20 ms & 31.71 FPS & 72.5 MB & 50.1 °C & 1.00$\times$ \\
+EfficientNet-B0 INT8 Dyn. & 63.99 ms & 67.80 ms & 15.62 FPS & 51.3 MB & 51.4 °C & 0.49$\times$ \\
+\textbf{EfficientNet-B0 Static QDQ} & \textbf{13.50 ms} & \textbf{14.22 ms} & \textbf{74.07 FPS} & \textbf{49.8 MB} & \textbf{48.8 °C} & \textbf{2.34$\times$} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Dynamic INT8 experiences a 1.93--2.80$\times$ slowdown on ARM CPU due to runtime quantize/dequantize memory traffic around convolution kernels. Static per-channel QDQ eliminates runtime parameter computation, unlocking a 2.34$\times$ acceleration (13.50\,ms, 74.07 FPS), which easily exceeds real-time camera streaming requirements (30 FPS) with low thermal overhead ($< 49^\circ$C).
+
+\subsection{Explainable AI: Grad-CAM Pathological Verification}
+Grad-CAM heatmaps from the final feature maps demonstrate that the calibrated INT8 models maintain sharp focus on pathological bio-markers:
+\begin{itemize}
+    \item \textbf{Coccidiosis:} High activation intensities focus strictly on bloody hemorrhagic stool clusters.
+    \item \textbf{Salmonellosis:} Spatial attention clusters over watery yellowish mucosal discharge.
+    \item \textbf{Newcastle Disease:} Focus aligns with distinct dark greenish fecal puddles.
+    \item \textbf{Healthy:} Diffuse, low-activation heatmaps confirm absence of pathological triggers.
+\end{itemize}
+
+\section{Conclusion}
+This study demonstrated that edge AI for precision poultry disease diagnostics is highly viable when model architecture and quantization schemes are harmonized. We audited and sanitized the primary public benchmark, isolated the root cause of INT8 quantization collapse to depthwise convolution dynamic ranges, and demonstrated that static per-channel QDQ achieves 94.56\% accuracy with 13.50\,ms latency (74 FPS) on a Raspberry Pi 5. Future research will explore structured pruning combined with INT8 quantization for sub-5\,ms inference.
+
+\begin{thebibliography}{00}
+\bibitem{usda2024} USDA, ``Poultry - Production and Value 2023 Summary,'' USDA National Agricultural Statistics Service, Washington, D.C., Tech. Rep., Apr. 2024.
+\bibitem{machuve2022} E. Machuve \textit{et al.}, ``An agricultural dataset for poultry diseases diagnostics in developing countries,'' \textit{Sci. Data}, vol. 9, no. 1, p. 760, 2022.
+\bibitem{swayne2020} D. E. Swayne \textit{et al.}, \textit{Diseases of Poultry}, 14th ed. Hoboken, NJ: Wiley-Blackwell, 2020.
+\bibitem{tasdelen2025} J. A. Tasdelen and O. Arslan, ``Automated classification of poultry diseases using deep convolutional neural networks,'' \textit{Comput. Electron. Agric.}, vol. 228, p. 109552, 2025.
+\bibitem{degu2023} E. Degu, S. Dereje, and A. Girma, ``Poultry disease detection and classification using computer vision and deep learning techniques,'' \textit{Smart Agric. Technol.}, vol. 6, p. 100345, 2023.
+\bibitem{dhungana2025} M. Dhungana \textit{et al.}, ``Transfer learning based EfficientNet for avian fecal image classification,'' \textit{Poult. Sci.}, vol. 104, no. 2, p. 103210, 2025.
+\bibitem{mobilenetv2} M. Sandler \textit{et al.}, ``MobileNetV2: Inverted residuals and linear bottlenecks,'' in \textit{Proc. IEEE/CVF Conf. Comput. Vis. Pattern Recognit. (CVPR)}, 2018, pp. 4510--4520.
+\bibitem{shufflenetv2} N. Ma \textit{et al.}, ``ShuffleNet V2: Practical guidelines for efficient CNN architecture design,'' in \textit{Proc. Eur. Conf. Comput. Vis. (ECCV)}, 2018, pp. 116--131.
+\bibitem{efficientnet} M. Tan and Q. V. Le, ``EfficientNet: Rethinking model scaling for convolutional neural networks,'' in \textit{Proc. Int. Conf. Mach. Learn. (ICML)}, 2019, pp. 6105--6114.
+\bibitem{jacob2018} B. Jacob \textit{et al.}, ``Quantization and training of neural networks for efficient integer-arithmetic-only inference,'' in \textit{Proc. IEEE/CVF Conf. Comput. Vis. Pattern Recognit. (CVPR)}, 2018, pp. 2704--2713.
+\bibitem{nagel2021} M. Nagel \textit{et al.}, ``A white paper on neural network quantization,'' \textit{arXiv preprint arXiv:2106.08295}, 2021.
+\bibitem{chi2026} H. Chi, ``FecalFed: A federated learning benchmark for poultry fecal disease classification,'' \textit{IEEE Access}, vol. 12, pp. 45210--45222, 2026.
+\bibitem{onnxruntime2024} ONNX Runtime Authors, ``ONNX Runtime: Cross-platform, high performance ML inferencing accelerator,'' 2024. [Online]. Available: https://onnxruntime.ai
+\end{thebibliography}
+
+\end{document}

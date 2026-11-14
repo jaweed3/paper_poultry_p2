@@ -1,0 +1,22 @@
+{
+  "pruned_s30_fp32": {
+    "accuracy": 93.81,
+    "size_mb": 4.23,
+    "per_class": {
+      "cocci": 93.76,
+      "healthy": 97.42,
+      "ncd": 75.18,
+      "salmo": 95.31
+    }
+  },
+  "pruned_s30_int8": {
+    "accuracy": 91.09,
+    "size_mb": 1.23,
+    "per_class": {
+      "cocci": 93.38,
+      "healthy": 97.22,
+      "ncd": 61.7,
+      "salmo": 90.79
+    }
+  }
+}
