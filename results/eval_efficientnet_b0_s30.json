@@ -1,0 +1,37 @@
+{
+  "model": "efficientnet_b0",
+  "sparsity": 0.3,
+  "test_n": 1728,
+  "variants": {
+    "fp32": {
+      "accuracy": 93.69,
+      "size_mb": 7.67,
+      "per_class": {
+        "cocci": 91.68,
+        "healthy": 95.44,
+        "ncd": 82.27,
+        "salmo": 96.93
+      }
+    },
+    "int8_dynamic": {
+      "accuracy": 33.28,
+      "size_mb": 2.23,
+      "per_class": {
+        "cocci": 32.7,
+        "healthy": 1.79,
+        "ncd": 20.57,
+        "salmo": 65.7
+      }
+    },
+    "int8_static_per_channel": {
+      "accuracy": 63.72,
+      "size_mb": 2.62,
+      "per_class": {
+        "cocci": 99.24,
+        "healthy": 65.48,
+        "ncd": 37.59,
+        "salmo": 34.84
+      }
+    }
+  }
+}

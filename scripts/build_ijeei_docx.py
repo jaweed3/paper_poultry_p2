@@ -300,13 +300,13 @@ def create_document():
 
     add_h2("C. Synergistic Compression: Structured Pruning Coupled with INT8 Quantization")
     doc.add_paragraph(
-        "To explore whether parameter redundancy can be trimmed prior to quantization, we applied structured channel pruning via Dependency Graph (DepGraph) L1-norm pruning at 30% channel sparsity on MobileNetV2, followed by a 12-epoch fine-tuning on the sterile dataset and subsequent INT8 dynamic quantization (Table 3)."
+        "To explore whether parameter redundancy can be trimmed prior to quantization across distinct architectures, we applied structured channel pruning via Dependency Graph (DepGraph) L1-norm pruning on MobileNetV2 (at 30% and 50% channel sparsity) and EfficientNet-B0 (at 30% channel sparsity), followed by a 12-epoch fine-tuning on the sterile split and subsequent post-training quantization (Table 3)."
     )
 
     # Table 3
-    t3 = doc.add_table(rows=4, cols=8)
+    t3 = doc.add_table(rows=8, cols=8)
     t3.alignment = WD_TABLE_ALIGNMENT.CENTER
-    h3 = ["Model Stage", "Parameters", "Disk Size", "Top-1 Acc.", "Healthy", "Cocci", "Salmo", "NCD"]
+    h3 = ["Model & Compression Stage", "Parameters", "Disk Size", "Top-1 Acc.", "Healthy", "Cocci", "Salmo", "NCD"]
     for i, h in enumerate(h3):
         cell = t3.cell(0, i)
         cell.text = h
@@ -315,24 +315,28 @@ def create_document():
         set_cell_margins(cell)
 
     rows_t3 = [
-        ["Baseline FP32", "2,228,996 (100%)", "8.48 MB", "97.92%", "98.41%", "98.11%", "97.83%", "92.20%"],
-        ["Pruned FP32 (s=0.3)", "1,110,790 (49.8%)", "4.23 MB", "93.81%", "97.42%", "93.76%", "95.31%", "75.18%"],
-        ["Pruned INT8 (s=0.3)", "1,110,790 (49.8%)", "1.23 MB", "91.09%", "97.22%", "93.38%", "90.79%", "61.70%"],
+        ["MNV2 Baseline FP32", "2,228,996 (100%)", "8.48 MB", "97.92%", "98.41%", "98.11%", "97.83%", "92.20%"],
+        ["MNV2 Pruned FP32 (s=0.3)", "1,110,790 (49.8%)", "4.23 MB", "93.81%", "97.42%", "93.76%", "95.31%", "75.18%"],
+        ["MNV2 Pruned INT8 (s=0.3)", "1,110,790 (49.8%)", "1.23 MB", "91.09%", "97.22%", "93.38%", "90.79%", "61.70%"],
+        ["MNV2 Pruned INT8 (s=0.5)", "583,332 (26.2%)", "0.72 MB", "85.47%", "91.07%", "96.98%", "83.21%", "31.21%"],
+        ["EB0 Baseline FP32", "4,012,672 (100%)", "15.30 MB", "98.55%", "99.11%", "99.24%", "98.92%", "94.33%"],
+        ["EB0 Pruned FP32 (s=0.3)", "2,005,801 (50.0%)", "7.67 MB", "93.69%", "95.44%", "91.68%", "96.93%", "82.27%"],
+        ["EB0 Pruned INT8 Static QDQ", "2,005,801 (50.0%)", "2.62 MB", "63.72%", "65.48%", "99.24%", "34.84%", "37.59%"],
     ]
     for r_idx, r_data in enumerate(rows_t3, start=1):
         for c_idx, val in enumerate(r_data):
             cell = t3.cell(r_idx, c_idx)
             cell.text = val
             set_cell_margins(cell)
-            if c_idx in [2, 3] and "1.23 MB" in val:
+            if c_idx in [2, 3] and ("1.23 MB" in val or "0.72 MB" in val or "2.62 MB" in val):
                 cell.paragraphs[0].runs[0].bold = True
 
-    p_t3 = doc.add_paragraph("Table 3. Structured Channel Pruning Coupled with INT8 Quantization on MobileNetV2")
+    p_t3 = doc.add_paragraph("Table 3. Structured Channel Pruning Coupled with INT8 Quantization Across MobileNetV2 and EfficientNet-B0")
     p_t3.alignment = WD_ALIGN_PARAGRAPH.CENTER
     p_t3.paragraph_format.space_after = Pt(8)
 
     doc.add_paragraph(
-        "Coupling structured channel pruning with INT8 quantization achieves an impressive 6.89x overall compression ratio (reducing MobileNetV2 from 8.48 MB down to 1.23 MB), enabling ultra-compact edge deployment on microcontrollers while retaining over 91% diagnostic accuracy."
+        "Coupling structured channel pruning with INT8 quantization yields an exceptional compression continuum: for MobileNetV2, 30% sparsity achieves a 6.89x total compression ratio (1.23 MB at 91.09% accuracy), while aggressive 50% sparsity reaches an 11.78x reduction (0.72 MB / 733 KB at 85.47% accuracy), revealing the critical accuracy cliff primarily driven by the low-prevalence Newcastle disease class. For EfficientNet-B0, dynamic INT8 collapses severely to 33.28% post-pruning, whereas static per-channel QDQ calibration recovers diagnostic performance to 63.72% (+30.44% accuracy recovery) at 2.62 MB. For ShuffleNetV2, automatic DepGraph channel pruning is topologically constrained due to paired branch dimension requirements in channel-split operations, highlighting a crucial architectural trade-off between manual channel dimension matching and automated pruning pipelines."
     )
 
     add_h2("D. Physical Hardware Profiling on Raspberry Pi 5")

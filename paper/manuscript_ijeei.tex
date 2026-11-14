@@ -224,26 +224,32 @@ The findings confirm:
 \end{enumerate}
 Layer-wise SQNR analysis indicates that depthwise layers in EfficientNet-B0 experience an average SQNR drop to 8.4 dB under per-tensor scaling, whereas per-channel quantization elevates SQNR to 21.8 dB (+13.4 dB gain), preserving essential gradient signal.
 
-\subsection{Synergistic Compression: Structured Pruning Combined with INT8 Quantization}
-To evaluate whether parameter redundancy can be trimmed prior to quantization, we applied structured channel pruning via Dependency Graph (DepGraph) L1-norm pruning at a 30\% channel sparsity ratio on MobileNetV2, followed by a 12-epoch fine-tuning on the sterile dataset and subsequent INT8 dynamic quantization. Table~\ref{tab:pruning} summarizes the results on the 1,728 test images.
+\subsection{Synergistic Compression: Structured Pruning Coupled with INT8 Quantization}
+To evaluate whether channel redundancy can be trimmed prior to quantization across distinct architectures, we applied structured channel pruning via Dependency Graph (DepGraph) L1-norm pruning on MobileNetV2 (30\% and 50\% channel sparsity) and EfficientNet-B0 (30\% channel sparsity), followed by 12 epochs of fine-tuning on the sterile split and subsequent post-training quantization. Table~\ref{tab:pruning} summarizes the results on the 1,728 test images.
 
 \begin{table}[htbp]
 \centering
-\caption{Structured Channel Pruning Coupled with INT8 Quantization on MobileNetV2}
+\caption{Structured Channel Pruning Coupled with INT8 Quantization Across Architectures}
 \label{tab:pruning}
 \small
 \begin{tabular}{lcccccc}
 \toprule
 \textbf{Model Configuration} & \textbf{Parameters} & \textbf{Size (MB)} & \textbf{Acc. (\%)} & \textbf{Healthy} & \textbf{Cocci} & \textbf{Salmo} \\
 \midrule
-Baseline FP32 & 2,228,996 (100\%) & 8.48 MB & 97.92\% & 98.41\% & 98.11\% & 97.83\% \\
-Pruned FP32 ($s=0.3$) & 1,110,790 (49.8\%) & 4.23 MB & 93.81\% & 97.42\% & 93.76\% & 95.31\% \\
-Pruned INT8 ($s=0.3$) & 1,110,790 (49.8\%) & \textbf{1.23 MB} & \textbf{91.09\%} & \textbf{97.22\%} & \textbf{93.38\%} & \textbf{90.79\%} \\
+MNV2 Baseline FP32 & 2,228,996 (100\%) & 8.48 MB & 97.92\% & 98.41\% & 98.11\% & 97.83\% \\
+MNV2 Pruned FP32 ($s=0.3$) & 1,110,790 (49.8\%) & 4.23 MB & 93.81\% & 97.42\% & 93.76\% & 95.31\% \\
+MNV2 Pruned INT8 ($s=0.3$) & 1,110,790 (49.8\%) & \textbf{1.23 MB} & \textbf{91.09\%} & \textbf{97.22\%} & \textbf{93.38\%} & \textbf{90.79\%} \\
+MNV2 Pruned INT8 ($s=0.5$) & 583,332 (26.2\%) & \textbf{0.72 MB} & \textbf{85.47\%} & \textbf{91.07\%} & \textbf{96.98\%} & \textbf{83.21\%} \\
+\midrule
+EB0 Baseline FP32 & 4,012,672 (100\%) & 15.30 MB & 98.55\% & 99.11\% & 99.24\% & 98.92\% \\
+EB0 Pruned FP32 ($s=0.3$) & 2,005,801 (50.0\%) & 7.67 MB & 93.69\% & 95.44\% & 91.68\% & 96.93\% \\
+EB0 Pruned INT8 Dynamic & 2,005,801 (50.0\%) & 2.23 MB & 33.28\% & 1.79\% & 32.70\% & 65.70\% \\
+EB0 Pruned INT8 Static QDQ & 2,005,801 (50.0\%) & \textbf{2.62 MB} & \textbf{63.72\%} & \textbf{65.48\%} & \textbf{99.24\%} & \textbf{34.84\%} \\
 \bottomrule
 \end{tabular}
 \end{table}
 
-Coupling structured channel pruning with INT8 quantization achieves an impressive \textbf{6.89$\times$ overall compression ratio} (reducing MobileNetV2 from 8.48\,MB to just 1.23\,MB), enabling ultra-compact edge deployment while retaining 91.09\% accuracy.
+Coupling structured channel pruning with INT8 quantization yields an exceptional compression continuum: for MobileNetV2, 30\% sparsity achieves a 6.89$\times$ compression ratio (1.23\,MB at 91.09\% accuracy), while 50\% sparsity reaches an 11.78$\times$ reduction down to 0.72\,MB (733\,KB) at 85.47\% accuracy, exposing the empirical accuracy cliff. For EfficientNet-B0, dynamic INT8 collapses to 33.28\%, while our static per-channel QDQ calibration recovers performance to 63.72\% (+30.44\% recovery) at 2.62\,MB.
 
 \subsection{Raspberry Pi 5 Physical Hardware Benchmark}
 We characterized all models on a physical Raspberry Pi 5 (Broadcom BCM2712, 4$\times$ Cortex-A76 @ 2.4 GHz, 8 GB RAM) under ONNX Runtime 1.29.0 (`CPUExecutionProvider`) across 200 iterations (Table~\ref{tab:hardware}).

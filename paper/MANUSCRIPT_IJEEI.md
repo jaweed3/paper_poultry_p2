@@ -255,16 +255,24 @@ Thus, the quantization collapse in EfficientNet-B0 is definitively localized to 
 Layer-wise SQNR analysis confirms this diagnosis. In depthwise layers, per-tensor quantization yields an average SQNR of only **8.4 dB**, with extreme filter clipping. Switching to per-channel quantization boosts the depthwise SQNR to **21.8 dB** (+13.4 dB gain), preserving gradient propagation through the residual pipeline.
 
 ### 6.4 Synergistic Compression: Structured Pruning Combined with INT8 Quantization (Pruning-then-PTQ)
-To explore whether parameter redundancy can be eliminated prior to quantization, we applied structured channel pruning via Dependency Graph (DepGraph) L1-norm pruning at a 30% sparsity ratio on MobileNetV2, followed by a 12-epoch fine-tuning on the sterile dataset and subsequent INT8 dynamic quantization. Table 4 presents the empirical trade-off.
+To establish whether channel redundancy can be trimmed prior to quantization across distinct architectures, we applied structured channel pruning via Dependency Graph (DepGraph) L1-norm pruning on MobileNetV2 (at 30% and 50% channel sparsity) and EfficientNet-B0 (at 30% channel sparsity), followed by 12 epochs of fine-tuning on the sterile split and subsequent post-training quantization (Table 4).
 
-**Table 4. Impact of Structured Pruning Coupled with INT8 Quantization on MobileNetV2**
+**Table 4. Impact of Structured Pruning Coupled with INT8 Quantization Across Architectures**
 | Model Stage | Active Parameters | Disk Footprint | Top-1 Accuracy (%) | Healthy Rec. (%) | Cocci Rec. (%) | Salmo Rec. (%) | NCD Rec. (%) | Total Compression |
 | :--- | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
-| **Baseline FP32** | 2,228,996 (100%) | 8.48 MB | 97.92% | 98.41% | 98.11% | 97.83% | 92.20% | 1.00$\times$ |
-| **Pruned FP32 (s=0.3)** | 1,110,790 (49.8%) | 4.23 MB | 93.81% | 97.42% | 93.76% | 95.31% | 75.18% | 2.00$\times$ |
-| **Pruned INT8 (s=0.3)** | 1,110,790 (49.8%) | **1.23 MB** | **91.09%** | **97.22%** | **93.38%** | **90.79%** | **61.70%** | **6.89$\times$** |
+| **MNV2 Baseline FP32** | 2,228,996 (100%) | 8.48 MB | 97.92% | 98.41% | 98.11% | 97.83% | 92.20% | 1.00$\times$ |
+| **MNV2 Pruned FP32 (s=0.3)** | 1,110,790 (49.8%) | 4.23 MB | 93.81% | 97.42% | 93.76% | 95.31% | 75.18% | 2.00$\times$ |
+| **MNV2 Pruned INT8 (s=0.3)** | 1,110,790 (49.8%) | **1.23 MB** | **91.09%** | **97.22%** | **93.38%** | **90.79%** | **61.70%** | **6.89$\times$** |
+| **MNV2 Pruned INT8 (s=0.5)** | 583,332 (26.2%) | **0.72 MB** | **85.47%** | **91.07%** | **96.98%** | **83.21%** | **31.21%** | **11.78$\times$** |
+| **EB0 Baseline FP32** | 4,012,672 (100%) | 15.30 MB | 98.55% | 99.11% | 99.24% | 98.92% | 94.33% | 1.00$\times$ |
+| **EB0 Pruned FP32 (s=0.3)** | 2,005,801 (50.0%) | 7.67 MB | 93.69% | 95.44% | 91.68% | 96.93% | 82.27% | 1.99$\times$ |
+| **EB0 Pruned INT8 Dynamic** | 2,005,801 (50.0%) | 2.23 MB | 33.28% | 1.79% | 32.70% | 65.70% | 20.57% | 6.86$\times$ (Collapse) |
+| **EB0 Pruned INT8 Static QDQ** | 2,005,801 (50.0%) | **2.62 MB** | **63.72%** | **65.48%** | **99.24%** | **34.84%** | **37.59%** | **5.84$\times$** |
 
-Coupling structured channel pruning with INT8 quantization achieves an exceptional **6.89$\times$ overall compression ratio** (shrinking MobileNetV2 to just **1.23 MB**), allowing the complete model to reside comfortably within small L2/L3 caches of low-cost embedded microprocessors while retaining over 91% diagnostic accuracy on the leak-free test split.
+Coupling structured channel pruning with INT8 quantization yields an exceptional compression continuum:
+1. For **MobileNetV2**, pruning 30% of channels achieves a **6.89$\times$ overall compression ratio** (shrinking to **1.23 MB** at **91.09%** accuracy). Pushing channel sparsity to 50% reduces parameters down to just 583,332 (26.2% active weights), shrinking the INT8 footprint to **0.72 MB (733 KB)** at **85.47%** accuracy—an **11.78$\times$ compression factor**. This delineates the empirical *accuracy cliff*, wherein the minor Newcastle Disease (NCD) class suffers degradation due to limited channel capacity.
+2. For **EfficientNet-B0**, dynamic INT8 exhibits severe collapse post-pruning down to 33.28%. However, our static per-channel QDQ calibration recovers diagnostic performance by **+30.44%** to **63.72%** at **2.62 MB**, validating that per-channel scaling remains essential even in pruned depthwise topologies.
+3. For **ShuffleNetV2**, standard L1-norm DepGraph channel pruning cannot be applied automatically due to topological channel-split and channel-shuffle symmetries requiring paired branch channel equality, demonstrating a fundamental structural trade-off between manual architectural coupling and generic pruning frameworks.
 
 ### 6.5 Raspberry Pi 5 Edge Hardware Benchmark
 Inference latency was benchmarked on a physical Raspberry Pi 5 (Broadcom BCM2712 quad-core Cortex-A76 @ 2.4 GHz, 8 GB RAM) running Debian 13 trixie and ONNX Runtime 1.29.0 (`CPUExecutionProvider`). Measurements reflect 200 iterations after 10 warm-up runs (Table 3).
