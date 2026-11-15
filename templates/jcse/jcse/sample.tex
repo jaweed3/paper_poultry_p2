@@ -1,0 +1,538 @@
+\documentclass{jcse}
+
+\usepackage{url} % generates hyperlinks if available + modifies _ in urls.
+\usepackage{amsmath} % higher quality rendering of eqs
+\usepackage{flushend}
+% flushend package is the easiest way to balance the two
+% columns at "references" section.
+\usepackage{booktabs} % higher quality tables
+\usepackage{algorithm} % provides algorithm env.
+\usepackage{algpseudocode}
+\input{setup.tex} % Setup for editors. Paper authors don't need to modify this.
+
+% For Title, Use Camel Case.
+\title[JCSE Template Example]{An Example Usage of the JCSE \LaTeX\xspace Class}
+\author{
+	\authname{Debra Park} \\
+	\affaddr{School of Electrical Engineering and Computer Science,
+	  ABC National University, Seoul, Korea}
+	\email{debbie@abc.ac.kr} \\
+	\\
+	\authname{Dezhen Zhu$^*$} \\
+	\affaddr{School of Electrical Engineering and Computer Science,
+	  ABC National University, Seoul, Korea}
+	\email{jdj@abc.ac.kr} \\
+}
+\shortauthors{D. Park and D. Zhu}
+\bottomstuff
+{
+$^*$ Corresponding Author
+}
+
+% Enable one of following six categories listed at
+% http://jcse.kiise.org/
+\category{Embedded Computing}
+%\category{Ubiquitous Computing}
+%\category{Convergence Computing}
+%\category{Green Computing}
+%\category{Smart and Intelligent Computing}
+%\category{Human Computing}
+
+% Any other keywords...
+% Capital letter only for the first word of the first keyword.
+\keywords{Gigabit switches; gulyFlea; cryptoanalysis;
+systems; internet technologies; queueing systems; keyword1; keyword2;
+keyword3; keyword4}
+
+
+
+\begin{document}
+
+\begin{abstract}
+This is an example tex file which demonstrates the functionalities of
+JCSE \LaTeX template.
+Lengthening the abstract for testing purpose:
+Blah blah blah blah blah blah blah blah blah blah blah blah.
+Blah blah blah blah blah blah blah blah blah blah blah blah.
+Blah blah blah blah blah blah blah blah blah blah blah blah.
+Blah blah blah blah blah blah blah blah blah blah blah blah.
+Blah blah blah blah blah blah blah blah blah blah blah blah.
+Blah blah blah blah blah blah blah blah blah blah blah blah.
+Blah blah blah blah blah blah blah blah blah blah blah blah.
+Blah blah blah blah blah blah blah blah blah blah blah blah.
+Blah blah blah blah blah blah blah blah blah blah blah blah.
+Blah blah blah blah blah blah blah blah blah blah blah blah.
+Blah blah blah blah blah blah blah blah blah blah blah blah.
+Blah blah blah blah blah blah blah blah blah blah blah blah.
+Blah blah blah blah blah blah blah blah blah blah blah blah.
+Blah blah blah blah blah blah blah blah blah blah blah blah.
+Gigabit switches  must work. After years of key research into
+checksums, we confirm the simulation of cache coherence, which embodies
+the confusing principles of cryptoanalysis. GulyFlea, our new
+methodology for read-write information, is the solution to all of these
+grand challenges.
+\end{abstract}
+
+\maketitle
+
+
+
+\section{Introduction} \label{s:intro}
+
+This is an exmple \LaTeX\xspace file demonstrating the
+usage of the JCSE \LaTeX\xspace class file.
+Skip to section \ref{s:ex} for example tables, figures, etc.
+Other than that, the rest of the paper is gibberish generated
+by SCIgen \cite{scigen}.
+\LaTeX\xspace codes are worth looking at, though.
+
+The analysis of the transistor has investigated IPv6, and current
+trends suggest that the emulation of expert systems will soon
+emerge\footnote{Foot note test 1}.
+But,  despite the fact that conventional wisdom states that this
+question is mostly fixed by the emulation of Web services, we believe
+that a different approach is necessary.
+In fact, few system
+administrators would disagree with the construction of the transistor,
+which embodies the private principles of cryptoanalysis \cite{cite:0}.
+To what extent can IPv7  be constructed to fix this obstacle?
+
+We concentrate our efforts on showing that the foremost low-energy
+algorithm for the understanding of write-ahead logging by Sun
+\cite{cite:1} is maximally efficient \cite{cite:2}.  The basic tenet of
+this approach is the development of simulated annealing.  Existing
+wireless and ``smart'' systems use 802.11b  to cache systems.  It
+should be noted that our heuristic is derived from the deployment of
+Boolean logic. Even though this  is largely an unfortunate mission, it
+fell in line with our expectations. On a similar note, indeed, the
+UNIVAC\footnote{Foot note test2} computer  and Lamport clocks  have a
+long history of interfering
+in this manner. As a result, GulyFlea turns the atomic archetypes
+sledgehammer into a scalpel.
+
+Our contributions are as follows.   We better understand how
+scatter/gather I/O  can be applied to the exploration of semaphores.
+Second, we argue that red-black trees  can be made game-theoretic,
+Bayesian, and classical.
+
+The roadmap of the paper is as follows. To begin with, we motivate the
+need for the Internet.  We place our work in context with the related
+work in this area.  We confirm the exploration of RAID. Next, we
+confirm the construction of courseware. Finally,  we conclude.
+
+
+\section{Examples} \label{s:ex}
+
+\subsection{One Equation}
+
+\begin{equation}
+F = -\frac{GMm}{r^2}
+\label{e:grav}
+\end{equation}
+
+Equations can be easily written in equation environment.
+See Equation~\ref{e:grav} for example.
+
+
+\subsection{Series of Equations}
+
+\begin{eqnarray}
+ y &=& x^4 + 4      \nonumber \\
+   &=& (x^2+2)^2 -4x^2 \nonumber \\
+   &\le&(x^2+2)^2 \label{e:series}
+\end{eqnarray}
+
+Sometimes a series of equations are needed.
+See Equation~\ref{e:series} for
+details\footnote{\url{http://www.personal.ceu.hu/tex/cookbook.html}}.
+
+
+\subsection{Algorithms}
+
+\begin{algorithm}
+\caption{Euclid’s algorithm}\label{alg:euclid}
+\begin{algorithmic}[1]
+\Procedure{Euclid}{$a,b$}\Comment{The g.c.d. of a and b}
+	\State $r\gets a\bmod b$
+	\While{$r\not=0$}\Comment{We have the answer if r is 0}
+		\State $a\gets b$
+		\State $b\gets r$
+		\State $r\gets a\bmod b$
+	\EndWhile\label{euclidendwhile}
+	\State \textbf{return} $b$\Comment{The gcd is b}
+\EndProcedure
+\end{algorithmic}
+\end{algorithm}
+
+The use of ``algorithmicx'' package is recommended,
+although it is possible show algorithms manually.
+An example is shown as Algorithm~\ref{alg:euclid}.
+
+
+\subsection{Theorems, Proofs, etc.} \label{s:envs}
+
+JCSE.cls profides many environments for theorems, proofs, etc,
+Definitions \ref{def:3} and \ref{def:genus} are an example.
+There are more environments:
+
+\begin{definition}[A triangle]
+\label{def:3}
+A plane figure bounded by 3 straight sides is a triangle.
+\end{definition}
+
+\begin{definition}[a genus (or family)]
+\label{def:genus}
+An existing definition that serves as a portion of the new definition;
+all definitions with the same genus are considered members of that genus,
+and a definition can be composed of multiple genera (more than one genus).
+\end{definition}
+
+\begin{lemma}[Example Lemma]
+Lemma lemma lemma lemma lemma lemma lemma lemma lemma.
+\end{lemma}
+\begin{proof}
+Write proof here.
+\end{proof}
+
+\begin{corollary}[Example corollary]
+Corollary corollary corollary corollary corollary.
+\end{corollary}
+
+\begin{proposition}[Example proposition]
+All humans are mortal.
+\end{proposition}
+
+\begin{axiom}[Example Axiom]
+It is possible to draw a straight line from any point to any other point.
+\end{axiom}
+
+\begin{remark}[Example Remark]
+Can't prove axioms.
+\end{remark}
+
+\begin{example}[Example example]
+There can be numbered examples.
+\end{example}
+
+\begin{theorem}[Fermat's Last Theorem]
+No three positive integers $a$, $b$, and $c$ can satisfy the equation
+$a^n + b^n = c^n$ for any integer value of $n$ greater than two.
+\end{theorem}
+\begin{proof}
+I have discovered a truly remarkable proof which this margin
+is too small to contain.
+\end{proof}
+
+
+
+\subsection{Subsection testing1}
+Chicken chicken chicken chicken,
+chicken chicken chicken chicken \cite{Zongker2006}.
+
+\subsubsection{Subsubsection Testing1} \label{ss:testing1}
+
+Subsubsection headings are enumerated by Arabic numerals followed by
+parentheses. They are indented, italicized, upper and lower case,
+run into the text in their sections, and are followed by a colon.
+
+\subsubsection{Subsubsection Referencing}
+It is possible to reference sections and subsections.
+Subsubsection \ref{ss:testing1} has discussion about chickens.
+Subsection \ref{s:envs} has examples of definitions, remarks, proofs, etc.
+Section \ref{s:intro} is the introduction section.
+
+
+\subsubsection{Subsubsection Image that Spans Two Columns}
+
+\begin{figure*}
+	\centering
+	\epsfig{width=\textwidth,figure=figs/unix}
+	\caption{Evolution of Unix and Unix-like systems. This is an example
+		of large figures which spans two columns.
+	}
+	\label{dia:unix}
+\end{figure*}
+
+Fig.~\ref{dia:unix} is from \url{http://en.wikipedia.org/wiki/File:Unix_history-simple.svg}.
+
+\subsection{Subsection testing2}
+Chicken chicken chicken chicken,
+chicken chicken chicken chicken.
+
+\subsection{Example Tables}
+
+\subsubsection{Simple Tables}
+
+\begin{table}
+\centering
+\caption{Quarks}
+\label{t:quarks}
+\begin{tabular}{cccc}
+\thline
+Name     & Symbol & Antiparticle   & Charge (e) \\
+\hline
+up       & $u$    & $\overline{u}$ & +2/3       \\
+down     & $d$    & $\overline{d}$ & -1/3       \\
+charm    & $c$    & $\overline{c}$ & +2/3       \\
+strange  & $s$    & $\overline{s}$ & −1/3       \\
+top      & $t$    & $\overline{t}$ & +2/3       \\
+bottom   & $b$    & $\overline{b}$ & -1/3       \\
+\hline
+\end{tabular}
+\end{table}
+
+``thline'' command provides thicker line for drawing tables,
+as shown as Table~\ref{t:quarks}.
+
+
+\subsubsection{(Optional) Booktabs Package}
+
+\begin{table*}
+\centering
+\caption{Comparison of results by their algorithm \cite{Zongker2006} and our algorithm.}
+\label{t:cmp}
+\begin{tabular} {ccccccccc}
+
+\toprule
+        & \multicolumn{4}{c}{Theirs \cite{Zongker2006}}  & \multicolumn{4}{c}{Ours} \\
+\cmidrule(r){2-5} \cmidrule(l){6-9}
+Circuit & Skew (ps) & Hops & Latency (ps) & Error(\%)    & Skew (ps) & Hops & Time (ps) & Error(\%) \\
+\midrule
+s5378   & 40        & 3004 & 19.4         & 14.2         & 14.1      & 2990 & 12        & 0.02 \\
+s9234   & 50        & 2345 & 23.6         & 18.3         & 18.2      & 2131 & 16        & 0.02 \\
+s13207  & 134       & 2263 & 54.8         & 47.7         & 47.8      & 1950 & 36        & 0.19 \\
+s15850  & 133       & 2615 & 56.7         & 51.5         & 52.9      & 1515 & 49        & 0.12 \\
+s35932  & 407       & 8774 & 129.7        & 122.4        & 111.6     & 6684 & 121       & 1.26 \\
+s38417  & 343       & 7917 & 113.7        & 100.1        & 112.8     & 7917 & 81        & 1.20 \\
+s35584  & 330       & 268  & 119.8        & 113.1        & 99.8      & 255  & 100       & 0.80 \\
+\cmidrule(lr){1-1} \cmidrule(r){2-5} \cmidrule(l){6-9}
+Average & 3         & 4    & 5            & 6            & 7         & 8    & 9         & 10   \\
+\midrule
+
+\end{tabular}
+\end{table*}
+
+Table~\ref{t:cmp} shows an example of larger table which spans two columns.
+``booktabs'' package allows higher quality tables.
+Use toprule, midrule, bottomrule, cmidrule commands instead if using booktabs.
+cmidrule command allows shorter version of ``clines'' as the two lines
+between the first and second rows of Table~\ref{t:cmp}.
+
+
+
+\section{Model}
+
+The properties of our algorithm depend greatly on the assumptions
+inherent in our framework; in this section, we outline those
+assumptions. This may or may not actually hold in reality.  We
+estimate that spreadsheets  can be made metamorphic, homogeneous, and
+adaptive. This may or may not actually hold in reality.  Rather than
+creating fiber-optic cables, GulyFlea chooses to request stable
+theory. Therefore, the framework that GulyFlea uses is unfounded.
+
+\begin{figure}
+	\centering
+	\epsfig{figure=figs/dia0}
+	\caption{GulyFlea's encrypted location.}
+	\label{dia:label0}
+\end{figure}
+
+Our heuristic relies on the structured architecture outlined in the
+recent little-known work by J. Dongarra in the field of robotics. This
+seems to hold in most cases.  Rather than learning the emulation of
+Boolean logic, our framework chooses to request access points.  Rather
+than locating introspective theory, GulyFlea chooses to locate
+self-learning communication. Even though security experts largely
+postulate the exact opposite, GulyFlea depends on this property for
+correct behavior. Along these same lines, rather than evaluating
+classical methodologies, our heuristic chooses to cache the
+investigation of the transistor. This seems to hold in most cases. The
+question is, will GulyFlea satisfy all of these assumptions?  Yes, but
+with low probability \cite{cite:28, cite:29}.
+
+Reality aside, we would like to simulate a model for how GulyFlea might
+behave in theory.  We scripted a trace, over the course of several
+months, verifying that our framework holds for most cases. Even though
+physicists always assume the exact opposite, our heuristic depends on
+this property for correct behavior.  We estimate that SMPs
+\cite{cite:6} and IPv6  can interact to fulfill this aim. See our
+existing technical report \cite{cite:30} for details.
+
+
+
+\section{Implementation}
+
+After several weeks of arduous architecting, we finally have a working
+implementation of our algorithm.  Information theorists have complete
+control over the codebase of 63 Simula-67 files, which of course is
+necessary so that the little-known reliable algorithm for the
+refinement of the location-identity split \cite{cite:4} runs in O($
+\log \log \log n $) time. Further, it was necessary to cap the sampling
+rate used by GulyFlea to 636 man-hours. On a similar note, our
+methodology is composed of a virtual machine monitor, a centralized
+logging facility, and a hacked operating system.  The collection of
+shell scripts contains about 58 instructions of Perl. Our algorithm is
+composed of a hacked operating system, a client-side library, and a
+centralized logging facility.
+
+
+
+\section{Evaluation}
+
+As we will soon see, the goals of this section are manifold. Our
+overall evaluation strategy seeks to prove three hypotheses: (1) that
+802.11b has actually shown muted effective popularity of IPv4  over
+time; (2) that cache coherence no longer influences system design; and
+finally (3) that an application's effective user-kernel boundary is
+less important than an application's virtual user-kernel boundary when
+maximizing effective complexity. The reason for this is that studies
+have shown that average instruction rate is roughly 49\% higher than we
+might expect \cite{cite:31}.  Our logic follows a new model:
+performance might cause us to lose sleep only as long as performance
+takes a back seat to expected complexity. Our work in this regard is a
+novel contribution, in and of itself.
+
+
+\subsection{Hardware and Software Configuration}
+
+\begin{figure}
+	\centering
+	\epsfig{figure=figs/figure0,width=3in}
+	\caption{The 10th-percentile response time of our methodology, as a function
+of latency.}
+	\label{fig:label0}
+\end{figure}
+
+A well-tuned network setup holds the key to an useful performance
+analysis. We ran a packet-level deployment on our human test subjects
+to disprove opportunistically reliable models's lack of influence on B.
+Maruyama's study of SCSI disks in 1993.  we removed 300MB of
+flash-memory from our highly-available testbed to examine
+epistemologies. Second, we tripled the time since 2001 of our 10-node
+testbed.  We tripled the throughput of CERN's XBox network. It is
+largely a confirmed aim but fell in line with our expectations. Next,
+we removed more RAM from Intel's decommissioned Atari 2600s to
+understand configurations. Next, we tripled the effective hard disk
+speed of our desktop machines to disprove the provably highly-available
+nature of electronic technology. Finally, we added 300Gb/s of Ethernet
+access to our mobile telephones.
+
+\begin{figure}
+	\centering
+	\epsfig{figure=figs/figure1,width=3in}
+	\caption{The expected interrupt rate of our framework, as a function of
+		block size.
+	}
+	\label{fig:label1}
+\end{figure}
+
+GulyFlea does not run on a commodity operating system but instead
+requires an independently patched version of Minix Version 8.4. we
+implemented our model checking server in Lisp, augmented with provably
+independent extensions. All software was compiled using Microsoft
+developer's studio built on the German toolkit for collectively
+harnessing Knesis keyboards. Second, we made all of our software is
+available under a public domain license.
+
+\begin{figure}
+	\centering
+	\epsfig{figure=figs/figure2,width=3in}
+	\caption{The mean latency of our system, as a function of throughput.}
+	\label{fig:label2}
+\end{figure}
+
+
+
+\subsection{Dogfooding Our System}
+
+\begin{figure}
+	\centering
+	\epsfig{figure=figs/figure3,width=3in}
+	\caption{The mean energy of our system, as a function of complexity.}
+	\label{fig:label3}
+\end{figure}
+
+\begin{figure}
+	\centering
+	\epsfig{figure=figs/figure4,width=3in}
+	\caption{
+Note that energy grows as instruction rate decreases -- a phenomenon
+worth investigating in its own right.
+}
+	\label{fig:label4}
+\end{figure}
+
+Is it possible to justify having paid little attention to our
+implementation and experimental setup? It is not. Seizing upon this
+approximate configuration, we ran four novel experiments: (1) we
+dogfooded our algorithm on our own desktop machines, paying particular
+attention to effective flash-memory speed; (2) we ran kernels on 66
+nodes spread throughout the millenium network, and compared them against
+suffix trees running locally; (3) we ran hierarchical databases on 15
+nodes spread throughout the sensor-net network, and compared them
+against randomized algorithms running locally; and (4) we measured WHOIS
+and E-mail throughput on our system.
+
+Now for the climactic analysis of the second half of our experiments.
+Note the heavy tail on the CDF in Figure~\ref{fig:label2}, exhibiting
+degraded latency.  The key to Figure~\ref{fig:label0} is closing the
+feedback loop; Figure~\ref{fig:label2} shows how our system's effective
+block size does not converge otherwise.  The key to
+Figure~\ref{fig:label4} is closing the feedback loop;
+Figure~\ref{fig:label3} shows how our system's distance does not
+converge otherwise.
+
+Shown in Figure~\ref{fig:label2}, the second half of our experiments
+call attention to our method's 10th-percentile interrupt rate. The data
+in Figure~\ref{fig:label2}, in particular, proves that four years of
+hard work were wasted on this project. Second, the curve in
+Figure~\ref{fig:label4} should look familiar; it is better known as
+$F(n) = n$. On a similar note, these expected power observations
+contrast to those seen in earlier work \cite{cite:32}, such as John
+Hopcroft's seminal treatise on systems and observed effective USB key
+throughput.
+
+Lastly, we discuss the second half of our experiments. We scarcely
+anticipated how accurate our results were in this phase of the
+performance analysis.  The data in Figure~\ref{fig:label2}, in
+particular, proves that four years of hard work were wasted on this
+project.  The data in Figure~\ref{fig:label2}, in particular, proves
+that four years of hard work were wasted on this project.
+
+
+
+\section{Conclusion}
+
+Our experiences with our system and the emulation of hierarchical
+databases prove that the well-known pseudorandom algorithm for the
+exploration of fiber-optic cables by U. Zhou follows a Zipf-like
+distribution.  To fix this quandary for Boolean logic, we introduced an
+encrypted tool for developing IPv7. We plan to explore more problems
+related to these issues in future work.
+
+\ack{This research was undertaken as part of the YYYY
+project and is jointly funded by a XXX Systems and ZZZZ
+strategic partnership
+(ABC/U518331/1).}
+
+
+
+% The citation style adheres to IEEEtran style.
+\bibliographystyle{IEEEtran}
+\bibliography{sample} % using bibtex
+
+% OR manual method should still work.
+%\begin{thebibliography}{99}
+%\vspace*{2mm}
+%\bibitem{noisedel}
+%	S.  Chowdury and J. Barkatullah,
+%		``Estimation of maximum currents in MOS IC logic circuits,''
+%		{\em IEEE Transaction on Computer-Aided Design of of Integrated Circuits and Systems}, vol. 9, no. 6, pp. 642-654, June 1990.
+%\vspace*{1mm}
+%\bibitem{3d_thermal_adi}
+%	T. Wang and C. C. Chen,
+%		``3D thermal-ADI: a linear-time chip level transient thermal simulator,''
+%		{\em IEEE Trans. on Computer-Aided Design of Integrated Circuits and Systems}, vol. 21, no. 12, pp. 1434-1445, December 2002.
+%\end{thebibliography}
+
+\end{document}

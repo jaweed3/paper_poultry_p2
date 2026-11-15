@@ -1,0 +1,39 @@
+The JCSE template and its provided LaTeX sample, sample.tex has been tested on
+KoTeXLive (Windows, kotexlive2010-full.exe, ktug.or.kr),
+on Ubuntu 10.04, Arch Linux environment.
+
+
+
+On Windows, with KoTeXLive environment, sample.tex should compile
+seamlessly with pdfLaTeX compile command from TeXworks -
+eps figures will be automatically converted to PDF format.
+
+
+
+Tested on Ubuntu 10.04 with latex command, with texlive-full package installed.
+Type following sequence of commands to generate pdf output:
+
+latex sample
+bibtex sample
+latex sample
+latex sample
+dvipdf sample.dvi
+
+
+
+Tested on Arch Linux (2011-05-22), with texlive-most package installed.
+On Arch Linux, pdflatex command can handle epsfig command automatically by
+converting eps to pdf files. The following commands will generate
+pdf output directly:
+
+pdflatex sample
+bibtex sample
+pdflatex sample
+pdflatex sample
+
+or, with provided Makefile:
+
+make
+make bib
+make
+make
