@@ -35,7 +35,7 @@
         "salmo": 93.32
       },
       "size_mb": 4.67,
-      "quant_time_s": 4.1,
+      "quant_time_s": 4.2,
       "mcnemar_vs_fp32": {
         "b": 75,
         "c": 7,

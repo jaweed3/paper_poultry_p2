@@ -4,7 +4,7 @@
     "git_hash": "4075e93",
     "seed": 42,
     "protocol_train": "50ep Adam 1e-4 cosine, batch 32, 224px, ImageNet init",
-    "protocol_quant": "ORT dynamic PTQ (Conv-inclusive default operator selection), CPU",
+    "protocol_quant": "ORT dynamic PTQ (MatMul-only), CPU",
     "runtime_lab": {
       "onnxruntime": "1.29.0",
       "onnx": "1.22.0",
@@ -18,17 +18,16 @@
       "audit": "pHash Hamming<=5 over 8770 files",
       "near_pairs": 617,
       "exact_pairs": 393,
-      "cross_split_groups": 303,
+      "cross_split_groups": 316,
       "byte_identical_cross": 203,
-      "test_identical_to_train": 94,
-      "test_identical_to_val": 31,
+      "test_identical_to_train": 95,
+      "test_identical_to_val": 30,
       "est_unique": 8153
-    },
-    "mcnemar_artifact": "results/mcnemar_mnv2_snv2.json"
+    }
   },
   "split": {
     "train": {
-      "total": 5100,
+      "total": 5088,
       "per_class": {
         "cocci": 1555,
         "healthy": 1537,
@@ -37,7 +36,7 @@
       }
     },
     "val": {
-      "total": 1325,
+      "total": 1337,
       "per_class": {
         "cocci": 406,
         "healthy": 396,
@@ -93,7 +92,7 @@
           544
         ]
       ],
-      "int8_test_acc": 97.28,
+      "int8_test_acc": 97.11,
       "int8_per_class": {
         "cocci": 97.73,
         "healthy": 98.02,
@@ -126,7 +125,7 @@
           538
         ]
       ],
-      "acc_drop_pp": 0.64,
+      "acc_drop_pp": 0.81,
       "fp32_lat_ms_ref": 2.4,
       "int8_lat_ms_ref": 40.25,
       "fp32_size_mb": 8.48,
@@ -178,7 +177,7 @@
           540
         ]
       ],
-      "int8_test_acc": 97.63,
+      "int8_test_acc": 97.45,
       "int8_per_class": {
         "cocci": 98.11,
         "healthy": 98.02,
@@ -211,7 +210,7 @@
           539
         ]
       ],
-      "acc_drop_pp": 0.06,
+      "acc_drop_pp": 0.24,
       "fp32_lat_ms_ref": 4.15,
       "int8_lat_ms_ref": 12.62,
       "fp32_size_mb": 4.89,

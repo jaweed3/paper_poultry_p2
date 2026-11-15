@@ -1,0 +1,27 @@
+{
+  "model": "mobilenetv2",
+  "sparsity": 0.4,
+  "test_n": 1728,
+  "variants": {
+    "fp32": {
+      "accuracy": 90.68,
+      "size_mb": 3.15,
+      "per_class": {
+        "cocci": 92.63,
+        "healthy": 95.44,
+        "ncd": 55.32,
+        "salmo": 93.5
+      }
+    },
+    "int8_dynamic": {
+      "accuracy": 88.19,
+      "size_mb": 0.95,
+      "per_class": {
+        "cocci": 93.76,
+        "healthy": 88.69,
+        "ncd": 51.77,
+        "salmo": 91.7
+      }
+    }
+  }
+}

@@ -1,90 +1,117 @@
 #!/usr/bin/env python3
 """
 scripts/plot_pareto_jcse.py
-Generates the comprehensive Accuracy vs. Model Size trade-off frontier for JCSE paper.
+Generates the 2-panel Edge Deployment Pareto Frontier for JCSE paper:
+  Panel (a): Test Top-1 Accuracy vs. Hardware Inference Latency (4T on RPi5)
+  Panel (b): Newcastle Disease Sensitivity (Minority Lethal Recall) vs. Hardware Inference Latency
 Outputs:
   - figures/pareto_frontier_jcse.png
-  - figures/pareto_frontier_jcse.eps (vector graphic for LaTeX submission)
+  - figures/pareto_frontier_jcse.eps
+  - paper/figures/pareto_frontier_jcse.png
+  - paper/figures/pareto_frontier_jcse.eps
 """
+
 import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
-import numpy as np
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
-FIG_DIR = ROOT / "figures"
-FIG_DIR.mkdir(exist_ok=True)
+FIG_DIRS = [ROOT / "figures", ROOT / "paper" / "figures"]
+for d in FIG_DIRS:
+    d.mkdir(parents=True, exist_ok=True)
 
-# Data points: (Model, Variant, Size_MB, Acc_Percent, Color, Marker)
-data = [
-    # MobileNetV2
-    ("MNV2 Baseline FP32", 8.48, 97.92, "#1f77b4", "o", (10, 5)),
-    ("MNV2 INT8 Dense", 2.30, 97.28, "#1f77b4", "s", (10, -12)),
-    ("MNV2 Pruned s30 INT8", 1.23, 91.09, "#1f77b4", "^", (10, 5)),
-    ("MNV2 Pruned s50 INT8 (Cliff)", 0.72, 85.47, "#1f77b4", "v", (10, -15)),
+# Data: (Name, Latency_4T_ms, Top1_Acc, NCD_Recall, Color, Marker, Offset_a, Offset_b)
+points = [
+    # Baseline Uncompressed
+    ("ShuffleNetV2 FP32", 9.03, 97.69, 95.74, "#2ca02c", "o", (10, 5), (10, -12)),
+    ("MobileNetV2 FP32", 19.48, 97.92, 94.33, "#1f77b4", "o", (10, 5), (10, 5)),
+    ("EfficientNet-B0 FP32", 39.31, 98.55, 95.74, "#d62728", "o", (10, 5), (10, 5)),
     
-    # ShuffleNetV2
-    ("SNV2 Baseline FP32", 4.89, 97.69, "#2ca02c", "o", (10, 5)),
-    ("SNV2 INT8 Dense", 1.47, 97.63, "#2ca02c", "s", (10, -12)),
+    # Quantized
+    ("ShuffleNetV2 INT8 Dyn", 11.63, 97.45, 93.62, "#2ca02c", "s", (10, -12), (10, -12)),
+    ("MobileNetV2 INT8 Dyn", 42.01, 97.11, 91.49, "#1f77b4", "s", (10, -12), (10, -12)),
+    ("EfficientNet-B0 Static QDQ", 19.40, 94.56, 92.91, "#d62728", "D", (10, -12), (10, -12)),
     
-    # EfficientNet-B0
-    ("EB0 Baseline FP32", 15.30, 98.55, "#d62728", "o", (-130, 5)),
-    ("EB0 INT8 Static QDQ", 4.67, 94.56, "#d62728", "s", (10, 5)),
-    ("EB0 Pruned s30 Static QDQ", 2.62, 63.72, "#d62728", "^", (10, -5)),
-    ("EB0 INT8 Dynamic (Collapse)", 4.16, 10.42, "#7f7f7f", "X", (10, -5)),
+    # Pruned Variants
+    ("MobileNetV2 s30 FP32", 11.07, 93.81, 75.18, "#1f77b4", "^", (10, 5), (10, 5)),
+    ("MobileNetV2 s30 INT8", 25.93, 91.09, 61.70, "#9467bd", "v", (10, -14), (10, -14)),
+    ("MobileNetV2 s50 FP32", 6.90, 90.05, 52.48, "#1f77b4", "<", (10, 5), (10, 5)),
+    ("MobileNetV2 s50 INT8", 18.88, 85.47, 31.21, "#9467bd", ">", (10, -14), (10, -14)),
+    
+    ("EfficientNet-B0 s30 FP32", 26.50, 93.69, 82.27, "#d62728", "^", (10, 5), (10, 5)),
+    ("EfficientNet-B0 s30 Static", 16.55, 63.72, 37.59, "#e377c2", "D", (10, 5), (10, 5)),
 ]
 
-fig, ax = plt.subplots(figsize=(10, 6.5), dpi=300)
+fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(14, 5.5), dpi=300)
 
-for label, size, acc, color, marker, text_offset in data:
-    ax.scatter([size], [acc], color=color, marker=marker, s=140, edgecolors="black", linewidths=1.2, zorder=5)
-    ax.annotate(
-        label,
-        (size, acc),
+# Panel (a): Overall Top-1 Accuracy vs Latency
+for name, lat, top1, ncd, color, marker, off_a, _ in points:
+    ax1.scatter([lat], [top1], color=color, marker=marker, s=120, edgecolors="black", linewidths=1.0, zorder=5)
+    ax1.annotate(
+        name,
+        (lat, top1),
         textcoords="offset points",
-        xytext=text_offset,
-        fontsize=9,
-        fontweight="semibold" if "Pruned" in label or "Collapse" in label else "normal",
-        bbox=dict(boxstyle="round,pad=0.2", facecolor="white", alpha=0.7, edgecolor="none"),
+        xytext=off_a,
+        fontsize=8,
+        bbox=dict(boxstyle="round,pad=0.15", facecolor="white", alpha=0.75, edgecolor="none"),
         zorder=6
     )
 
-# Connect compression trajectories
-# MobileNetV2 trajectory
-ax.plot([8.48, 2.30, 1.23, 0.72], [97.92, 97.28, 91.09, 85.47], linestyle="--", color="#1f77b4", alpha=0.6, label="MobileNetV2 Trajectory")
-# EfficientNet-B0 recovery trajectory
-ax.plot([15.30, 4.67, 2.62], [98.55, 94.56, 63.72], linestyle="--", color="#d62728", alpha=0.6, label="EfficientNet-B0 (Static QDQ)")
-# ShuffleNetV2 trajectory
-ax.plot([4.89, 1.47], [97.69, 97.63], linestyle="--", color="#2ca02c", alpha=0.6, label="ShuffleNetV2 Trajectory")
+# Connect Pareto Frontier in (a)
+pareto_a_x = [6.90, 9.03, 19.48, 39.31]
+pareto_a_y = [90.05, 97.69, 97.92, 98.55]
+ax1.plot(pareto_a_x, pareto_a_y, color="green", linestyle="--", linewidth=1.8, alpha=0.7, label="Empirical Pareto Frontier")
 
-# Annotate Sweet Spot and Collapse
-ax.axvspan(0.5, 1.5, color="#2ca02c", alpha=0.08, label="Ultra-Edge Target Zone (< 1.5 MB)")
-ax.annotate(
-    "Sweet Spot:\n6.89x Compression\n91.09% Acc (1.23 MB)",
-    xy=(1.23, 91.09), xytext=(2.5, 82),
-    arrowprops=dict(arrowstyle="->", color="#1f77b4", lw=1.5),
-    fontsize=9.5, fontweight="bold", color="#1f77b4"
-)
+ax1.axvline(33.33, color="gray", linestyle=":", alpha=0.7, label="30 FPS Real-Time Boundary")
+ax1.set_xlabel("Raspberry Pi 5 Inference Latency, 4 Threads (ms)", fontsize=10, fontweight="bold")
+ax1.set_ylabel("Sterile Test Top-1 Accuracy (%)", fontsize=10, fontweight="bold")
+ax1.set_title("(a) Top-1 Accuracy vs. Hardware Execution Latency", fontsize=11, fontweight="bold")
+ax1.set_xlim(0, 50)
+ax1.set_ylim(60, 101)
+ax1.grid(True, linestyle=":", alpha=0.6)
+ax1.legend(loc="lower left", fontsize=8.5, framealpha=0.9)
 
-ax.annotate(
-    "Quantization Collapse:\nPer-Tensor Depthwise\nSQNR Drops to 8.4 dB",
-    xy=(4.16, 10.42), xytext=(6.0, 18),
-    arrowprops=dict(arrowstyle="->", color="#d62728", lw=1.5),
-    fontsize=9.5, fontweight="bold", color="#d62728"
-)
+# Panel (b): Minority Lethal Recall (NCD) vs Latency
+for name, lat, top1, ncd, color, marker, _, off_b in points:
+    ax2.scatter([lat], [ncd], color=color, marker=marker, s=120, edgecolors="black", linewidths=1.0, zorder=5)
+    ax2.annotate(
+        name,
+        (lat, ncd),
+        textcoords="offset points",
+        xytext=off_b,
+        fontsize=8,
+        bbox=dict(boxstyle="round,pad=0.15", facecolor="white", alpha=0.75, edgecolor="none"),
+        zorder=6
+    )
 
-ax.set_xlabel("Model Storage Footprint on Disk (MB)", fontsize=11, fontweight="bold")
-ax.set_ylabel("Sterile Test Top-1 Accuracy (%)", fontsize=11, fontweight="bold")
-ax.set_title("Pareto Compression Frontier: Accuracy vs. Storage Footprint Across Architectures", fontsize=12, fontweight="bold", pad=12)
-ax.set_xlim(0, 16.5)
-ax.set_ylim(0, 102)
-ax.grid(True, linestyle=":", alpha=0.6)
-ax.legend(loc="lower right", fontsize=9.5, framealpha=0.9)
+# Connect Pareto Frontier in (b)
+pareto_b_x = [9.03, 19.48, 39.31]
+pareto_b_y = [95.74, 94.33, 95.74]
+ax2.plot([9.03, 39.31], [95.74, 95.74], color="green", linestyle="--", linewidth=1.8, alpha=0.7, label="Safety Pareto Frontier (≥90% Recall)")
+
+# Critical Safety Threshold
+ax2.axhline(90.0, color="red", linestyle="--", linewidth=1.4, alpha=0.8, label="Veterinary Safety Threshold (90% NCD Recall)")
+ax2.axvline(33.33, color="gray", linestyle=":", alpha=0.7, label="30 FPS Boundary")
+
+# Shaded unsafe region
+ax2.axhspan(0, 90.0, color="red", alpha=0.06)
+ax2.text(3, 40, "CRITICAL BIOSECURITY HAZARD ZONE\n(Minority Pathogen Under-Reported)", color="#b30000", fontsize=9, fontweight="bold", alpha=0.8)
+
+ax2.set_xlabel("Raspberry Pi 5 Inference Latency, 4 Threads (ms)", fontsize=10, fontweight="bold")
+ax2.set_ylabel("Newcastle Disease Recall [Sensitivity] (%)", fontsize=10, fontweight="bold")
+ax2.set_title("(b) Lethal Minority Sensitivity (NCD) vs. Execution Latency", fontsize=11, fontweight="bold")
+ax2.set_xlim(0, 50)
+ax2.set_ylim(25, 102)
+ax2.grid(True, linestyle=":", alpha=0.6)
+ax2.legend(loc="lower right", fontsize=8.5, framealpha=0.9)
 
 plt.tight_layout()
-png_out = FIG_DIR / "pareto_frontier_jcse.png"
-eps_out = FIG_DIR / "pareto_frontier_jcse.eps"
-fig.savefig(png_out, dpi=300)
-fig.savefig(eps_out, format="eps")
-print(f"Saved: {png_out} and {eps_out}")
+
+for d in FIG_DIRS:
+    fig.savefig(d / "pareto_frontier_jcse.png", dpi=300)
+    fig.savefig(d / "pareto_frontier_jcse.eps", format="eps")
+    print(f"Saved: {d / 'pareto_frontier_jcse.png'} and {d / 'pareto_frontier_jcse.eps'}")
+
+if __name__ == '__main__':
+    pass
