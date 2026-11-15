@@ -1,0 +1,80 @@
+\documentclass[10pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[margin=0.75in,top=0.7in,bottom=0.7in]{geometry}
+\usepackage{booktabs}
+\usepackage{hyperref}
+\usepackage{times}
+\usepackage{microtype}
+\usepackage{xcolor}
+
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue,
+    citecolor=blue,
+    urlcolor=blue
+}
+
+\begin{document}
+\pagestyle{empty}
+
+\begin{center}
+{\Large \textbf{JOURNAL OF COMPUTING SCIENCE AND ENGINEERING (JCSE)}}\\[0.2em]
+{\large Published by the Korean Institute of Information Scientists and Engineers (KIISE)}\\[0.15em]
+\rule{\linewidth}{0.8pt}
+\end{center}
+
+\vspace{0.4em}
+\noindent\textbf{Date:} November 15, 2026 \\
+\textbf{To:} Prof. Jong-Hyeok Lee, Editor-in-Chief, \textit{Journal of Computing Science and Engineering (JCSE)} \\
+\textbf{Submission Category:} Regular Research Paper --- Track: \textbf{Embedded Computing} \\
+\textbf{Manuscript Title:} \textbf{Localizing INT8 Quantization Collapse and Channel Pruning for Resilient Edge Poultry Disease Diagnosis} \\
+\textbf{Authors:} Fatih Jawwad Al Mumtaz$^*$ and Farrel Ghozy Afifuddin \\
+\textbf{Affiliation:} Department of Informatics, Faculty of Science and Technology, Universitas Darussalam Gontor \\
+\textbf{Postal Address:} Jl. Raya Siman Km. 6, Demangan, Siman, Ponorogo, East Java 63471, Indonesia \\
+\textbf{Corresponding Author Email:} \url{fatihalmumtaz76@student.cs.unida.gontor.ac.id} \quad \textbf{Phone:} +62-851-4339-6221 \\
+
+\vspace{0.4em}
+\noindent Dear Prof. Jong-Hyeok Lee and Esteemed Editorial Board Members,
+
+\vspace{0.3em}
+We are pleased to submit our original research manuscript entitled \textbf{``Localizing INT8 Quantization Collapse and Channel Pruning for Resilient Edge Poultry Disease Diagnosis''} for peer-reviewed publication consideration in the \textit{Embedded Computing} track of the \textit{Journal of Computing Science and Engineering (JCSE)}.
+
+\vspace{0.4em}
+\noindent\textbf{Prior Conference Disclosure and Substantial Journal Extension:}\\
+In strict adherence to the JCSE Editorial Policies and ethical guidelines governing conference-to-journal expansions, we explicitly disclose that an early, preliminary five-page exploratory work was presented at the \textit{2026 International Conference on Artificial Intelligence and Digital Environment for Sustainability (ICAIDES 2026)} [IEEE Xplore]. The present journal submission represents an extensive, rigorous, and technically substantive expansion comprising approximately \textbf{70\% entirely new empirical proofs, mathematical derivations, and physical edge evaluations}. Table~\ref{tab:novelty} outlines the itemized technical differences.
+
+\begin{table}[h!]
+\centering
+\fontsize{8pt}{9.6pt}\selectfont
+\caption{Itemized Technical Comparison Between Preliminary Conference Work and Present Journal Article}
+\label{tab:novelty}
+\vspace{0.2em}
+\begin{tabular}{p{2.6cm}p{6.4cm}p{7.4cm}}
+\toprule
+\textbf{Technical Dimension} & \textbf{Preliminary Conference (ICAIDES 2026)} & \textbf{Present Journal Submission (JCSE 2026)} \\
+\midrule
+\textbf{Dataset Hygiene \& Integrity} & Evaluated on uncurated public poultry images without duplicate verification. & Comprehensive perceptual hash audit ($D_H \le 5$); removed 617 duplicates and 94 cross-split leaks; established sanitized 8,744-image sterile benchmark ($n=1,728$ test set) with Wilson 95\% confidence intervals. \\
+\addlinespace[0.2em]
+\textbf{Theoretical Formulation} & Empirical observation of accuracy drop without formal error bounds. & Rigorous Signal-to-Quantization-Noise Ratio (SQNR) derivation; proves effective bit-width reduction ($B_{\text{eff}} \le 4.1$ bits) caused by cross-channel dynamic range disparity ($\Delta_{w,l} > 14.8$) in depthwise convolutions. \\
+\addlinespace[0.2em]
+\textbf{Structured Channel Pruning} & Not investigated (quantization only). & \textbf{Entirely New:} Dependency Graph (DepGraph) L1-norm structured pruning swept across $s \in \{0.2, 0.3, 0.4, 0.5, 0.6\}$; establishes empirical Pareto frontier and maps accuracy cliff at 50\% sparsity. \\
+\addlinespace[0.2em]
+\textbf{Physical Edge Profiling} & Basic single-thread latency measurement. & \textbf{Entirely New:} In-depth Raspberry Pi 5 ARM Cortex-A76 profiling; multi-core thread scaling (1T to 4T); kernel dispatch analysis; active incremental energy ($\Delta P = 3.10$\,W); duty-cycled off-grid IoT battery autonomy modeling. \\
+\addlinespace[0.2em]
+\textbf{Clinical Interpretability} & No explainability analysis. & \textbf{Entirely New:} Grad-CAM visual heatmaps verifying morphological focus on hemorrhagic mucous streaks and uric acid lesions. \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\vspace{-0.2em}
+\noindent\textbf{Authorship Transition and Ethical Statement:}\\
+This journal investigation was conceptualized, implemented, mathematically derived, and empirically validated by Fatih Jawwad Al Mumtaz and Farrel Ghozy Afifuddin. The preliminary exploratory conference co-authors (Amirul Al Aziz and Muhammad Iqbal Hidayatullah) contributed during the initial project stages and are gratefully and prominently acknowledged in the Acknowledgements section in full accordance with COPE (Committee on Publication Ethics) guidelines. Written concurrence for this journal expansion has been established.
+
+All authors have reviewed and approved the final manuscript. The material is original, has not been published elsewhere in journal format, and is not concurrently under review by any other venue.
+
+\vspace{0.4em}
+\noindent Respectfully submitted,\\
+\textbf{Fatih Jawwad Al Mumtaz} (Corresponding Author) \quad \textbf{Farrel Ghozy Afifuddin} (Co-Author)\\
+Department of Informatics, Faculty of Science and Technology, Universitas Darussalam Gontor, Ponorogo, Indonesia
+
+\end{document}
