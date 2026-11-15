@@ -1,0 +1,458 @@
+{
+  "metadata": {
+    "num_leaked_test": 156,
+    "num_clean_orig_test": 1598,
+    "num_all_orig_test": 1754,
+    "num_sterile_test": 1728
+  },
+  "evaluations": {
+    "mobilenetv2": {
+      "leaked_subset": {
+        "acc": 98.08,
+        "correct": 153,
+        "total": 156,
+        "per_class": {
+          "cocci": {
+            "recall": 100.0,
+            "correct": 47,
+            "total": 47
+          },
+          "healthy": {
+            "recall": 100.0,
+            "correct": 22,
+            "total": 22
+          },
+          "ncd": {
+            "recall": 83.33,
+            "correct": 10,
+            "total": 12
+          },
+          "salmo": {
+            "recall": 98.67,
+            "correct": 74,
+            "total": 75
+          }
+        }
+      },
+      "non_leaked_subset": {
+        "acc": 97.93,
+        "correct": 1565,
+        "total": 1598,
+        "per_class": {
+          "cocci": {
+            "recall": 98.36,
+            "correct": 480,
+            "total": 488
+          },
+          "healthy": {
+            "recall": 97.95,
+            "correct": 477,
+            "total": 487
+          },
+          "ncd": {
+            "recall": 95.45,
+            "correct": 126,
+            "total": 132
+          },
+          "salmo": {
+            "recall": 98.17,
+            "correct": 482,
+            "total": 491
+          }
+        }
+      },
+      "original_full_test": {
+        "acc": 97.95,
+        "correct": 1718,
+        "total": 1754,
+        "per_class": {
+          "cocci": {
+            "recall": 98.5,
+            "correct": 527,
+            "total": 535
+          },
+          "healthy": {
+            "recall": 98.04,
+            "correct": 499,
+            "total": 509
+          },
+          "ncd": {
+            "recall": 94.44,
+            "correct": 136,
+            "total": 144
+          },
+          "salmo": {
+            "recall": 98.23,
+            "correct": 556,
+            "total": 566
+          }
+        }
+      },
+      "sterile_test": {
+        "acc": 97.92,
+        "correct": 1692,
+        "total": 1728,
+        "per_class": {
+          "cocci": {
+            "recall": 98.49,
+            "correct": 521,
+            "total": 529
+          },
+          "healthy": {
+            "recall": 98.02,
+            "correct": 494,
+            "total": 504
+          },
+          "ncd": {
+            "recall": 94.33,
+            "correct": 133,
+            "total": 141
+          },
+          "salmo": {
+            "recall": 98.19,
+            "correct": 544,
+            "total": 554
+          }
+        }
+      },
+      "leakage_bias_pp": 0.15,
+      "ncd_leakage_bias_pp": -12.12
+    },
+    "shufflenetv2": {
+      "leaked_subset": {
+        "acc": 94.87,
+        "correct": 148,
+        "total": 156,
+        "per_class": {
+          "cocci": {
+            "recall": 97.87,
+            "correct": 46,
+            "total": 47
+          },
+          "healthy": {
+            "recall": 100.0,
+            "correct": 22,
+            "total": 22
+          },
+          "ncd": {
+            "recall": 75.0,
+            "correct": 9,
+            "total": 12
+          },
+          "salmo": {
+            "recall": 94.67,
+            "correct": 71,
+            "total": 75
+          }
+        }
+      },
+      "non_leaked_subset": {
+        "acc": 98.0,
+        "correct": 1566,
+        "total": 1598,
+        "per_class": {
+          "cocci": {
+            "recall": 97.75,
+            "correct": 477,
+            "total": 488
+          },
+          "healthy": {
+            "recall": 98.36,
+            "correct": 479,
+            "total": 487
+          },
+          "ncd": {
+            "recall": 97.73,
+            "correct": 129,
+            "total": 132
+          },
+          "salmo": {
+            "recall": 97.96,
+            "correct": 481,
+            "total": 491
+          }
+        }
+      },
+      "original_full_test": {
+        "acc": 97.72,
+        "correct": 1714,
+        "total": 1754,
+        "per_class": {
+          "cocci": {
+            "recall": 97.76,
+            "correct": 523,
+            "total": 535
+          },
+          "healthy": {
+            "recall": 98.43,
+            "correct": 501,
+            "total": 509
+          },
+          "ncd": {
+            "recall": 95.83,
+            "correct": 138,
+            "total": 144
+          },
+          "salmo": {
+            "recall": 97.53,
+            "correct": 552,
+            "total": 566
+          }
+        }
+      },
+      "sterile_test": {
+        "acc": 97.69,
+        "correct": 1688,
+        "total": 1728,
+        "per_class": {
+          "cocci": {
+            "recall": 97.73,
+            "correct": 517,
+            "total": 529
+          },
+          "healthy": {
+            "recall": 98.41,
+            "correct": 496,
+            "total": 504
+          },
+          "ncd": {
+            "recall": 95.74,
+            "correct": 135,
+            "total": 141
+          },
+          "salmo": {
+            "recall": 97.47,
+            "correct": 540,
+            "total": 554
+          }
+        }
+      },
+      "leakage_bias_pp": -3.13,
+      "ncd_leakage_bias_pp": -22.73
+    },
+    "efficientnet_b0": {
+      "leaked_subset": {
+        "acc": 98.08,
+        "correct": 153,
+        "total": 156,
+        "per_class": {
+          "cocci": {
+            "recall": 100.0,
+            "correct": 47,
+            "total": 47
+          },
+          "healthy": {
+            "recall": 100.0,
+            "correct": 22,
+            "total": 22
+          },
+          "ncd": {
+            "recall": 83.33,
+            "correct": 10,
+            "total": 12
+          },
+          "salmo": {
+            "recall": 98.67,
+            "correct": 74,
+            "total": 75
+          }
+        }
+      },
+      "non_leaked_subset": {
+        "acc": 98.62,
+        "correct": 1576,
+        "total": 1598,
+        "per_class": {
+          "cocci": {
+            "recall": 98.36,
+            "correct": 480,
+            "total": 488
+          },
+          "healthy": {
+            "recall": 98.36,
+            "correct": 479,
+            "total": 487
+          },
+          "ncd": {
+            "recall": 96.97,
+            "correct": 128,
+            "total": 132
+          },
+          "salmo": {
+            "recall": 99.59,
+            "correct": 489,
+            "total": 491
+          }
+        }
+      },
+      "original_full_test": {
+        "acc": 98.57,
+        "correct": 1729,
+        "total": 1754,
+        "per_class": {
+          "cocci": {
+            "recall": 98.5,
+            "correct": 527,
+            "total": 535
+          },
+          "healthy": {
+            "recall": 98.43,
+            "correct": 501,
+            "total": 509
+          },
+          "ncd": {
+            "recall": 95.83,
+            "correct": 138,
+            "total": 144
+          },
+          "salmo": {
+            "recall": 99.47,
+            "correct": 563,
+            "total": 566
+          }
+        }
+      },
+      "sterile_test": {
+        "acc": 98.55,
+        "correct": 1703,
+        "total": 1728,
+        "per_class": {
+          "cocci": {
+            "recall": 98.49,
+            "correct": 521,
+            "total": 529
+          },
+          "healthy": {
+            "recall": 98.41,
+            "correct": 496,
+            "total": 504
+          },
+          "ncd": {
+            "recall": 95.74,
+            "correct": 135,
+            "total": 141
+          },
+          "salmo": {
+            "recall": 99.46,
+            "correct": 551,
+            "total": 554
+          }
+        }
+      },
+      "leakage_bias_pp": -0.54,
+      "ncd_leakage_bias_pp": -13.64
+    },
+    "efficientnet_b0_static_qdq": {
+      "leaked_subset": {
+        "acc": 91.67,
+        "correct": 143,
+        "total": 156,
+        "per_class": {
+          "cocci": {
+            "recall": 97.87,
+            "correct": 46,
+            "total": 47
+          },
+          "healthy": {
+            "recall": 95.45,
+            "correct": 21,
+            "total": 22
+          },
+          "ncd": {
+            "recall": 75.0,
+            "correct": 9,
+            "total": 12
+          },
+          "salmo": {
+            "recall": 89.33,
+            "correct": 67,
+            "total": 75
+          }
+        }
+      },
+      "non_leaked_subset": {
+        "acc": 94.81,
+        "correct": 1515,
+        "total": 1598,
+        "per_class": {
+          "cocci": {
+            "recall": 95.9,
+            "correct": 468,
+            "total": 488
+          },
+          "healthy": {
+            "recall": 94.87,
+            "correct": 462,
+            "total": 487
+          },
+          "ncd": {
+            "recall": 93.94,
+            "correct": 124,
+            "total": 132
+          },
+          "salmo": {
+            "recall": 93.89,
+            "correct": 461,
+            "total": 491
+          }
+        }
+      },
+      "original_full_test": {
+        "acc": 94.53,
+        "correct": 1658,
+        "total": 1754,
+        "per_class": {
+          "cocci": {
+            "recall": 96.07,
+            "correct": 514,
+            "total": 535
+          },
+          "healthy": {
+            "recall": 94.89,
+            "correct": 483,
+            "total": 509
+          },
+          "ncd": {
+            "recall": 92.36,
+            "correct": 133,
+            "total": 144
+          },
+          "salmo": {
+            "recall": 93.29,
+            "correct": 528,
+            "total": 566
+          }
+        }
+      },
+      "sterile_test": {
+        "acc": 94.56,
+        "correct": 1634,
+        "total": 1728,
+        "per_class": {
+          "cocci": {
+            "recall": 96.03,
+            "correct": 508,
+            "total": 529
+          },
+          "healthy": {
+            "recall": 94.84,
+            "correct": 478,
+            "total": 504
+          },
+          "ncd": {
+            "recall": 92.91,
+            "correct": 131,
+            "total": 141
+          },
+          "salmo": {
+            "recall": 93.32,
+            "correct": 517,
+            "total": 554
+          }
+        }
+      },
+      "leakage_bias_pp": -3.14,
+      "ncd_leakage_bias_pp": -18.94
+    }
+  }
+}

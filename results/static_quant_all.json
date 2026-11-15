@@ -1,0 +1,41 @@
+{
+  "mobilenetv2": {
+    "top1_acc": 97.74,
+    "per_class": {
+      "cocci": 98.49,
+      "healthy": 97.62,
+      "ncd": 94.33,
+      "salmo": 98.01
+    },
+    "ncd_recall": 94.33,
+    "size_mb": 2.48,
+    "size_bytes": 2604696,
+    "quant_time_s": 7.0
+  },
+  "shufflenetv2": {
+    "top1_acc": 97.57,
+    "per_class": {
+      "cocci": 97.73,
+      "healthy": 98.41,
+      "ncd": 94.33,
+      "salmo": 97.47
+    },
+    "ncd_recall": 94.33,
+    "size_mb": 1.56,
+    "size_bytes": 1637169,
+    "quant_time_s": 6.6
+  },
+  "efficientnet_b0": {
+    "top1_acc": 88.66,
+    "per_class": {
+      "cocci": 93.76,
+      "healthy": 90.08,
+      "ncd": 76.6,
+      "salmo": 85.56
+    },
+    "ncd_recall": 76.6,
+    "size_mb": 4.67,
+    "size_bytes": 4893013,
+    "quant_time_s": 8.2
+  }
+}
