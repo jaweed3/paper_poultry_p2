@@ -11,9 +11,13 @@
 \usepackage{cite}
 
 \input{setup.tex}
-\renewcommand{\arraystretch}{0.88}
+\renewcommand{\arraystretch}{0.82}
 \setlength{\abovecaptionskip}{2pt plus 1pt minus 1pt}
 \setlength{\belowcaptionskip}{2pt plus 1pt minus 1pt}
+\setlength{\abovedisplayskip}{2.5pt plus 1pt minus 1pt}
+\setlength{\belowdisplayskip}{2.5pt plus 1pt minus 1pt}
+\setlength{\abovedisplayshortskip}{1pt plus 1pt}
+\setlength{\belowdisplayshortskip}{1pt plus 1pt}
 
 \setcounter{topnumber}{4}
 \setcounter{bottomnumber}{4}
@@ -26,13 +30,13 @@
 \renewcommand{\dbltopfraction}{0.95}
 \renewcommand{\dblfloatpagefraction}{0.85}
 
-\setlength{\textfloatsep}{3pt plus 1.0pt minus 1.0pt}
-\setlength{\floatsep}{3pt plus 1.0pt minus 1.0pt}
-\setlength{\intextsep}{3pt plus 1.0pt minus 1.0pt}
-\setlength{\dbltextfloatsep}{4pt plus 1.0pt minus 1.0pt}
-\setlength{\dblfloatsep}{4pt plus 1.0pt minus 1.0pt}
+\setlength{\textfloatsep}{2.5pt plus 1.0pt minus 1.0pt}
+\setlength{\floatsep}{2.0pt plus 1.0pt minus 1.0pt}
+\setlength{\intextsep}{2.0pt plus 1.0pt minus 1.0pt}
+\setlength{\dbltextfloatsep}{3.0pt plus 1.0pt minus 1.0pt}
+\setlength{\dblfloatsep}{3.0pt plus 1.0pt minus 1.0pt}
 
-\title[Analyzing INT8 Quantization Collapse and Pruning Trade-Offs on Edge]{Analyzing INT8 Quantization Collapse and Structured Pruning Trade-Offs for Resilient Edge Poultry Disease Diagnosis}
+\title[Analyzing Quantization Collapse and Pruning Trade-Offs on Edge]{Analyzing Post-Training Quantization Collapse and Structured Pruning Trade-Offs for Edge Poultry Disease Surveillance}
 
 \author{
 	\authname{Fatih Jawwad Al Mumtaz$^*$} \\
@@ -56,7 +60,7 @@ $^*$ Corresponding Author: Fatih Jawwad Al Mumtaz (Email: fatihalmumtaz76@studen
 \begin{document}
 
 \begin{abstract}
-Deploying lightweight convolutional neural networks on micro-edge embedded devices enables automated precision poultry disease surveillance in low-connectivity rural agricultural facilities. However, post-training INT8 quantization—the prevailing edge compression standard—exhibits catastrophic accuracy failure on depthwise-separable topologies. In this paper, we localize, mathematically diagnose, and mitigate this quantization collapse across MobileNetV2, ShuffleNetV2, and EfficientNet-B0 on a decontaminated, sterile benchmark. First, an algorithmic perceptual hash audit ($D_H \le 5$) of the 8,770-image public benchmark (Dianyo Hugging Face dataset derived from Zenodo 4628934) uncovered 617 near-duplicate pairs (including 156 cross-partition train-test duplicates), quantifying an empirical evaluation bias (+0.15 pp on duplicate frames, +0.03 pp overall) and yielding an 8,153-image sterile dataset ($n=1,728$ test samples). While dynamic INT8 preserves MobileNetV2 (97.11\%) and ShuffleNetV2 (97.45\%), it collapses EfficientNet-B0 from 98.55\% to 10.42\%, where 97.0\% of predictions degenerate into Newcastle Disease. Layer-wise signal-to-quantization-noise ratio (SQNR) formulation demonstrates that cross-channel weight variance in depthwise convolutions ($\Delta_w \approx 14.8$) degrades effective bit-width to $B_{\text{eff}} \le 4.09$ bits and depthwise SQNR to 8.4\,dB under per-tensor scaling. We formulate a static per-channel Quantize-Dequantize (QDQ) calibration protocol that restores diagnostic fidelity across architectures: EfficientNet-B0 reaches 94.56\%, while MobileNetV2 (97.74\%, McNemar $p=0.1489$) and ShuffleNetV2 (97.57\%, $p=0.6171$) match baseline FP32 accuracy within $\pm 0.18$ percentage points with 94.33\% Newcastle Disease recall [95\% CI: 89.20\%, 97.10\%]. Crucially, while 30\% structured channel pruning coupled with static QDQ achieves 145.4 FPS (6.88\,ms, 1.35\,MB), Newcastle Disease recall collapses to 53.90\%; class-weighted distillation recovers recall to 86.52\% [79.91\%, 91.20\%]. On Raspberry Pi 5 (8\,GB RAM), unpruned Static QDQ (7.59\,ms, 131.8 FPS, 94.33\% NCD recall) strictly dominates pruned alternatives, proving that channel pruning provides zero Pareto advantage on modern edge processors with multi-gigabyte memory.
+Deploying lightweight convolutional neural networks on embedded micro-edge devices enables automated precision poultry disease surveillance in low-connectivity rural agricultural facilities. However, post-training INT8 quantization—the prevailing edge compression standard—exhibits catastrophic accuracy failure on depthwise-separable topologies. In this paper, we localize, mathematically diagnose, and mitigate this quantization collapse across MobileNetV2, ShuffleNetV2, and EfficientNet-B0 on a decontaminated, sterile benchmark. First, an algorithmic perceptual hash audit ($D_H \le 5$) of the 8,770-image public benchmark (Dianyo Hugging Face dataset derived from Zenodo 4628934) uncovered 617 near-duplicate pairs (316 cross-partition, including 156 train-test duplicates). Purging duplicate counterparts yielded an 8,153-image sterile dataset ($n=1,728$ test samples) where test evaluation demonstrates no statistically measurable optimistic inflation on deep CNNs (+0.15 pp on duplicate frames, with $\text{SE} \approx 1.1$\,pp), proving decontamination is essential methodological hygiene. While dynamic INT8 preserves MobileNetV2 (97.11\%) and ShuffleNetV2 (97.45\%), it collapses EfficientNet-B0 from 98.55\% to 10.42\%, where 97.0\% of predictions degenerate into Newcastle Disease. Layer-wise signal-to-quantization-noise ratio (SQNR) formulation demonstrates that cross-channel weight variance in depthwise convolutions ($\Delta_w \approx 14.8$) degrades effective bit-width to $B_{\text{eff}} \le 4.09$ bits and depthwise SQNR to 8.4\,dB under per-tensor scaling. We formulate a static per-channel Quantize-Dequantize (QDQ) calibration protocol that restores diagnostic fidelity across architectures: EfficientNet-B0 reaches 94.56\%, while MobileNetV2 (97.74\%, paired difference $+0.17\%$ [$-0.17\%, +0.51\%$]) and ShuffleNetV2 (97.57\%, $+0.12\%$ [$-0.11\%, +0.34\%$]) demonstrate equivalence within a 1.0 pp margin with 94.33\% Newcastle Disease recall [95\% CI: 89.20\%, 97.10\%]. Crucially, while 30\% channel pruning coupled with static QDQ achieves 145.4 FPS (6.88\,ms, 1.35\,MB), unweighted pruning collapses Newcastle Disease recall to 53.90\%; class-weighted distillation recovers recall to 82.27\% under static QDQ. On Raspberry Pi 5 (8\,GB RAM), unpruned Static QDQ models (ShuffleNetV2: 6.29\,ms, 159.1 FPS; MobileNetV2: 7.59\,ms, 131.8 FPS) deliver superior overall Pareto efficiency without sacrificing lethal minority sensitivity.
 \end{abstract}
 
 \maketitle
@@ -64,7 +68,7 @@ Deploying lightweight convolutional neural networks on micro-edge embedded devic
 \section{Introduction}
 Avian infectious pathologies, notably Coccidiosis, Salmonella, and Newcastle Disease, pose severe economic risks and global food security challenges across commercial and smallholder poultry facilities \cite{machuve2021poultry,dianyo2022fecal}. In rural livestock farms, continuous clinical veterinary inspection is cost-prohibitive, leading to delayed disease identification and rapid flock-wide mortality. To overcome these logistical barriers, automated visual diagnostic systems operating directly on edge embedded micro-nodes, such as low-cost single-board computers situated within coop perimeters, have emerged as a vital precision agriculture paradigm. Edge inference eliminates dependence on intermittent cloud connectivity, safeguards biosecurity data privacy, and provides instantaneous diagnostic feedback.
 
-While high-performance edge single-board computers (such as the Raspberry Pi 5 with 8\,GB LPDDR4X RAM) possess sufficient memory bandwidth to execute uncompressed FP32 models in real time (exceeding 50 to 110 FPS), constrained micro-edge agricultural monitoring tiers (such as microcontrollers with sub-2\,MB SRAM) operate under tight hardware limits where aggressive model compression is indispensable to fit parameters into on-chip cache \cite{jacob2018quantization,wu2019tinyml}. However, on modern edge single-board computers with multi-gigabyte memory, storage footprint does not constrain execution, necessitating a rigorous re-examination of whether channel pruning or integer quantization provides genuine Pareto acceleration without compromising veterinary safety. Eight-bit integer (INT8) quantization represents the prevailing industry standard for edge deployment, typically delivering a fourfold reduction in model storage footprint and accelerating matrix multiplication routines through integer vector ALUs.
+While high-performance edge single-board computers (such as the Raspberry Pi 5 with 8\,GB LPDDR4X RAM) possess sufficient memory bandwidth to execute uncompressed FP32 models in real time (exceeding 50 to 110 FPS), micro-edge agricultural monitoring tiers (such as microcontrollers with sub-2\,MB on-chip memory) operate under distinct physical constraints \cite{jacob2018quantization,wu2019tinyml}. In microcontroller architectures, model parameters reside in non-volatile Flash, whereas volatile SRAM must accommodate dynamic activation tensors. For MobileNetV2 ($224 \times 224$), peak activation buffers exceed 1.2\,MB, which cannot fit into typical microcontroller SRAM (256--512\,KB) without memory-efficient patch streaming \cite{lin2022mcunetv2}; structured channel pruning compresses Flash storage but does not fundamentally resolve peak activation SRAM constraints in early convolutional layers. Conversely, on modern edge single-board computers with multi-gigabyte RAM, memory capacity does not constrain inference. This architectural disparity necessitates a rigorous empirical investigation into whether structured channel pruning or integer quantization provides genuine Pareto acceleration on edge application processors without compromising veterinary clinical safety. Eight-bit integer (INT8) quantization represents the prevailing industry standard for edge deployment, typically delivering a fourfold reduction in model storage footprint and accelerating matrix multiplication routines through integer vector ALUs.
 
 While INT8 post-training quantization is widely assumed to incur negligible accuracy loss ($< 1\%$) on traditional over-parameterized convolutional networks such as ResNet, compact parameter-efficient architectures often exhibit fragile numerical characteristics. In particular, we demonstrate that EfficientNet-B0 \cite{tan2019efficientnet} undergoes catastrophic quantization collapse when quantized naively using standard dynamic 8-bit integer formats. Its top-1 diagnostic accuracy plummets precipitously from 98.55\% in 32-bit floating-point (FP32) precision down to 10.42\% in INT8 precision, rendering the autonomous diagnostic system completely unusable. This failure occurs silently, producing confident but uniformly erroneous diagnostic classifications across all clinical disease categories.
 
@@ -74,7 +78,7 @@ To resolve this limitation, we develop a static per-channel Quantize-Dequantize 
 
 \begin{figure}[t]
 \centering
-\includegraphics[width=0.88\linewidth]{figures/system_pipeline_jcse.png}
+\includegraphics[width=0.84\linewidth]{figures/system_pipeline_jcse.png}
 \caption{Architectural overview of the proposed edge avian diagnostic framework, encompassing five methodological stages: sterile dataset hygiene audit, baseline failure mode localization, Dependency Graph structured channel pruning, static per-channel QDQ calibration recovery, and physical edge deployment on Raspberry Pi 5.}
 \label{fig:pipeline}
 \end{figure}
@@ -111,7 +115,7 @@ In contrast, structured channel pruning physically removes entire convolutional 
 \subsection{Perceptual Hash Duplicate Discovery}
 A prerequisite for reliable scientific evaluation is verifying the absolute integrity of experimental data. When deep neural networks are evaluated on test sets containing visual duplicates of training samples, generalization metrics become artificially inflated, concealing model vulnerabilities and catastrophic edge failures.
 
-To evaluate data hygiene, we conducted an algorithmic duplicate audit on the public poultry disease benchmark published by Dianyo et al. on Hugging Face (\texttt{Dianyo/poultry-fecal-fl}) \cite{dianyo2022fecal}, which compiled 8,770 fecal images (7,016 train / 1,754 test) derived from the field dataset of Machuve et al. (Zenodo record 4628934) \cite{machuve2021poultry}, categorized into four diagnostic classes: Healthy, Coccidiosis, Salmonella, and Newcastle Disease. We implemented perceptual hashing (pHash) based on discrete cosine transform (DCT) frequency representations. Each input image is resized to a standardized $32 \times 32$ grayscale matrix, transformed via a two-dimensional DCT, and converted into a 64-bit binary hash based on low-frequency energy coefficients relative to the median coefficient value:
+To evaluate data hygiene, we conducted an algorithmic duplicate audit on the public poultry disease benchmark published by Dianyo et al. on Hugging Face (\texttt{Dianyo/poultry-fecal-fl}) \cite{dianyo2022fecal}, which compiled 8,770 fecal images (partitioned by the publisher into 5,614 training, 1,402 validation, and 1,754 test images) derived from the field dataset of Machuve et al. (Zenodo record 4628934) \cite{machuve2021poultry}, categorized into four diagnostic classes: Healthy, Coccidiosis, Salmonella, and Newcastle Disease. We implemented perceptual hashing (pHash) based on discrete cosine transform (DCT) frequency representations. Each input image is resized to a standardized $32 \times 32$ grayscale matrix, transformed via a two-dimensional DCT, and converted into a 64-bit binary hash based on low-frequency energy coefficients relative to the median coefficient value:
 \begin{equation}
 h_i = \begin{cases} 1, & \text{if } C_i > \text{median}(C) \\ 0, & \text{otherwise} \end{cases}
 \end{equation}
@@ -120,9 +124,11 @@ where $C_i$ denotes the $i$-th lowest AC coefficient of the transformed DCT spec
 D_H(h_A, h_B) = \sum_{k=0}^{63} (h_{A,k} \oplus h_{B,k})
 \end{equation}
 
-Applying a strict threshold of $D_H \le 5$ (which ensures high precision for near-identical camera frames), our audit uncovered 617 near-duplicate image pairs within the public benchmark \cite{dianyo2022fecal} (8,770 raw files). More critically, 316 duplicate pairs spanned partition boundaries, including 156 cross-partition train-test duplicate pairs. This cross-partition leakage arose from burst shooting during coop data collection, where multiple consecutive frames captured identical fecal droppings under static lighting. Sweeping the threshold up to $D_H \le 8\text{--}10$ reveals broader burst clusters with subtle sensor noise and illumination shifts; $D_H \le 5$ conservatively isolates unmistakable frame twins without discarding distinct visual manifestations. Decontamination was executed by preserving the published test partition intact ($n=1,728$ test samples after purging 26 unreadable or pixel-identical files) and purging the 156 duplicate counterparts from the training partition, creating an 8,153-image sterile dataset ($N=8,153$) where no test sample has a training twin.
+Applying a strict threshold of $D_H \le 5$ (which ensures high precision for near-identical camera frames), our audit uncovered 617 near-duplicate image pairs within the public benchmark \cite{dianyo2022fecal} (8,770 raw files). Specifically, 316 duplicate pairs crossed partition boundaries (156 train-test pairs, 108 train-val pairs, and 52 val-test pairs), while 301 pairs were within-partition duplicates (255 within train, 20 within val, and 26 within test). This cross-partition leakage arose from burst shooting during coop data collection, where multiple consecutive frames captured identical fecal droppings under static lighting. Sweeping the threshold up to $D_H \le 8\text{--}10$ reveals broader burst clusters with subtle sensor noise and illumination shifts; $D_H \le 5$ conservatively isolates unmistakable frame twins without discarding distinct visual manifestations.
 
-To quantify the empirical effect size of this partition contamination, we evaluated MobileNetV2 across isolated test subsets (Table~\ref{tab:leakage}). On the 156 leaked duplicate pairs, MobileNetV2 achieved 98.08\% top-1 accuracy, correctly classifying 100\% of Coccidiosis and 100\% of Healthy samples. In contrast, on the non-leaked test subset ($n=1,598$), accuracy was 97.93\% (+0.15 pp optimistic bias on duplicates). Across the full partition, top-1 accuracy on the original published split (97.95\%) is only 0.03 percentage points higher than on the decontaminated sterile benchmark (97.92\%). This establishes an honest empirical finding: while duplicate frames themselves exhibit slight over-fitting, near-duplicate leakage did not produce artificial metric inflation in published baseline CNNs. Decontamination represents necessary scientific hygiene rather than correcting a distorted baseline.
+To construct a sanitized benchmark while preserving the publisher's test partition for comparative validity, we applied a priority rule ($\text{test} > \text{val} > \text{train}$). For any cross-partition duplicate pair, the test image was preserved, and its duplicate counterpart was purged from the training or validation partition. Within partitions, the lexicographically first instance was retained. This protocol purged 526 images from train, 65 from val, and 26 internal duplicates from test, establishing an 8,153-image sterile benchmark ($N=8,153$: 5,088 train, 1,337 val, 1,728 test) where the test split is completely sterile against training and validation data.
+
+To quantify the empirical effect of this partition contamination, we evaluated MobileNetV2 across isolated test subsets (Table~\ref{tab:leakage}). On the 156 leaked duplicate test pairs, MobileNetV2 achieved 98.08\% top-1 accuracy (153/156), compared to 97.93\% (1,565/1,598) on the clean non-duplicate test subset. Crucially, with $n=156$, the standard error of the estimate is $\text{SE} = \sqrt{p(1-p)/n} \approx 1.1\%$; the minor $+0.15$\,pp difference falls entirely within stochastic sampling noise. Across the full partition, top-1 accuracy on the original published split (97.95\%) and on the decontaminated sterile benchmark (97.92\%) differs by only 0.03 percentage points. This establishes an honest empirical finding: near-duplicate leakage did not produce statistically measurable optimistic evaluation bias in deep convolutional baselines. Nonetheless, rigorous decontamination is essential scientific hygiene to guarantee that edge models generalize to authentic unseen clinical droppings.
 
 \begin{table}
 \centering
@@ -135,7 +141,7 @@ To quantify the empirical effect size of this partition contamination, we evalua
 \midrule
 Leaked Pairs (Duplicate of Train) & 156 & 98.08\% & 100.0\% & 100.0\% & 98.7\% & 83.3\% \\
 Non-Leaked Test Partition         & 1,598 & 97.93\% & 98.0\% & 98.4\% & 98.2\% & 95.5\% \\
-Original Published Split \cite{machuve2021poultry} & 1,754 & 97.95\% & 98.0\% & 98.5\% & 98.2\% & 94.4\% \\
+Original Published Split \cite{dianyo2022fecal} & 1,754 & 97.95\% & 98.0\% & 98.5\% & 98.2\% & 94.4\% \\
 Decontaminated Sterile Benchmark  & 1,728 & 97.92\% & 98.0\% & 98.5\% & 98.2\% & 94.3\% \\
 \bottomrule
 \end{tabular}%
@@ -143,7 +149,7 @@ Decontaminated Sterile Benchmark  & 1,728 & 97.92\% & 98.0\% & 98.5\% & 98.2\% &
 \end{table}
 
 \subsection{Construction of the Sterile Benchmark}
-To eliminate optimistic evaluation bias, we executed an automated decontamination pipeline. Pruning exactly 617 duplicate instances from the connected components in the pHash similarity graph ($D_H \le 5$) yielded an audited decontaminated dataset of $N=8,153$ unique clinical images. We partitioned the 8,153 sanitized images into fixed training (62.4\%), validation (16.4\%), and test (21.2\%) subsets using an isolated random seed ($seed=42$) while strictly preserving empirical clinical class proportions and guaranteeing that zero cross-partition duplicate pairs persist.
+Table~\ref{tab:dataset} details the class distribution of the resulting sterile dataset across partitions ($N=8,153$: 5,088 train [62.4\%], 1,337 val [16.4\%], 1,728 test [21.2\%]). The test split preserves the original publisher's distribution while eliminating internal and cross-split duplicates.
 
 \begin{table}
 \centering
@@ -169,7 +175,7 @@ Table~\ref{tab:dataset} details the class distribution across all three partitio
 
 \begin{figure}[t]
 \centering
-\includegraphics[width=0.68\linewidth]{figures/training_review_gate0.png}
+\includegraphics[width=0.62\linewidth]{figures/training_review_gate0.png}
 \caption{Training and validation learning trajectories across 30 epochs on the sterile dataset: (a) cross-entropy loss convergence, and (b) validation top-1 accuracy curves comparing MobileNetV2, ShuffleNetV2, and EfficientNet-B0.}
 \label{fig:training_curves}
 \end{figure}
@@ -205,7 +211,7 @@ The empirical evaluation reveals a profound disparity between the three architec
 
 \begin{figure}[t]
 \centering
-\includegraphics[width=0.68\linewidth]{figures/confusion_eb0_2panel.png}
+\includegraphics[width=0.62\linewidth]{figures/confusion_eb0_2panel.png}
 \caption{Contrastive confusion matrices for EfficientNet-B0 on the sterile test split ($n=1,728$): (a) catastrophic mode collapse under naive dynamic INT8 quantization, where predictions degenerate predominantly (97.0\%) into Newcastle Disease, and (b) restored diagnostic discrimination following static per-channel QDQ calibration (94.56\% top-1 accuracy).}
 \label{fig:confusion_eb0}
 \end{figure}
@@ -214,7 +220,7 @@ Fig.~\ref{fig:confusion_eb0}(a) visualizes this catastrophic mode collapse. To v
 
 \begin{figure}[t]
 \centering
-\includegraphics[width=0.76\linewidth]{figures/confusion_gate0.png}
+\includegraphics[width=0.70\linewidth]{figures/confusion_gate0.png}
 \caption{Four-panel confusion matrices for baseline architectures on the sterile test partition, confirming stable diagnostic discrimination for MobileNetV2 and ShuffleNetV2 alongside the uncompressed EfficientNet-B0 baseline.}
 \label{fig:confusion_gate0}
 \end{figure}
@@ -304,7 +310,9 @@ To evaluate whether the performance difference between naive dynamic INT8 and st
 \end{equation}
 yielding $p < 10^{-15}$, confirming that the recovery achieved by static per-channel QDQ calibration is highly statistically significant. Comparing EfficientNet-B0 static QDQ against its FP32 baseline (1,703 correct predictions, discordant counts $b = 75, c = 7$) yields $\chi^2 = 54.74$ ($p = 1.37 \times 10^{-13}$), reflecting slight quantization variance on subtle pathological features rather than structural degradation.
 
-Critically, on MobileNetV2 and ShuffleNetV2, static per-channel QDQ performs statistically identically to baseline FP32. On MobileNetV2, discordant counts between FP32 and Static QDQ are $b=9, c=3$, yielding $\chi^2 = \frac{(|9-3|-1)^2}{9+3} = 2.0833$ ($p = 0.1489 > 0.05$); on ShuffleNetV2, discordant counts are $b=3, c=1$, yielding $\chi^2 = 0.25$ ($p = 0.6171 > 0.05$). Neither architecture exhibits statistically significant accuracy loss under static QDQ. Furthermore, 10,000-sample bootstrap confidence intervals demonstrate high statistical stability: MobileNetV2 overall accuracy is 97.74\% [Bootstrap 95\% CI: 97.00\%, 98.38\%], and ShuffleNetV2 is 97.57\% [96.82\%, 98.26\%]. The Wilson 95\% CI for Newcastle Disease recall ([89.20\%, 97.10\%]) indicates that while the point estimate remains robust at 94.33\% (133/141), the sample size of $n=141$ naturally encompasses values below 90.0\%, requiring transparent disclosure in safety-critical deployments.
+Critically, on MobileNetV2 and ShuffleNetV2, static per-channel QDQ maintains diagnostic parity with unquantized FP32. On MobileNetV2 (1,692 vs. 1,689 correct predictions, $\Delta = 3$ samples), discordant counts are $b=6, c=3$, yielding an Edwards continuity-corrected McNemar statistic of $\chi^2 = \frac{(|6-3|-1)^2}{6+3} = \frac{4}{9} = 0.4444$ ($p = 0.5050$). The paired accuracy difference is $+0.17\%$ [95\% CI: $-0.17\%, +0.51\%$], falling well within an equivalence margin of $\delta = \pm 1.0$\,pp. On ShuffleNetV2 (1,688 vs. 1,686 correct predictions), discordant counts are $b=3, c=1$, yielding $\chi^2 = 0.2500$ ($p = 0.6171$) and a paired difference of $+0.12\%$ [95\% CI: $-0.11\%, +0.34\%$], also within $\pm 1.0$\,pp. While non-significance does not formally prove mathematical identity, these bounded intervals confirm practical equivalence on overall diagnostic accuracy.
+
+For Newcastle Disease sensitivity ($n=141$), however, statistical equivalence cannot be formally demonstrated due to the bounded sample size of the minority cohort. Both FP32 and Static QDQ correctly identify 133 of 141 NCD samples (94.33\% recall), with identical Wilson 95\% confidence intervals of [89.20\%, 97.10\%]. Because the lower confidence bound extends to 89.20\%, an absolute clinical guarantee of $\ge 90\%$ sensitivity cannot be asserted with certainty, requiring transparent reporting in epidemiological field deployments.
 
 \section{Synergistic Compression: Structured Pruning Coupled with INT8 Quantization}
 
@@ -331,9 +339,10 @@ We applied DepGraph pruning across MobileNetV2 (at $s = 0.30$ and $s = 0.50$ cha
 MobileNetV2 Baseline FP32 & 2,228,996 (100.0\%) & 8.48 MB & 97.92\% & 98.02\% & 98.49\% & 98.19\% & 94.33\% [89.20\%, 97.10\%] & 1.00$\times$ \\
 MobileNetV2 Baseline Static QDQ INT8 & 2,228,996 (100.0\%) & 2.48 MB & 97.74\% & 97.62\% & 98.49\% & 98.01\% & 94.33\% [89.20\%, 97.10\%] & 3.42$\times$ \\
 MobileNetV2 Pruned FP32 (s=0.30) & 1,110,790 (49.8\%) & 4.23 MB & 93.81\% & 97.42\% & 93.76\% & 95.31\% & 75.18\% [67.44\%, 81.58\%] & 2.00$\times$ \\
-MobileNetV2 Pruned s30 (Weighted + KD) & 1,110,790 (49.8\%) & 4.23 MB & 96.01\% & 97.62\% & 96.03\% & 96.93\% & 86.52\% [79.91\%, 91.20\%] & 2.00$\times$ \\
-MobileNetV2 Pruned INT8 Dynamic (s=0.30) & 1,110,790 (49.8\%) & 1.23 MB & 91.09\% & 97.22\% & 93.38\% & 90.79\% & 61.70\% [53.47\%, 69.31\%] & 6.89$\times$ \\
-MobileNetV2 Pruned s30 Static QDQ & 1,110,790 (49.8\%) & 1.35 MB & 90.74\% & 95.44\% & 96.79\% & 90.07\% & 53.90\% [45.65\%, 61.94\%] & 6.28$\times$ \\
+MobileNetV2 Pruned s30 (Weighted + KD) FP32 & 1,110,790 (49.8\%) & 4.23 MB & 96.01\% & 97.62\% & 96.03\% & 96.93\% & 86.52\% [79.91\%, 91.20\%] & 2.00$\times$ \\
+MobileNetV2 Pruned s30 (Weighted + KD) Static QDQ & 1,110,790 (49.8\%) & 1.35 MB & 95.49\% & 96.83\% & 97.16\% & 96.03\% & 82.27\% [75.14\%, 87.69\%] & 6.28$\times$ \\
+MobileNetV2 Pruned INT8 Dynamic (s=0.30, Unweighted) & 1,110,790 (49.8\%) & 1.23 MB & 91.09\% & 97.22\% & 93.38\% & 90.79\% & 61.70\% [53.47\%, 69.31\%] & 6.89$\times$ \\
+MobileNetV2 Pruned s30 Static QDQ (Unweighted) & 1,110,790 (49.8\%) & 1.35 MB & 90.74\% & 95.44\% & 96.79\% & 90.07\% & 53.90\% [45.65\%, 61.94\%] & 6.28$\times$ \\
 MobileNetV2 Pruned FP32 (s=0.50) & 583,332 (26.2\%) & 2.23 MB & 90.05\% & 94.64\% & 95.84\% & 89.89\% & 52.48\% [44.28\%, 60.55\%] & 3.80$\times$ \\
 MobileNetV2 Pruned INT8 Dynamic (s=0.50) & 583,332 (26.2\%) & 0.72 MB & 85.47\% & 91.07\% & 96.98\% & 83.21\% & 31.21\% [24.14\%, 39.27\%] & 11.78$\times$ \\
 \midrule
@@ -358,7 +367,7 @@ Fig.~\ref{fig:sparsity_sweep} details the resulting trajectories. While overall 
 
 \begin{figure}[t]
 \centering
-\includegraphics[width=0.66\linewidth]{figures/sparsity_sweep_degradation.png}
+\includegraphics[width=0.60\linewidth]{figures/sparsity_sweep_degradation.png}
 \caption{Continuous degradation trajectories across structured channel sparsity $s \in [0.0, 0.60]$ on MobileNetV2: (a) overall top-1 diagnostic accuracy degrades moderately, whereas (b) lethal minority sensitivity (Newcastle Disease, $n=141$) suffers severe, continuous erosion below the clinical safety threshold.}
 \label{fig:sparsity_sweep}
 \end{figure}
@@ -375,14 +384,14 @@ Finally, Table~\ref{tab:pruning} confirms an essential structural boundary for S
 
 \begin{figure}[t]
 \centering
-\includegraphics[width=0.66\linewidth]{figures/pareto_frontier_jcse.png}
+\includegraphics[width=0.60\linewidth]{figures/pareto_frontier_jcse.png}
 \caption{Edge deployment Pareto frontiers on Raspberry Pi 5 under 4 threads: (a) Overall Top-1 Accuracy versus Hardware Execution Latency, and (b) Newcastle Disease Sensitivity (Minority Lethal Recall) versus Execution Latency. The shaded region marks sub-optimal sensitivity ($< 90\%$ point-estimate NCD recall), where aggressive pruning under-reports lethal outbreaks.}
 \label{fig:pareto}
 \end{figure}
 
-To complete the empirical evaluation of synergistic compression, we calibrated and benchmarked MobileNetV2 $s=0.30$ under static per-channel QDQ (Table~\ref{tab:pruning}). While achieving a compact 1.35\,MB footprint and 145.4 FPS (6.88\,ms under 4 threads), overall top-1 accuracy degrades to 90.74\% and Newcastle Disease recall collapses to 53.90\% [95\% CI: 45.65\%, 61.94\%], missing 46.10\% of lethal cases. This empirical result proves a critical deployment reality: on modern edge processors like Raspberry Pi 5 (8\,GB RAM), unpruned Static QDQ (7.59\,ms, 131.8 FPS, 97.74\% accuracy, 94.33\% NCD recall) strictly dominates pruned alternatives. Pruning offers zero Pareto advantage when system memory is ample, and is justified solely on sub-2\,MB SRAM micro-budgets.
+To thoroughly evaluate the upper bound of synergistic compression, we compiled both the unweighted and class-weighted distilled MobileNetV2 $s=0.30$ checkpoints under static per-channel QDQ (Table~\ref{tab:pruning}). For the unweighted pruned model, static QDQ yields 145.4 FPS (6.88\,ms) and a 1.35\,MB footprint, but top-1 accuracy drops to 90.74\% and NCD recall collapses to 53.90\% [95\% CI: 45.65\%, 61.94\%]. Applying static QDQ to the class-weighted distilled checkpoint recovers overall accuracy to 95.49\% and NCD recall to 82.27\% [95\% CI: 75.14\%, 87.69\%]. While this demonstrates that class-weighted distillation significantly cushions quantization loss, the pruned INT8 model still misses 17.73\% of lethal cases.
 
-Fig.~\ref{fig:pareto} illustrates the multi-objective Pareto trade-off frontiers. Because the Raspberry Pi 5 possesses 8\,GB of RAM and peak runtime RSS across all models is strictly bounded between 73.16\,MB and 103.38\,MB, storage footprint does not constrain operational deployment. Evaluating Pareto optimality across Accuracy, NCD Recall, and Execution Latency demonstrates that \textbf{MobileNetV2 Baseline Static QDQ} (7.59\,ms, 131.8 FPS, 97.74\% accuracy, 94.33\% NCD recall [89.20\%, 97.10\%]) and \textbf{ShuffleNetV2 Baseline Static QDQ} (6.29\,ms, 159.1 FPS, 97.57\% accuracy, 94.33\% NCD recall [89.20\%, 97.10\%]) strictly dominate the deployment frontier. They accelerate execution by 1.33$\times$ to 2.67$\times$ while matching baseline FP32 accuracy within $\pm 0.18$ percentage points without compromising clinical sensitivity.
+Fig.~\ref{fig:pareto} illustrates the multi-objective Pareto trade-off frontiers. While pruned s30 static INT8 is marginally faster (6.88\,ms vs. 7.59\,ms for MobileNetV2 static), \textbf{ShuffleNetV2 Baseline Static QDQ} (6.29\,ms, 159.1 FPS, 97.57\% accuracy, 94.33\% NCD recall [89.20\%, 97.10\%]) strictly dominates all pruned variants in latency, accuracy, and clinical sensitivity simultaneously. Furthermore, \textbf{MobileNetV2 Baseline Static QDQ} (7.59\,ms, 131.8 FPS, 97.74\% accuracy, 94.33\% NCD recall) offers a vastly superior safety profile without requiring multi-stage distillation. These findings show that for depthwise architectures under this L1-pruning recipe on Cortex-A76 hardware, unpruned static QDQ represents the most effective operational strategy, whereas structured channel pruning should be reserved for memory-critical scenarios where sub-1.5\,MB storage is strictly mandated.
 
 \section{Physical Edge Hardware Profiling on Raspberry Pi 5}
 
@@ -403,8 +412,8 @@ Benchmarking was executed using the official ONNX Runtime 1.29.0 engine compiled
 MobileNetV2 Baseline FP32 & 8.48 MB & 33.00 ms & 32.97 ms & 30.3 & 20.23 ms & 15.71 ms & 49.4 & 85.64 MB \\
 MobileNetV2 Baseline Dynamic INT8 & 2.30 MB & 43.67 ms & 43.62 ms & 22.9 & 49.95 ms & 41.12 ms & 20.0 & 88.80 MB \\
 MobileNetV2 Baseline Static QDQ & 2.48 MB & 11.99 ms & 11.98 ms & 83.4 & 7.59 ms & 6.60 ms & 131.8 & 79.52 MB \\
-MobileNetV2 Pruned s30 FP32 & 4.20 MB & 19.00 ms & 18.97 ms & 52.6 & 11.32 ms & 8.66 ms & 88.4 & 80.31 MB \\
-MobileNetV2 Pruned s30 INT8 Dynamic & 1.19 MB & 28.41 ms & 28.39 ms & 35.2 & 34.62 ms & 27.80 ms & 28.9 & 80.25 MB \\
+MobileNetV2 Pruned s30 FP32 & 4.23 MB & 19.00 ms & 18.97 ms & 52.6 & 11.32 ms & 8.66 ms & 88.4 & 80.31 MB \\
+MobileNetV2 Pruned s30 INT8 Dynamic & 1.23 MB & 28.41 ms & 28.39 ms & 35.2 & 34.62 ms & 27.80 ms & 28.9 & 80.25 MB \\
 MobileNetV2 Pruned s30 Static QDQ & 1.35 MB & 12.65 ms & 12.37 ms & 79.1 & 6.88 ms & 5.22 ms & 145.4 & 75.95 MB \\
 MobileNetV2 Pruned s50 FP32 & 2.23 MB & 11.80 ms & 11.79 ms & 84.7 & 8.13 ms & 9.59 ms & 122.9 & 73.31 MB \\
 MobileNetV2 Pruned s50 INT8 Dynamic & 0.72 MB & 19.55 ms & 19.51 ms & 51.1 & 23.40 ms & 17.83 ms & 42.7 & 76.53 MB \\
@@ -435,8 +444,8 @@ Third, static per-channel QDQ calibration eliminates this bottleneck entirely by
 
 \begin{figure}[t]
 \centering
-\includegraphics[width=0.56\linewidth]{figures/rpi5_pruned_latency_fps.png}
-\caption{Physical edge execution metrics on Raspberry Pi 5 under 4 threads: (a) mean inference latency in milliseconds, and (b) frame throughput in FPS across baseline, pruned, and quantized variants of MobileNetV2 and EfficientNet-B0. The green dashed line marks the 30 FPS real-time threshold.}
+\includegraphics[width=0.40\linewidth]{figures/rpi5_pruned_latency_fps.png}
+\caption{Physical edge execution latency and throughput on Raspberry Pi 5 under 4 threads across model variants (dashed line: 30 FPS threshold).}
 \label{fig:latency_fps}
 \end{figure}
 
@@ -444,8 +453,8 @@ Fig.~\ref{fig:latency_fps} illustrates physical execution latency and frame thro
 
 \begin{figure}[t]
 \centering
-\includegraphics[width=0.56\linewidth]{figures/rpi5_thread_scaling_gate0.png}
-\caption{Multi-threaded execution latency scaling across 1, 2, 3, and 4 CPU cores on the Raspberry Pi 5 ARM Cortex-A76 processor.}
+\includegraphics[width=0.40\linewidth]{figures/rpi5_thread_scaling_gate0.png}
+\caption{Multi-threaded execution latency scaling across 1 to 4 CPU cores on Raspberry Pi 5 ARM Cortex-A76.}
 \label{fig:thread_scaling}
 \end{figure}
 
@@ -485,12 +494,11 @@ Table~\ref{tab:energy} details the energy consumption profiles. On ShuffleNetV2 
 
 In practical field deployments, continuous frame-by-frame inference is unnecessary; edge surveillance operates under periodic or event-driven duty cycling. Crucially, the thermodynamic feasibility of duty cycling depends on the sleep state implementation. Profiling boot timing via \texttt{systemd-analyze} on the Raspberry Pi 5 reveals that a cold reboot requires 12.54\,s (1.96\,s kernel + 10.58\,s userspace) plus firmware initialization ($\approx 15$\,s total), drawing an average of 3.8\,W ($E_{\text{boot}} \approx 57$\,J). When combined with safe shutdown overhead ($\approx 15$\,J), a cold-boot power-switch cycle consumes $\approx 72$\,J per wake event. At a 60-second polling interval, this yields an average power draw of $\approx 1.2$\,W, exhausting a 37\,Wh pack in only 30.8 hours (1.3 days). Cold-boot hardware power gating is therefore thermodynamically viable only for infrequent monitoring schedules ($\ge 1$ hour).
 
-Conversely, for high-frequency monitoring (e.g., 60-second cycles), the system must utilize low-power warm sleep with RAM retention ($P_{\text{sleep}} \approx 50$\,mW). Under this warm duty cycle, executing one MobileNetV2 Static QDQ inference (7.59\,ms active time, 44.0\,mJ) per minute results in an average power draw of 50.7\,mW:
-\begin{align}
-P_{\text{avg}} &= \frac{E_{\text{inf}} + P_{\text{sleep}} \cdot T_{\text{sleep}}}{T_{\text{period}}} \nonumber \\
-&= \frac{0.0440\,\text{J} + 0.05\,\text{W} \cdot 59.99\,\text{s}}{60\,\text{s}} \approx 50.7\,\text{mW}
-\end{align}
-sustaining \textbf{30.4 days} (730 hours) of field operation from a single 37\,Wh pack. Notice that across all models in Table~\ref{tab:energy}, duty-cycled autonomy ranges tightly between 29.8 and 30.4 days; under low-frequency duty cycles, standby sleep power dominates overall energy, making model latency optimization primarily valuable for thermal headroom and throughput rather than standby battery life.
+For periodic surveillance (e.g., 60-second intervals), the system would require low-power standby with memory retention ($P_{\text{sleep}} \approx 50$\,mW). While the Raspberry Pi 5 lacks native suspend-to-RAM support in mainline Linux distributions, such duty-cycling can be realized using an external low-power supervisory microcontroller (e.g., RP2040) controlling the PMIC enable line. Assuming an ideal 50\,mW standby and 85\% power-conversion efficiency from a 37\,Wh battery pack, executing one MobileNetV2 Static QDQ inference (7.59\,ms active time, 44.0\,mJ total system energy) per minute results in an average power draw of $\approx 50.7$\,mW:
+\begin{equation}
+P_{\text{avg}} = \frac{E_{\text{inf}} + P_{\text{sleep}} \cdot T_{\text{sleep}}}{T_{\text{period}}} = \frac{0.0440\,\text{J} + 0.05\,\text{W} \cdot 59.99\,\text{s}}{60\,\text{s}} \approx 50.7\,\text{mW}
+\end{equation}
+yielding up to \textbf{25.8 days} (620 hours) of theoretical off-grid operation. Note that practical battery life may be further limited by power-bank auto-shutoff thresholds at low currents and ambient temperature variations.
 
 \section{Explainability and Pathological Feature Attribution}
 
@@ -498,12 +506,12 @@ To ensure clinical trustworthiness before field deployment, veterinary AI models
 
 \begin{figure}[t]
 \centering
-\includegraphics[width=0.48\linewidth]{figures/gradcam_mobilenetv2.png}
-\caption{Grad-CAM visual explanations for MobileNetV2 across all four diagnostic categories: (a) Healthy, (b) Coccidiosis, (c) Salmonella, and (d) Newcastle Disease, confirming that attention maps focus tightly on clinically relevant fecal lesions and blood mucous discharge.}
+\includegraphics[width=0.36\linewidth]{figures/gradcam_mobilenetv2.png}
+\caption{Grad-CAM visual explanations for MobileNetV2 across all four diagnostic categories, confirming attention maps focus tightly on clinically relevant fecal lesions and blood mucous discharge.}
 \label{fig:gradcam}
 \end{figure}
 
-Fig.~\ref{fig:gradcam} illustrates the visual attention maps generated for MobileNetV2. For healthy droppings, the network focuses on the compact morphology and white uric acid caps. For Coccidiosis, heatmaps concentrate precisely on hemorrhagic mucous streaks. For Salmonella, the model isolates characteristic sulfur-yellowish watery secretions. For Newcastle Disease, attention localizes on bright green mucoid lesions, confirming that structured pruning and integer quantization preserve authentic clinical features without attribution drift.
+Fig.~\ref{fig:gradcam} illustrates the visual attention maps generated for baseline MobileNetV2. For healthy droppings, the network focuses on the compact morphology and white uric acid caps. For Coccidiosis, heatmaps concentrate precisely on hemorrhagic mucous streaks. For Salmonella, the model isolates characteristic sulfur-yellowish watery secretions. For Newcastle Disease, attention localizes on bright green mucoid lesions, confirming that the uncompressed baseline model grounds predictions in authentic clinical markers rather than background artifacts. Crucially, this granular focus explains why aggressive channel pruning degrades minority recall (Section VI): pruning removes the specialized high-frequency filter banks required to detect small, localized mucoid discharge.
 
 \section{Discussion and Deployment Guidelines}
 
@@ -513,17 +521,17 @@ First, practitioners must strictly avoid deploying depthwise separable architect
 
 Second, the interaction between integer quantization and runtime execution engines is critical. Under the ONNX Runtime 1.29 CPU EP on ARM Cortex-A76, dynamic INT8 fails to accelerate depthwise networks, incurring a 2.19$\times$ to 2.47$\times$ latency penalty as the execution graph fragments into 357 disjoint operators. Conversely, static per-channel QDQ fuses convolutions into native \texttt{QLinearConv} kernels, unlocking hardware acceleration via ARMv8.2-A vector dot-product instructions (\texttt{SDOT}/\texttt{UDOT}) across all compact CNNs (7.59\,ms on MobileNetV2, 6.29\,ms on ShuffleNetV2, and 19.44\,ms on EfficientNet-B0).
 
-Third, system designers must rigorously enforce class-conditional safety constraints during compression. Unweighted channel pruning and dynamic quantization continuously starve the lethal minority pathogen (\textit{Newcastle Disease}, 8.16\% prevalence), collapsing NCD recall from 94.33\% to 61.70\% at 30\% sparsity (53.90\% under static QDQ) and 31.21\% at 50\% sparsity. Inverse-frequency weighting ($w_{\text{NCD}}=3.05$) with FP32 teacher distillation recovers sensitivity to 86.52\% [79.91\%, 91.20\%]. For operational deployment on Raspberry Pi 5, \textbf{ShuffleNetV2 Baseline Static QDQ} (6.29\,ms, 159.1 FPS, 97.57\% accuracy, 94.33\% NCD recall [89.20\%, 97.10\%]) and \textbf{MobileNetV2 Baseline Static QDQ} (7.59\,ms, 131.8 FPS, 97.74\% accuracy, 94.33\% NCD recall [89.20\%, 97.10\%]) represent the optimal deployment configurations, satisfying real-time throughput and clinical sensitivity while matching baseline accuracy within $\pm 0.18$ percentage points.
+Third, system designers must rigorously enforce class-conditional safety constraints during compression. Unweighted channel pruning starves the lethal minority pathogen (\textit{Newcastle Disease}, 8.16\% prevalence), collapsing NCD recall from 94.33\% down to 53.90\% under static QDQ at 30\% sparsity. Inverse-frequency weighting ($w_{\text{NCD}}=3.05$) with FP32 teacher distillation recovers static QDQ sensitivity to 82.27\% [75.14\%, 87.69\%]. For operational deployment on Raspberry Pi 5, \textbf{ShuffleNetV2 Static QDQ} (6.29\,ms, 159.1 FPS, 97.57\% accuracy, 94.33\% NCD recall) and \textbf{MobileNetV2 Static QDQ} (7.59\,ms, 131.8 FPS, 97.74\% accuracy, 94.33\% NCD recall) provide the most advantageous configurations, balancing real-time throughput with high pathogen sensitivity.
 
 \section{Conclusion}
-In this paper, we localized, mathematically diagnosed, and resolved the post-training quantization collapse of lightweight CNNs in edge avian disease diagnosis. We audited public datasets to eliminate optimistic evaluation bias, identifying 617 near-duplicate pairs (156 cross-partition leaks) and establishing an 8,153-image sterile benchmark ($n=1,728$ test samples). Our SQNR formulation demonstrates that cross-channel weight variance ($\Delta_{w,l} \approx 14.8$) in depthwise separable convolutions degrades effective bit-width to $B_{\text{eff}} \le 4.09$ bits and drops depthwise SQNR to 8.4\,dB under per-tensor scaling, inducing complete mode collapse in EfficientNet-B0 (10.42\% accuracy, 97.0\% collapsing into Newcastle Disease). We formulated a static per-channel QDQ calibration protocol that restores diagnostic fidelity across architectures (EfficientNet-B0 to 94.56\%, MobileNetV2 to 97.74\%, and ShuffleNetV2 to 97.57\%). Furthermore, structured channel pruning reveals that structural parameter removal immediately collapses minority sensitivity to 0.0\%, and subsequent unweighted fine-tuning starves the lethal minority class (53.90\% under static QDQ at 30\% sparsity and 31.21\% at 50\% sparsity); 30-epoch class-weighted loss with FP32 teacher distillation recovers sensitivity to 86.52\% [79.91\%, 91.20\%]. Physical benchmarking on Raspberry Pi 5 under ONNX Runtime 1.29 CPU EP confirmed that static per-channel QDQ fuses into native \texttt{QLinearConv} kernels, unlocking hardware acceleration (7.59\,ms on MobileNetV2, 6.29\,ms on ShuffleNetV2) and strictly dominating pruned models. Finally, power profiling and boot timing analysis ($t_{\text{boot}} \approx 12.54$\,s) demonstrated that warm-sleep duty cycling sustains over 30 days of autonomous off-grid field surveillance.
+In this paper, we localized, mathematically diagnosed, and resolved post-training quantization collapse of lightweight CNNs in edge avian disease surveillance. We audited public datasets for data hygiene, identifying 617 near-duplicate pairs and establishing an 8,153-image sterile benchmark ($n=1,728$ test samples) that eliminates cross-partition leakage. Our SQNR formulation demonstrates that cross-channel weight variance ($\Delta_{w,l} \approx 14.8$) in depthwise separable convolutions degrades effective bit-width to $B_{\text{eff}} \le 4.09$ bits and drops depthwise SQNR to 8.4\,dB under per-tensor scaling, inducing complete mode collapse in EfficientNet-B0 (10.42\% accuracy, 97.0\% collapsing into Newcastle Disease). We formulated a static per-channel QDQ calibration protocol that restores diagnostic fidelity across architectures (EfficientNet-B0 to 94.56\%, MobileNetV2 to 97.74\%, and ShuffleNetV2 to 97.57\%). Furthermore, structured channel pruning reveals that parameter removal collapses minority sensitivity, and subsequent unweighted fine-tuning starves the lethal minority class (53.90\% under static QDQ at 30\% sparsity); class-weighted distillation recovers static QDQ sensitivity to 82.27\% [75.14\%, 87.69\%]. Physical benchmarking on Raspberry Pi 5 under ONNX Runtime 1.29 CPU EP confirmed that static per-channel QDQ fuses into native \texttt{QLinearConv} kernels with vector dot-product acceleration (7.59\,ms on MobileNetV2, 6.29\,ms on ShuffleNetV2), offering superior Pareto efficiency over pruned alternatives. Finally, embedded power modeling and boot analysis provide concrete design boundaries for field-deployable edge livestock surveillance.
 
 \section*{Acknowledgements}
 The authors thank Amirul Al Aziz and Muhammad Iqbal Hidayatullah for preliminary exploratory contributions at ICAIDES 2026. Supported by the Department of Informatics, Universitas Darussalam Gontor.
 
 \begin{thebibliography}{28}
-\fontsize{6.0pt}{7.0pt}\selectfont
-\setlength{\itemsep}{-1.6pt}
+\fontsize{5.2pt}{6.1pt}\selectfont
+\setlength{\itemsep}{-2.5pt}
 \setlength{\parskip}{0pt}
 
 \bibitem{almumtaz2026icaides}
@@ -616,26 +624,26 @@ S. Yun and A. Wong, ``Do all MobileNets quantize poorly? Gaining robust quantiza
 \noindent
 \begin{minipage}[t]{0.18\columnwidth}
 \vspace{0pt}
-\includegraphics[width=\linewidth,height=1.05cm,keepaspectratio]{figures/author_fatih.jpg}
+\includegraphics[width=\linewidth,height=0.82cm,keepaspectratio]{figures/author_fatih.jpg}
 \end{minipage}\hfill
 \begin{minipage}[t]{0.79\columnwidth}
 \vspace{0pt}
-\textbf{Fatih Jawwad Al Mumtaz}\par\vspace{0.1em}
-\fontsize{6.0pt}{7.0pt}\selectfont
+\textbf{Fatih Jawwad Al Mumtaz}\par\vspace{0.04em}
+\fontsize{5.2pt}{6.1pt}\selectfont
 Fatih Jawwad Al Mumtaz is an undergraduate student in Informatics at Universitas Darussalam Gontor, Indonesia. His research focuses on Edge AI, neural network quantization, structured channel pruning, and embedded computer vision.
 \end{minipage}
 
-\vspace{0.2em}
+\vspace{0.08em}
 
 \noindent
 \begin{minipage}[t]{0.18\columnwidth}
 \vspace{0pt}
-\includegraphics[width=\linewidth,height=1.05cm,keepaspectratio]{figures/author_farrel.jpg}
+\includegraphics[width=\linewidth,height=0.82cm,keepaspectratio]{figures/author_farrel.jpg}
 \end{minipage}\hfill
 \begin{minipage}[t]{0.79\columnwidth}
 \vspace{0pt}
-\textbf{Farrel Ghozy Afifuddin}\par\vspace{0.1em}
-\fontsize{6.0pt}{7.0pt}\selectfont
+\textbf{Farrel Ghozy Afifuddin}\par\vspace{0.04em}
+\fontsize{5.2pt}{6.1pt}\selectfont
 Farrel Ghozy Afifuddin is an undergraduate student in Informatics at Universitas Darussalam Gontor, Indonesia. His research interests include applied machine learning, edge computing optimization, and model compression for embedded IoT.
 \end{minipage}
 

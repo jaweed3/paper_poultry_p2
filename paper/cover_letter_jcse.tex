@@ -28,7 +28,7 @@
 \noindent\textbf{Date:} November 16, 2026 \\
 \textbf{To:} Prof. Jong-Hyeok Lee, Editor-in-Chief, \textit{Journal of Computing Science and Engineering (JCSE)} \\
 \textbf{Submission Category:} Regular Research Paper --- Track: \textbf{Embedded Computing} \\
-\textbf{Manuscript Title:} \textbf{Analyzing INT8 Quantization Collapse and Structured Pruning Trade-Offs for Resilient Edge Poultry Disease Diagnosis} \\
+\textbf{Manuscript Title:} \textbf{Analyzing Post-Training Quantization Collapse and Structured Pruning Trade-Offs for Edge Poultry Disease Surveillance} \\
 \textbf{Authors:} Fatih Jawwad Al Mumtaz$^*$ and Farrel Ghozy Afifuddin \\
 \textbf{Affiliation:} Department of Informatics, Faculty of Science and Technology, Universitas Darussalam Gontor \\
 \textbf{Postal Address:} Jl. Raya Siman Km. 6, Demangan, Siman, Ponorogo, East Java 63471, Indonesia \\
@@ -38,7 +38,7 @@
 \noindent Dear Prof. Jong-Hyeok Lee and Esteemed Editorial Board Members,
 
 \vspace{0.3em}
-We are pleased to submit our original research manuscript entitled \textbf{``Localizing INT8 Quantization Collapse and Channel Pruning for Resilient Edge Poultry Disease Diagnosis''} for peer-reviewed publication consideration in the \textit{Embedded Computing} track of the \textit{Journal of Computing Science and Engineering (JCSE)}.
+We are pleased to submit our original research manuscript entitled \textbf{``Analyzing Post-Training Quantization Collapse and Structured Pruning Trade-Offs for Edge Poultry Disease Surveillance''} for peer-reviewed publication consideration in the \textit{Embedded Computing} track of the \textit{Journal of Computing Science and Engineering (JCSE)}.
 
 \vspace{0.4em}
 \noindent\textbf{Prior Conference Disclosure and Substantial Journal Extension:}\\
@@ -54,15 +54,15 @@ In strict adherence to the JCSE Editorial Policies and ethical guidelines govern
 \toprule
 \textbf{Technical Dimension} & \textbf{Preliminary Conference (ICAIDES 2026)} & \textbf{Present Journal Submission (JCSE 2026)} \\
 \midrule
-\textbf{Dataset Hygiene \& Integrity} & Evaluated on uncurated public poultry images without duplicate verification. & Comprehensive perceptual hash audit ($D_H \le 5$); removed 617 duplicates (including 156 cross-partition train-test leaks); established sanitized 8,153-image sterile benchmark ($n=1,728$ test set) with Wilson 95\% confidence intervals. \\
+\textbf{Dataset Hygiene \& Integrity} & Evaluated on uncurated public poultry images without duplicate verification. & Comprehensive perceptual hash audit ($D_H \le 5$); removed duplicate counterparts from 617 pairs (316 cross-partition leaks); established sanitized 8,153-image sterile benchmark ($n=1,728$ test set) with Wilson 95\% confidence intervals. \\
 \addlinespace[0.2em]
 \textbf{Theoretical Formulation} & Empirical observation of accuracy drop without formal error bounds. & Rigorous Signal-to-Quantization-Noise Ratio (SQNR) derivation; proves effective bit-width reduction ($B_{\text{eff}} \le 4.1$ bits) caused by cross-channel dynamic range disparity ($\Delta_{w,l} > 14.8$) in depthwise convolutions. \\
 \addlinespace[0.2em]
-\textbf{Structured Channel Pruning} & Not investigated (quantization only). & \textbf{Entirely New:} Dependency Graph (DepGraph) L1-norm structured pruning swept across $s \in \{0.2, 0.3, 0.4, 0.5, 0.6\}$; establishes empirical Pareto frontier and maps accuracy cliff at 50\% sparsity. \\
+\textbf{Structured Channel Pruning} & Not investigated (quantization only). & \textbf{Entirely New:} Dependency Graph (DepGraph) L1-norm structured pruning; demonstrates minority pathogen starvation and evaluates class-weighted distillation recovery under static INT8 QDQ. \\
 \addlinespace[0.2em]
-\textbf{Physical Edge Profiling} & Basic single-thread latency measurement. & \textbf{Entirely New:} In-depth Raspberry Pi 5 ARM Cortex-A76 profiling; multi-core thread scaling (1T to 4T); kernel dispatch analysis; active incremental energy ($\Delta P = 3.10$\,W); duty-cycled off-grid IoT battery autonomy modeling. \\
+\textbf{Physical Edge Profiling} & Basic single-thread latency measurement. & \textbf{Entirely New:} In-depth Raspberry Pi 5 ARM Cortex-A76 profiling; multi-core thread scaling (1T to 4T); vector dot-product kernel dispatch analysis; power modeling with warm-sleep duty cycling for edge IoT autonomy. \\
 \addlinespace[0.2em]
-\textbf{Clinical Interpretability} & No explainability analysis. & \textbf{Entirely New:} Grad-CAM visual heatmaps verifying morphological focus on hemorrhagic mucous streaks and uric acid lesions. \\
+\textbf{Clinical Interpretability} & No explainability analysis. & \textbf{Entirely New:} Grad-CAM visual heatmaps on baseline models verifying morphological focus on hemorrhagic mucous streaks and uric acid lesions. \\
 \bottomrule
 \end{tabular}
 \end{table}

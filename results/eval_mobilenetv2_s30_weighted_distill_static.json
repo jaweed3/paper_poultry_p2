@@ -1,0 +1,90 @@
+{
+  "fp32": {
+    "top1_acc": 95.43,
+    "total_correct": 1649,
+    "total_samples": 1728,
+    "per_class": {
+      "cocci": {
+        "recall": 96.6,
+        "correct": 511,
+        "total": 529,
+        "wilson_ci": [
+          94.69,
+          1.0
+        ]
+      },
+      "healthy": {
+        "recall": 97.22,
+        "correct": 490,
+        "total": 504,
+        "wilson_ci": [
+          95.39,
+          1.0
+        ]
+      },
+      "ncd": {
+        "recall": 82.98,
+        "correct": 117,
+        "total": 141,
+        "wilson_ci": [
+          75.92,
+          1.0
+        ]
+      },
+      "salmo": {
+        "recall": 95.85,
+        "correct": 531,
+        "total": 554,
+        "wilson_ci": [
+          93.85,
+          1.0
+        ]
+      }
+    }
+  },
+  "static_qdq": {
+    "top1_acc": 95.49,
+    "total_correct": 1650,
+    "total_samples": 1728,
+    "per_class": {
+      "cocci": {
+        "recall": 97.16,
+        "correct": 514,
+        "total": 529,
+        "wilson_ci": [
+          95.37,
+          1.0
+        ]
+      },
+      "healthy": {
+        "recall": 96.83,
+        "correct": 488,
+        "total": 504,
+        "wilson_ci": [
+          94.91,
+          1.0
+        ]
+      },
+      "ncd": {
+        "recall": 82.27,
+        "correct": 116,
+        "total": 141,
+        "wilson_ci": [
+          75.14,
+          1.0
+        ]
+      },
+      "salmo": {
+        "recall": 96.03,
+        "correct": 532,
+        "total": 554,
+        "wilson_ci": [
+          94.06,
+          1.0
+        ]
+      }
+    }
+  },
+  "fp32_size_mb": 4.23,
+  "static_size_mb": 1.35
+}
