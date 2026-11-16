@@ -56,13 +56,11 @@ In strict adherence to the JCSE Editorial Policies and ethical guidelines govern
 \midrule
 \textbf{Dataset Hygiene \& Integrity} & Evaluated on uncurated public poultry images without duplicate verification. & Comprehensive perceptual hash audit ($D_H \le 5$); removed duplicate counterparts from 617 pairs (316 cross-partition leaks); established sanitized 8,153-image sterile benchmark ($n=1,728$ test set) with Wilson 95\% confidence intervals. \\
 \addlinespace[0.2em]
-\textbf{Theoretical Formulation} & Empirical observation of accuracy drop without formal error bounds. & Rigorous Signal-to-Quantization-Noise Ratio (SQNR) derivation; proves effective bit-width reduction ($B_{\text{eff}} \le 4.1$ bits) caused by cross-channel dynamic range disparity ($\Delta_{w,l} > 14.8$) in depthwise convolutions. \\
+\textbf{Theoretical Formulation} & Empirical observation of accuracy drop without formal error bounds. & Layer-wise Signal-to-Quantization-Noise Ratio (SQNR) formulation; shows effective bit-width reduction ($B_{\text{eff}} \le 4.1$ bits) caused by cross-channel dynamic range disparity ($\Delta_{w,l} > 14.8$) in depthwise convolutions. \\
 \addlinespace[0.2em]
 \textbf{Structured Channel Pruning} & Not investigated (quantization only). & \textbf{Entirely New:} Dependency Graph (DepGraph) L1-norm structured pruning; demonstrates minority pathogen starvation and evaluates class-weighted distillation recovery under static INT8 QDQ. \\
 \addlinespace[0.2em]
-\textbf{Physical Edge Profiling} & Basic single-thread latency measurement. & \textbf{Entirely New:} In-depth Raspberry Pi 5 ARM Cortex-A76 profiling; multi-core thread scaling (1T to 4T); vector dot-product kernel dispatch analysis; power modeling with warm-sleep duty cycling for edge IoT autonomy. \\
-\addlinespace[0.2em]
-\textbf{Clinical Interpretability} & No explainability analysis. & \textbf{Entirely New:} Grad-CAM visual heatmaps on baseline models verifying morphological focus on hemorrhagic mucous streaks and uric acid lesions. \\
+\textbf{Physical Edge Profiling} & Basic single-thread latency measurement. & \textbf{Entirely New:} In-depth Raspberry Pi 5 ARM Cortex-A76 profiling; multi-core thread scaling (1T to 4T); execution graph kernel dispatch analysis (55 vs.\ 357 nodes); power measurement identifying idle dissipation constraints. \\
 \bottomrule
 \end{tabular}
 \end{table}
