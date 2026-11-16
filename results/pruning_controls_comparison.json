@@ -1,0 +1,666 @@
+{
+  "metadata": {
+    "date": "2026-11-17 06:04:09",
+    "epochs": 30,
+    "architecture": "MobileNetV2 (s=0.30)",
+    "benchmark": "Sterile test split (n=1,728)",
+    "classes": [
+      "cocci",
+      "healthy",
+      "ncd",
+      "salmo"
+    ]
+  },
+  "summary": {
+    "unweighted_ce_no_kd": {
+      "mean_acc": 95.69,
+      "std_acc": 0.55,
+      "mean_ncd_recall": 86.88,
+      "std_ncd_recall": 1.06,
+      "runs": [
+        {
+          "condition": "unweighted_ce_no_kd",
+          "seed": 42,
+          "epochs": 30,
+          "use_weights": false,
+          "use_kd": false,
+          "train_time_s": 299.8,
+          "best_val_acc": 95.81,
+          "test_eval": {
+            "acc": 95.14,
+            "correct": 1644,
+            "total": 1728,
+            "per_class": {
+              "cocci": {
+                "recall": 93.95,
+                "correct": 497,
+                "total": 529,
+                "ci_95": [
+                  91.59,
+                  95.68
+                ]
+              },
+              "healthy": {
+                "recall": 97.82,
+                "correct": 493,
+                "total": 504,
+                "ci_95": [
+                  96.13,
+                  98.78
+                ]
+              },
+              "ncd": {
+                "recall": 87.94,
+                "correct": 124,
+                "total": 141,
+                "ci_95": [
+                  81.54,
+                  92.33
+                ]
+              },
+              "salmo": {
+                "recall": 95.67,
+                "correct": 530,
+                "total": 554,
+                "ci_95": [
+                  93.63,
+                  97.07
+                ]
+              }
+            }
+          }
+        },
+        {
+          "condition": "unweighted_ce_no_kd",
+          "seed": 123,
+          "epochs": 30,
+          "use_weights": false,
+          "use_kd": false,
+          "train_time_s": 299.7,
+          "best_val_acc": 95.89,
+          "test_eval": {
+            "acc": 96.24,
+            "correct": 1663,
+            "total": 1728,
+            "per_class": {
+              "cocci": {
+                "recall": 96.79,
+                "correct": 512,
+                "total": 529,
+                "ci_95": [
+                  94.91,
+                  97.98
+                ]
+              },
+              "healthy": {
+                "recall": 97.22,
+                "correct": 490,
+                "total": 504,
+                "ci_95": [
+                  95.39,
+                  98.34
+                ]
+              },
+              "ncd": {
+                "recall": 85.82,
+                "correct": 121,
+                "total": 141,
+                "ci_95": [
+                  79.1,
+                  90.63
+                ]
+              },
+              "salmo": {
+                "recall": 97.47,
+                "correct": 540,
+                "total": 554,
+                "ci_95": [
+                  95.8,
+                  98.49
+                ]
+              }
+            }
+          }
+        }
+      ]
+    },
+    "weighted_ce_no_kd": {
+      "mean_acc": 95.72,
+      "std_acc": 0.17,
+      "mean_ncd_recall": 91.49,
+      "std_ncd_recall": 1.42,
+      "runs": [
+        {
+          "condition": "weighted_ce_no_kd",
+          "seed": 42,
+          "epochs": 30,
+          "use_weights": true,
+          "use_kd": false,
+          "train_time_s": 299.6,
+          "best_val_acc": 96.26,
+          "test_eval": {
+            "acc": 95.89,
+            "correct": 1657,
+            "total": 1728,
+            "per_class": {
+              "cocci": {
+                "recall": 95.65,
+                "correct": 506,
+                "total": 529,
+                "ci_95": [
+                  93.56,
+                  97.09
+                ]
+              },
+              "healthy": {
+                "recall": 98.02,
+                "correct": 494,
+                "total": 504,
+                "ci_95": [
+                  96.39,
+                  98.92
+                ]
+              },
+              "ncd": {
+                "recall": 92.91,
+                "correct": 131,
+                "total": 141,
+                "ci_95": [
+                  87.44,
+                  96.1
+                ]
+              },
+              "salmo": {
+                "recall": 94.95,
+                "correct": 526,
+                "total": 554,
+                "ci_95": [
+                  92.79,
+                  96.48
+                ]
+              }
+            }
+          }
+        },
+        {
+          "condition": "weighted_ce_no_kd",
+          "seed": 123,
+          "epochs": 30,
+          "use_weights": true,
+          "use_kd": false,
+          "train_time_s": 300.2,
+          "best_val_acc": 95.59,
+          "test_eval": {
+            "acc": 95.54,
+            "correct": 1651,
+            "total": 1728,
+            "per_class": {
+              "cocci": {
+                "recall": 94.33,
+                "correct": 499,
+                "total": 529,
+                "ci_95": [
+                  92.02,
+                  96.0
+                ]
+              },
+              "healthy": {
+                "recall": 97.62,
+                "correct": 492,
+                "total": 504,
+                "ci_95": [
+                  95.88,
+                  98.63
+                ]
+              },
+              "ncd": {
+                "recall": 90.07,
+                "correct": 127,
+                "total": 141,
+                "ci_95": [
+                  84.02,
+                  93.99
+                ]
+              },
+              "salmo": {
+                "recall": 96.21,
+                "correct": 533,
+                "total": 554,
+                "ci_95": [
+                  94.27,
+                  97.51
+                ]
+              }
+            }
+          }
+        }
+      ]
+    },
+    "weighted_ce_with_kd": {
+      "mean_acc": 96.0,
+      "std_acc": 0.18,
+      "mean_ncd_recall": 88.65,
+      "std_ncd_recall": 1.42,
+      "runs": [
+        {
+          "condition": "weighted_ce_with_kd",
+          "seed": 42,
+          "epochs": 30,
+          "use_weights": true,
+          "use_kd": true,
+          "train_time_s": 400.0,
+          "best_val_acc": 96.26,
+          "test_eval": {
+            "acc": 95.83,
+            "correct": 1656,
+            "total": 1728,
+            "per_class": {
+              "cocci": {
+                "recall": 95.46,
+                "correct": 505,
+                "total": 529,
+                "ci_95": [
+                  93.34,
+                  96.93
+                ]
+              },
+              "healthy": {
+                "recall": 97.42,
+                "correct": 491,
+                "total": 504,
+                "ci_95": [
+                  95.64,
+                  98.49
+                ]
+              },
+              "ncd": {
+                "recall": 87.23,
+                "correct": 123,
+                "total": 141,
+                "ci_95": [
+                  80.72,
+                  91.77
+                ]
+              },
+              "salmo": {
+                "recall": 96.93,
+                "correct": 537,
+                "total": 554,
+                "ci_95": [
+                  95.14,
+                  98.08
+                ]
+              }
+            }
+          }
+        },
+        {
+          "condition": "weighted_ce_with_kd",
+          "seed": 123,
+          "epochs": 30,
+          "use_weights": true,
+          "use_kd": true,
+          "train_time_s": 400.4,
+          "best_val_acc": 96.19,
+          "test_eval": {
+            "acc": 96.18,
+            "correct": 1662,
+            "total": 1728,
+            "per_class": {
+              "cocci": {
+                "recall": 96.41,
+                "correct": 510,
+                "total": 529,
+                "ci_95": [
+                  94.46,
+                  97.69
+                ]
+              },
+              "healthy": {
+                "recall": 97.02,
+                "correct": 489,
+                "total": 504,
+                "ci_95": [
+                  95.15,
+                  98.19
+                ]
+              },
+              "ncd": {
+                "recall": 90.07,
+                "correct": 127,
+                "total": 141,
+                "ci_95": [
+                  84.02,
+                  93.99
+                ]
+              },
+              "salmo": {
+                "recall": 96.75,
+                "correct": 536,
+                "total": 554,
+                "ci_95": [
+                  94.92,
+                  97.94
+                ]
+              }
+            }
+          }
+        }
+      ]
+    }
+  },
+  "all_runs": [
+    {
+      "condition": "unweighted_ce_no_kd",
+      "seed": 42,
+      "epochs": 30,
+      "use_weights": false,
+      "use_kd": false,
+      "train_time_s": 299.8,
+      "best_val_acc": 95.81,
+      "test_eval": {
+        "acc": 95.14,
+        "correct": 1644,
+        "total": 1728,
+        "per_class": {
+          "cocci": {
+            "recall": 93.95,
+            "correct": 497,
+            "total": 529,
+            "ci_95": [
+              91.59,
+              95.68
+            ]
+          },
+          "healthy": {
+            "recall": 97.82,
+            "correct": 493,
+            "total": 504,
+            "ci_95": [
+              96.13,
+              98.78
+            ]
+          },
+          "ncd": {
+            "recall": 87.94,
+            "correct": 124,
+            "total": 141,
+            "ci_95": [
+              81.54,
+              92.33
+            ]
+          },
+          "salmo": {
+            "recall": 95.67,
+            "correct": 530,
+            "total": 554,
+            "ci_95": [
+              93.63,
+              97.07
+            ]
+          }
+        }
+      }
+    },
+    {
+      "condition": "unweighted_ce_no_kd",
+      "seed": 123,
+      "epochs": 30,
+      "use_weights": false,
+      "use_kd": false,
+      "train_time_s": 299.7,
+      "best_val_acc": 95.89,
+      "test_eval": {
+        "acc": 96.24,
+        "correct": 1663,
+        "total": 1728,
+        "per_class": {
+          "cocci": {
+            "recall": 96.79,
+            "correct": 512,
+            "total": 529,
+            "ci_95": [
+              94.91,
+              97.98
+            ]
+          },
+          "healthy": {
+            "recall": 97.22,
+            "correct": 490,
+            "total": 504,
+            "ci_95": [
+              95.39,
+              98.34
+            ]
+          },
+          "ncd": {
+            "recall": 85.82,
+            "correct": 121,
+            "total": 141,
+            "ci_95": [
+              79.1,
+              90.63
+            ]
+          },
+          "salmo": {
+            "recall": 97.47,
+            "correct": 540,
+            "total": 554,
+            "ci_95": [
+              95.8,
+              98.49
+            ]
+          }
+        }
+      }
+    },
+    {
+      "condition": "weighted_ce_no_kd",
+      "seed": 42,
+      "epochs": 30,
+      "use_weights": true,
+      "use_kd": false,
+      "train_time_s": 299.6,
+      "best_val_acc": 96.26,
+      "test_eval": {
+        "acc": 95.89,
+        "correct": 1657,
+        "total": 1728,
+        "per_class": {
+          "cocci": {
+            "recall": 95.65,
+            "correct": 506,
+            "total": 529,
+            "ci_95": [
+              93.56,
+              97.09
+            ]
+          },
+          "healthy": {
+            "recall": 98.02,
+            "correct": 494,
+            "total": 504,
+            "ci_95": [
+              96.39,
+              98.92
+            ]
+          },
+          "ncd": {
+            "recall": 92.91,
+            "correct": 131,
+            "total": 141,
+            "ci_95": [
+              87.44,
+              96.1
+            ]
+          },
+          "salmo": {
+            "recall": 94.95,
+            "correct": 526,
+            "total": 554,
+            "ci_95": [
+              92.79,
+              96.48
+            ]
+          }
+        }
+      }
+    },
+    {
+      "condition": "weighted_ce_no_kd",
+      "seed": 123,
+      "epochs": 30,
+      "use_weights": true,
+      "use_kd": false,
+      "train_time_s": 300.2,
+      "best_val_acc": 95.59,
+      "test_eval": {
+        "acc": 95.54,
+        "correct": 1651,
+        "total": 1728,
+        "per_class": {
+          "cocci": {
+            "recall": 94.33,
+            "correct": 499,
+            "total": 529,
+            "ci_95": [
+              92.02,
+              96.0
+            ]
+          },
+          "healthy": {
+            "recall": 97.62,
+            "correct": 492,
+            "total": 504,
+            "ci_95": [
+              95.88,
+              98.63
+            ]
+          },
+          "ncd": {
+            "recall": 90.07,
+            "correct": 127,
+            "total": 141,
+            "ci_95": [
+              84.02,
+              93.99
+            ]
+          },
+          "salmo": {
+            "recall": 96.21,
+            "correct": 533,
+            "total": 554,
+            "ci_95": [
+              94.27,
+              97.51
+            ]
+          }
+        }
+      }
+    },
+    {
+      "condition": "weighted_ce_with_kd",
+      "seed": 42,
+      "epochs": 30,
+      "use_weights": true,
+      "use_kd": true,
+      "train_time_s": 400.0,
+      "best_val_acc": 96.26,
+      "test_eval": {
+        "acc": 95.83,
+        "correct": 1656,
+        "total": 1728,
+        "per_class": {
+          "cocci": {
+            "recall": 95.46,
+            "correct": 505,
+            "total": 529,
+            "ci_95": [
+              93.34,
+              96.93
+            ]
+          },
+          "healthy": {
+            "recall": 97.42,
+            "correct": 491,
+            "total": 504,
+            "ci_95": [
+              95.64,
+              98.49
+            ]
+          },
+          "ncd": {
+            "recall": 87.23,
+            "correct": 123,
+            "total": 141,
+            "ci_95": [
+              80.72,
+              91.77
+            ]
+          },
+          "salmo": {
+            "recall": 96.93,
+            "correct": 537,
+            "total": 554,
+            "ci_95": [
+              95.14,
+              98.08
+            ]
+          }
+        }
+      }
+    },
+    {
+      "condition": "weighted_ce_with_kd",
+      "seed": 123,
+      "epochs": 30,
+      "use_weights": true,
+      "use_kd": true,
+      "train_time_s": 400.4,
+      "best_val_acc": 96.19,
+      "test_eval": {
+        "acc": 96.18,
+        "correct": 1662,
+        "total": 1728,
+        "per_class": {
+          "cocci": {
+            "recall": 96.41,
+            "correct": 510,
+            "total": 529,
+            "ci_95": [
+              94.46,
+              97.69
+            ]
+          },
+          "healthy": {
+            "recall": 97.02,
+            "correct": 489,
+            "total": 504,
+            "ci_95": [
+              95.15,
+              98.19
+            ]
+          },
+          "ncd": {
+            "recall": 90.07,
+            "correct": 127,
+            "total": 141,
+            "ci_95": [
+              84.02,
+              93.99
+            ]
+          },
+          "salmo": {
+            "recall": 96.75,
+            "correct": 536,
+            "total": 554,
+            "ci_95": [
+              94.92,
+              97.94
+            ]
+          }
+        }
+      }
+    }
+  ]
+}
