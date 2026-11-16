@@ -1,6 +1,7 @@
 \documentclass[10pt,a4paper]{article}
 \usepackage[utf8]{inputenc}
 \usepackage[margin=0.75in,top=0.7in,bottom=0.7in]{geometry}
+\usepackage{amsmath}
 \usepackage{booktabs}
 \usepackage{hyperref}
 \usepackage{times}
@@ -53,7 +54,7 @@ In strict adherence to the JCSE Editorial Policies and ethical guidelines govern
 \toprule
 \textbf{Technical Dimension} & \textbf{Preliminary Conference (ICAIDES 2026)} & \textbf{Present Journal Submission (JCSE 2026)} \\
 \midrule
-\textbf{Dataset Hygiene \& Integrity} & Evaluated on uncurated public poultry images without duplicate verification. & Comprehensive perceptual hash audit ($D_H \le 5$); removed 617 duplicates and 94 cross-split leaks; established sanitized 8,744-image sterile benchmark ($n=1,728$ test set) with Wilson 95\% confidence intervals. \\
+\textbf{Dataset Hygiene \& Integrity} & Evaluated on uncurated public poultry images without duplicate verification. & Comprehensive perceptual hash audit ($D_H \le 5$); removed 617 duplicates (including 156 cross-partition train-test leaks); established sanitized 8,153-image sterile benchmark ($n=1,728$ test set) with Wilson 95\% confidence intervals. \\
 \addlinespace[0.2em]
 \textbf{Theoretical Formulation} & Empirical observation of accuracy drop without formal error bounds. & Rigorous Signal-to-Quantization-Noise Ratio (SQNR) derivation; proves effective bit-width reduction ($B_{\text{eff}} \le 4.1$ bits) caused by cross-channel dynamic range disparity ($\Delta_{w,l} > 14.8$) in depthwise convolutions. \\
 \addlinespace[0.2em]

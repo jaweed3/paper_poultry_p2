@@ -215,35 +215,10 @@ Request permission to republish from:\,JCSE Editorial Office, KIISE. FAX +82 2 5
 \def\endabstract{\endminipage\endlrbox}
 
 \def\titlepagelayout{
-  % Layout for title page
-  \newgeometry{
-    %voffset=1in, confuses geometry package.
-    %hoffset=1in, confuses geometry package.
-    %topskip=\baselineskip, nonexistent opt.
-    % textheight=42\baselineskip, not needed anymore, using top/bototm instead.
-    headsep=4mm,
-    marginparsep=1mm,
-    marginparwidth=5mm,
-    headheight=26mm,
-    footskip=10mm,
-    columnsep=2pc,
-    lmargin=20mm,
-    rmargin=20mm,
-    top=40mm,
-    bottom=60mm
-  }
+  \enlargethispage{-25mm}
 }
 
-\def\restorelayout {
-  % Because one column is a PAGE in LaTeX system,
-  % we restore page after TWO pages!
-  \afterpage{
-    \afterpage {
-      \aftergroup
-      \restoregeometry
-    }
-  }
-}
+\def\restorelayout{}
 
 \def\@bottomstuff{}
 \def\bottomstuff#1{

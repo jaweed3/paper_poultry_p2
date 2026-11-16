@@ -1,0 +1,455 @@
+{
+  "device": "Raspberry Pi 5 Model B Rev 1.0 (BCM2712, 4x Cortex-A76 @ 2.4GHz)",
+  "board_start": {
+    "temp": "temp=38.9'C",
+    "throttled": "throttled=0x50000"
+  },
+  "models": {
+    "mobilenetv2_fp32": {
+      "path": "models/onnx/mobilenetv2_gate0_fp32.onnx",
+      "file_size_mb": 8.48,
+      "th1": {
+        "runs": 100,
+        "mean_ms": 33.0,
+        "std_ms": 0.21,
+        "p50_ms": 32.97,
+        "p95_ms": 33.13,
+        "p99_ms": 34.15,
+        "fps": 30.31,
+        "peak_rss_mb": 85.73,
+        "wall_s": 3.3
+      },
+      "th4": {
+        "runs": 100,
+        "mean_ms": 20.23,
+        "std_ms": 11.15,
+        "p50_ms": 15.71,
+        "p95_ms": 26.58,
+        "p99_ms": 79.02,
+        "fps": 49.43,
+        "peak_rss_mb": 85.64,
+        "wall_s": 2.02
+      }
+    },
+    "mobilenetv2_dyn_int8": {
+      "path": "models/ptq/mobilenetv2_gate0_int8.onnx",
+      "file_size_mb": 2.3,
+      "th1": {
+        "runs": 100,
+        "mean_ms": 43.67,
+        "std_ms": 0.17,
+        "p50_ms": 43.62,
+        "p95_ms": 43.96,
+        "p99_ms": 44.36,
+        "fps": 22.9,
+        "peak_rss_mb": 89.62,
+        "wall_s": 4.37
+      },
+      "th4": {
+        "runs": 100,
+        "mean_ms": 49.95,
+        "std_ms": 12.87,
+        "p50_ms": 41.12,
+        "p95_ms": 73.15,
+        "p99_ms": 73.38,
+        "fps": 20.02,
+        "peak_rss_mb": 88.8,
+        "wall_s": 5.0
+      }
+    },
+    "mobilenetv2_static_int8": {
+      "path": "models/ptq/mobilenetv2_gate0_static_per_channel_minmax.onnx",
+      "file_size_mb": 2.48,
+      "th1": {
+        "runs": 100,
+        "mean_ms": 11.99,
+        "std_ms": 0.04,
+        "p50_ms": 11.98,
+        "p95_ms": 12.01,
+        "p99_ms": 12.12,
+        "fps": 83.43,
+        "peak_rss_mb": 79.34,
+        "wall_s": 1.2
+      },
+      "th4": {
+        "runs": 100,
+        "mean_ms": 7.59,
+        "std_ms": 1.79,
+        "p50_ms": 6.6,
+        "p95_ms": 9.58,
+        "p99_ms": 9.98,
+        "fps": 131.79,
+        "peak_rss_mb": 79.52,
+        "wall_s": 0.76
+      }
+    },
+    "mobilenetv2_s30_fp32": {
+      "path": "models/pruned/s30/mobilenetv2.onnx",
+      "file_size_mb": 4.2,
+      "th1": {
+        "runs": 100,
+        "mean_ms": 19.0,
+        "std_ms": 0.18,
+        "p50_ms": 18.97,
+        "p95_ms": 19.09,
+        "p99_ms": 19.75,
+        "fps": 52.62,
+        "peak_rss_mb": 80.14,
+        "wall_s": 1.9
+      },
+      "th4": {
+        "runs": 100,
+        "mean_ms": 11.32,
+        "std_ms": 3.15,
+        "p50_ms": 8.66,
+        "p95_ms": 14.9,
+        "p99_ms": 15.69,
+        "fps": 88.36,
+        "peak_rss_mb": 80.31,
+        "wall_s": 1.13
+      }
+    },
+    "mobilenetv2_s30_dyn_int8": {
+      "path": "models/pruned/s30/mobilenetv2_int8.onnx",
+      "file_size_mb": 1.19,
+      "th1": {
+        "runs": 100,
+        "mean_ms": 28.41,
+        "std_ms": 0.11,
+        "p50_ms": 28.39,
+        "p95_ms": 28.58,
+        "p99_ms": 28.95,
+        "fps": 35.19,
+        "peak_rss_mb": 80.5,
+        "wall_s": 2.84
+      },
+      "th4": {
+        "runs": 100,
+        "mean_ms": 34.62,
+        "std_ms": 11.04,
+        "p50_ms": 27.8,
+        "p95_ms": 50.4,
+        "p99_ms": 51.01,
+        "fps": 28.88,
+        "peak_rss_mb": 80.25,
+        "wall_s": 3.46
+      }
+    },
+    "mobilenetv2_s50_fp32": {
+      "path": "models/pruned/s50/mobilenetv2.onnx",
+      "file_size_mb": 2.23,
+      "th1": {
+        "runs": 100,
+        "mean_ms": 11.8,
+        "std_ms": 0.1,
+        "p50_ms": 11.79,
+        "p95_ms": 11.84,
+        "p99_ms": 11.91,
+        "fps": 84.72,
+        "peak_rss_mb": 73.16,
+        "wall_s": 1.18
+      },
+      "th4": {
+        "runs": 100,
+        "mean_ms": 8.13,
+        "std_ms": 2.07,
+        "p50_ms": 9.59,
+        "p95_ms": 9.79,
+        "p99_ms": 10.21,
+        "fps": 122.93,
+        "peak_rss_mb": 73.31,
+        "wall_s": 0.81
+      }
+    },
+    "mobilenetv2_s50_dyn_int8": {
+      "path": "models/pruned/s50/mobilenetv2_int8.onnx",
+      "file_size_mb": 0.72,
+      "th1": {
+        "runs": 100,
+        "mean_ms": 19.55,
+        "std_ms": 0.25,
+        "p50_ms": 19.51,
+        "p95_ms": 19.59,
+        "p99_ms": 21.15,
+        "fps": 51.14,
+        "peak_rss_mb": 77.84,
+        "wall_s": 1.96
+      },
+      "th4": {
+        "runs": 100,
+        "mean_ms": 23.4,
+        "std_ms": 7.56,
+        "p50_ms": 17.83,
+        "p95_ms": 35.94,
+        "p99_ms": 36.04,
+        "fps": 42.74,
+        "peak_rss_mb": 76.53,
+        "wall_s": 2.34
+      }
+    },
+    "efficientnet_b0_fp32": {
+      "path": "models/onnx/efficientnet_b0_gate0_fp32.onnx",
+      "file_size_mb": 15.3,
+      "th1": {
+        "runs": 100,
+        "mean_ms": 69.57,
+        "std_ms": 0.22,
+        "p50_ms": 69.53,
+        "p95_ms": 69.98,
+        "p99_ms": 70.32,
+        "fps": 14.37,
+        "peak_rss_mb": 103.16,
+        "wall_s": 6.96
+      },
+      "th4": {
+        "runs": 100,
+        "mean_ms": 40.19,
+        "std_ms": 13.14,
+        "p50_ms": 32.4,
+        "p95_ms": 58.32,
+        "p99_ms": 80.1,
+        "fps": 24.88,
+        "peak_rss_mb": 103.38,
+        "wall_s": 4.02
+      }
+    },
+    "efficientnet_b0_dyn_int8": {
+      "path": "models/ptq/efficientnet_b0_gate0_int8.onnx",
+      "file_size_mb": 4.16,
+      "th1": {
+        "runs": 100,
+        "mean_ms": 76.05,
+        "std_ms": 0.37,
+        "p50_ms": 75.99,
+        "p95_ms": 76.33,
+        "p99_ms": 77.64,
+        "fps": 13.15,
+        "peak_rss_mb": 92.83,
+        "wall_s": 7.61
+      },
+      "th4": {
+        "runs": 100,
+        "mean_ms": 88.22,
+        "std_ms": 22.63,
+        "p50_ms": 81.14,
+        "p95_ms": 123.97,
+        "p99_ms": 132.64,
+        "fps": 11.34,
+        "peak_rss_mb": 94.52,
+        "wall_s": 8.82
+      }
+    },
+    "efficientnet_b0_static_int8": {
+      "path": "models/ptq/efficientnet_b0_gate0_static_per_channel_minmax.onnx",
+      "file_size_mb": 4.67,
+      "th1": {
+        "runs": 100,
+        "mean_ms": 24.68,
+        "std_ms": 0.18,
+        "p50_ms": 24.62,
+        "p95_ms": 25.07,
+        "p99_ms": 25.37,
+        "fps": 40.52,
+        "peak_rss_mb": 89.33,
+        "wall_s": 2.47
+      },
+      "th4": {
+        "runs": 100,
+        "mean_ms": 19.44,
+        "std_ms": 8.05,
+        "p50_ms": 14.91,
+        "p95_ms": 26.44,
+        "p99_ms": 45.71,
+        "fps": 51.45,
+        "peak_rss_mb": 88.48,
+        "wall_s": 1.94
+      }
+    },
+    "efficientnet_b0_s30_fp32": {
+      "path": "models/pruned/s30/efficientnet_b0.onnx",
+      "file_size_mb": 7.67,
+      "th1": {
+        "runs": 100,
+        "mean_ms": 42.95,
+        "std_ms": 0.18,
+        "p50_ms": 42.9,
+        "p95_ms": 43.12,
+        "p99_ms": 43.66,
+        "fps": 23.29,
+        "peak_rss_mb": 88.84,
+        "wall_s": 4.29
+      },
+      "th4": {
+        "runs": 100,
+        "mean_ms": 25.99,
+        "std_ms": 10.63,
+        "p50_ms": 20.42,
+        "p95_ms": 32.9,
+        "p99_ms": 76.82,
+        "fps": 38.47,
+        "peak_rss_mb": 89.09,
+        "wall_s": 2.6
+      }
+    },
+    "efficientnet_b0_s30_static_int8": {
+      "path": "models/pruned/s30/efficientnet_b0_static_int8.onnx",
+      "file_size_mb": 2.62,
+      "th1": {
+        "runs": 100,
+        "mean_ms": 22.49,
+        "std_ms": 0.09,
+        "p50_ms": 22.48,
+        "p95_ms": 22.58,
+        "p99_ms": 22.88,
+        "fps": 44.46,
+        "peak_rss_mb": 83.67,
+        "wall_s": 2.25
+      },
+      "th4": {
+        "runs": 100,
+        "mean_ms": 17.22,
+        "std_ms": 6.36,
+        "p50_ms": 12.29,
+        "p95_ms": 26.96,
+        "p99_ms": 31.05,
+        "fps": 58.06,
+        "peak_rss_mb": 82.36,
+        "wall_s": 1.72
+      }
+    },
+    "efficientnet_b0_s50_fp32": {
+      "path": "models/pruned/s50/efficientnet_b0.onnx",
+      "file_size_mb": 4.04,
+      "th1": {
+        "runs": 100,
+        "mean_ms": 28.12,
+        "std_ms": 0.09,
+        "p50_ms": 28.1,
+        "p95_ms": 28.2,
+        "p99_ms": 28.46,
+        "fps": 35.57,
+        "peak_rss_mb": 80.69,
+        "wall_s": 2.81
+      },
+      "th4": {
+        "runs": 100,
+        "mean_ms": 16.72,
+        "std_ms": 6.17,
+        "p50_ms": 12.33,
+        "p95_ms": 25.41,
+        "p99_ms": 37.6,
+        "fps": 59.79,
+        "peak_rss_mb": 80.39,
+        "wall_s": 1.67
+      }
+    },
+    "shufflenetv2_fp32": {
+      "path": "models/onnx/shufflenetv2_gate0_fp32.onnx",
+      "file_size_mb": 4.89,
+      "th1": {
+        "runs": 100,
+        "mean_ms": 14.16,
+        "std_ms": 0.1,
+        "p50_ms": 14.15,
+        "p95_ms": 14.2,
+        "p99_ms": 14.33,
+        "fps": 70.62,
+        "peak_rss_mb": 75.83,
+        "wall_s": 1.42
+      },
+      "th4": {
+        "runs": 100,
+        "mean_ms": 8.35,
+        "std_ms": 2.87,
+        "p50_ms": 6.12,
+        "p95_ms": 12.33,
+        "p99_ms": 12.45,
+        "fps": 119.71,
+        "peak_rss_mb": 75.5,
+        "wall_s": 0.84
+      }
+    },
+    "shufflenetv2_dyn_int8": {
+      "path": "models/ptq/shufflenetv2_gate0_int8.onnx",
+      "file_size_mb": 1.47,
+      "th1": {
+        "runs": 100,
+        "mean_ms": 13.44,
+        "std_ms": 0.05,
+        "p50_ms": 13.42,
+        "p95_ms": 13.51,
+        "p99_ms": 13.56,
+        "fps": 74.43,
+        "peak_rss_mb": 76.09,
+        "wall_s": 1.34
+      },
+      "th4": {
+        "runs": 100,
+        "mean_ms": 14.56,
+        "std_ms": 5.1,
+        "p50_ms": 11.59,
+        "p95_ms": 24.77,
+        "p99_ms": 24.82,
+        "fps": 68.7,
+        "peak_rss_mb": 75.31,
+        "wall_s": 1.46
+      }
+    },
+    "shufflenetv2_static_int8": {
+      "path": "models/ptq/shufflenetv2_gate0_static_per_channel_minmax.onnx",
+      "file_size_mb": 1.56,
+      "th1": {
+        "runs": 100,
+        "mean_ms": 7.95,
+        "std_ms": 0.13,
+        "p50_ms": 7.93,
+        "p95_ms": 7.98,
+        "p99_ms": 8.1,
+        "fps": 125.85,
+        "peak_rss_mb": 75.64,
+        "wall_s": 0.79
+      },
+      "th4": {
+        "runs": 100,
+        "mean_ms": 6.29,
+        "std_ms": 2.24,
+        "p50_ms": 4.62,
+        "p95_ms": 9.42,
+        "p99_ms": 9.85,
+        "fps": 159.08,
+        "peak_rss_mb": 74.3,
+        "wall_s": 0.63
+      }
+    },
+    "shufflenetv2_s30_fp32": {
+      "path": "models/pruned/s30/shufflenetv2.onnx",
+      "file_size_mb": 4.86,
+      "th1": {
+        "runs": 100,
+        "mean_ms": 14.14,
+        "std_ms": 0.32,
+        "p50_ms": 14.04,
+        "p95_ms": 14.83,
+        "p99_ms": 15.44,
+        "fps": 70.73,
+        "peak_rss_mb": 75.97,
+        "wall_s": 1.41
+      },
+      "th4": {
+        "runs": 100,
+        "mean_ms": 9.36,
+        "std_ms": 5.39,
+        "p50_ms": 6.27,
+        "p95_ms": 19.46,
+        "p99_ms": 33.01,
+        "fps": 106.86,
+        "peak_rss_mb": 75.64,
+        "wall_s": 0.94
+      }
+    }
+  },
+  "board_end": {
+    "temp": "temp=47.2'C",
+    "throttled": "throttled=0x50000"
+  }
+}
